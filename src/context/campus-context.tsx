@@ -33,27 +33,6 @@ type CampusContextType = {
 
 const CampusContext = createContext<CampusContextType | undefined>(undefined);
 
-const DEFAULT_TERMS = {
-    communityName: 'Campus Loop',
-    listingName: 'Drop',
-    listingAction: 'Post a Drop',
-    sellerName: 'Plug',
-    buyerName: 'Hubber',
-    statusActive: 'Vibing',
-    statusPending: 'Locked In',
-    statusCompleted: 'Deal Sealed',
-    marketplaceName: 'The Feed',
-    pickupLabel: 'The Spot',
-};
-
-type CampusContextType = {
-    campus: CampusBranding | null;
-    loading: boolean;
-    getTerm: (key: keyof typeof DEFAULT_TERMS) => string;
-};
-
-const CampusContext = createContext<CampusContextType | undefined>(undefined);
-
 export function CampusProvider({ children }: { children: React.ReactNode }) {
     const [campus, setCampus] = useState<CampusBranding | null>(null);
     const [loading, setLoading] = useState(true);
