@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
 import { useModal } from "@/context/modal-context";
+import { FALLBACK_PRODUCT_IMAGE } from "@/lib/constants";
 
 export default function ListingDetailPage() {
     const { id } = useParams();
@@ -48,7 +49,6 @@ export default function ListingDetailPage() {
                 if (error) throw error;
                 if (data) setListing(data);
             } catch (err) {
-                console.error('Error fetching listing:', err);
             } finally {
                 setLoading(false);
             }
@@ -214,7 +214,7 @@ export default function ListingDetailPage() {
                             className="relative aspect-square overflow-hidden rounded-3xl bg-loops-subtle border border-loops-border shadow-2xl shadow-loops-primary/5"
                         >
                             <Image
-                                src={listing.images?.[0] || listing.image_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000"}
+                                src={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                 alt={listing.title}
                                 fill
                                 className="object-cover"

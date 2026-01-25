@@ -64,7 +64,6 @@ export default function SettingsPage() {
                 .eq('id', user.id);
 
             if (error) {
-                console.error("Save error:", error);
                 toast.error(`Error: ${error.message || "Failed to save settings."}`);
             } else {
                 toast.success("Settings updated successfully!");

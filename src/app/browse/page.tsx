@@ -13,6 +13,7 @@ import { SkeletonCard } from "@/components/ui/skeleton-loader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { cn } from "@/lib/utils";
 import { useCampus } from "@/context/campus-context";
+import { CATEGORIES, FALLBACK_PRODUCT_IMAGE } from "@/lib/constants";
 
 export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);
@@ -26,14 +27,6 @@ export default function MarketplacePage() {
     const supabase = createClient();
     const { campus, getTerm } = useCampus();
 
-    const CATEGORIES = [
-        { id: "all", label: "All" },
-        { id: "books", label: "Books" },
-        { id: "electronics", label: "Electronics" },
-        { id: "fashion", label: "Fashion" },
-        { id: "tutoring", label: "Tutoring" },
-        { id: "others", label: "Others" },
-    ];
 
     useEffect(() => {
         const fetchListings = async () => {
@@ -189,14 +182,14 @@ export default function MarketplacePage() {
                                     title={listing.title}
                                     price={`$${listing.price}`}
                                     category={listing.category}
-                                    image={listing.images?.[0] || listing.image_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000"}
+                                    image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                     delay={idx * 0.05}
                                 />
                             ))}
                         </div>
                     ) : (
                         <div className="text-center py-24 bg-loops-subtle border border-loops-border rounded-3xl">
-                            <div className="text-loops-muted font-bold uppercase tracking-widest text-xs mb-2 italic">The {campus?.slug === 'veritas' ? 'Pulse' : 'Loop'} is quiet.</div>
+                            <div className="text-loops-muted font-bold uppercase tracking-widest text-xs mb-2 italic">The {getTerm('communityName')} is quiet.</div>
                             <p className="text-loops-muted mb-8">Be the first to post something from your {campus?.name || 'campus'}!</p>
                             <Link href="/listings/create">
                                 <Button className="bg-loops-primary text-white shadow-xl shadow-loops-primary/20">{getTerm('listingAction')}</Button>

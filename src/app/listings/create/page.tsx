@@ -78,7 +78,6 @@ export default function CreateListingPage() {
                 });
 
             if (error) {
-                console.error('Listing creation error:', error);
                 throw error;
             }
             if (!error) {
@@ -88,7 +87,6 @@ export default function CreateListingPage() {
                 throw error;
             }
         } catch (error: any) {
-            console.error('Full error:', error);
             toast.error(error.message || 'Failed to create listing. Please try again.');
         } finally {
             setLoading(false);

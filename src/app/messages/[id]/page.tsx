@@ -57,19 +57,12 @@ export default function ChatPage() {
             if (listingData) {
                 setListing(listingData);
 
-                console.log("Chat Debug:", {
-                    myId: user.id,
-                    sellerId: listingData.seller_id,
-                    urlParamUser: threadUserId,
-                    isMeSeller: user.id === listingData.seller_id
-                });
 
                 // Determine who the "other" person is in this specific thread
                 const targetThreadPartnerId = user.id === listingData.seller_id
                     ? threadUserId
                     : listingData.seller_id;
 
-                console.log("Resolved Partner ID:", targetThreadPartnerId);
 
                 if (targetThreadPartnerId) {
                     const { data: partnerProfile } = await supabase
@@ -87,7 +80,6 @@ export default function ChatPage() {
                         .or(`sender_id.eq.${targetThreadPartnerId},receiver_id.eq.${targetThreadPartnerId}`)
                         .order('created_at', { ascending: true });
 
-                    if (msgError) console.error("Message Fetch Error:", msgError);
 
                     if (msgs) {
                         const filtered = msgs.filter(m =>
@@ -140,12 +132,6 @@ export default function ChatPage() {
         }
 
 
-        console.log("Attempting to send message:", {
-            listingId,
-            sender: currentUser.id,
-            receiver: otherUser.id,
-            content: newMessage.trim()
-        });
 
         const { data: msgData, error } = await supabase
             .from('messages')
@@ -158,7 +144,6 @@ export default function ChatPage() {
             .select()
             .single();
 
-        console.log("Send Result:", { msgData, error });
 
         if (!error) {
             setNewMessage("");

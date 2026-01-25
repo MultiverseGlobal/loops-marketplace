@@ -33,11 +33,6 @@ export default function MessagesPage() {
                 .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
                 .order('created_at', { ascending: false });
 
-            console.log("Inbox Debug:", {
-                myId: user.id,
-                rawData: data,
-                error: error
-            });
 
             if (data) {
                 // Determine unique threads: (listing_id + buyer_id)
@@ -46,7 +41,6 @@ export default function MessagesPage() {
                 data.forEach(msg => {
                     const listing = msg.listings;
                     if (!listing) {
-                        console.log("No listing for message:", msg.id);
                         return;
                     }
 
@@ -54,7 +48,6 @@ export default function MessagesPage() {
                     const partner = msg.sender_id === user.id ? msg.receiver : msg.sender;
 
                     if (!partner) {
-                        console.log("No partner found for message:", msg.id);
                         return;
                     }
 
@@ -70,7 +63,6 @@ export default function MessagesPage() {
                     }
                 });
 
-                console.log("Resolved Threads:", Array.from(threadsMap.values()));
                 setConversations(Array.from(threadsMap.values()));
             }
             setLoading(false);

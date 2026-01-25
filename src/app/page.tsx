@@ -8,8 +8,9 @@ import { Footer } from "@/components/layout/footer";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { SkeletonCard } from "@/components/ui/skeleton-loader";
 import { useCampus } from "@/context/campus-context";
+import { motion } from "framer-motion";
+import { FALLBACK_PRODUCT_IMAGE } from "@/lib/constants";
 
 export default function Home() {
     const [listings, setListings] = useState<any[]>([]);
@@ -50,7 +51,7 @@ export default function Home() {
                         className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold bg-white border border-loops-border shadow-xl shadow-loops-primary/5 text-loops-primary uppercase tracking-[0.2em]"
                     >
                         <Sparkles className="w-4 h-4 text-loops-accent" />
-                        Verified @ {campus?.name || 'Nigerian Universities'}
+                        Verified @ {campus?.name || 'Local Nodes'}
                     </motion.div>
 
                     <motion.h1
@@ -143,7 +144,7 @@ export default function Home() {
                                 title={listing.title}
                                 price={`$${listing.price}`}
                                 category={listing.category}
-                                image={listing.images?.[0] || listing.image_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000"}
+                                image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                 delay={idx * 0.1}
                             />
                         ))
@@ -165,12 +166,12 @@ export default function Home() {
                             <span className="italic opacity-60">Join the movement.</span>
                         </h2>
                         <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto font-medium">
-                            Join 500+ students already trading safely on {campus?.name || 'Campus'}. Your verified institutional identity is your key.
+                            Join the movement on {campus?.name || 'your campus'}. Your verified institutional identity is your key.
                         </p>
                         <div className="pt-6">
                             <Link href="/onboarding">
                                 <Button size="lg" className="h-16 px-16 text-xl font-bold bg-white text-loops-main hover:bg-loops-subtle transition-all rounded-2xl shadow-xl">
-                                    Activate My Pulse
+                                    Enter the {getTerm('communityName')}
                                 </Button>
                             </Link>
                         </div>

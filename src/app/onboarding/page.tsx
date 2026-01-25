@@ -18,10 +18,7 @@ interface Campus {
     location: string;
 }
 
-// Initial static fallback, will be replaced by DB fetch
-const FALLBACK_CAMPUSES = [
-    { id: "00000000-0000-0000-0000-000000000001", name: "Veritas University", slug: "veritas" },
-];
+// Fallback is no longer needed as we fetch from DB and have a "Request a Campus" button
 
 export default function OnboardingPage() {
     const [step, setStep] = useState(1);
@@ -83,7 +80,6 @@ export default function OnboardingPage() {
             toast.success(`Profile Activated. Welcome to the ${getTerm('communityName')}!`);
             router.push('/browse');
         } catch (error: any) {
-            console.error("Onboarding error details:", JSON.stringify(error, null, 2));
             toast.error(error.message || "Failed to complete onboarding. Check console.");
             if (error?.message?.includes("Session")) {
                 router.push('/login');
@@ -151,7 +147,7 @@ export default function OnboardingPage() {
                             </div>
 
                             <div className="grid gap-4">
-                                {(campuses.length > 0 ? campuses : FALLBACK_CAMPUSES).map((campus: any) => (
+                                {campuses.map((campus: any) => (
                                     <button
                                         key={campus.id}
                                         onClick={() => setSelectedCampus(campus.id)}

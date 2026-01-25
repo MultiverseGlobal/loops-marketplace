@@ -108,7 +108,7 @@ export function Navbar() {
                             </Link>
                             <Link href="/login?view=signup">
                                 <Button className="bg-loops-primary text-white hover:bg-loops-primary/90">
-                                    Join the {campus?.slug === 'veritas' ? 'Pulse' : 'Loop'}
+                                    Join the {getTerm('communityName')}
                                 </Button>
                             </Link>
                         </>

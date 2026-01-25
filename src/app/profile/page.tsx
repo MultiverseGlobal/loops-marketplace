@@ -139,7 +139,7 @@ export default function ProfilePage() {
                                         <Link href={`/messages?u=${profile?.id}`}>
                                             <Button className="w-full bg-loops-primary text-white hover:bg-loops-primary/90 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]">
                                                 <MessageSquare className="w-4 h-4" />
-                                                Send {campus?.slug === 'veritas' ? 'Pulse' : 'Loop'} Message
+                                                Send {getTerm('communityName')} Message
                                             </Button>
                                         </Link>
 

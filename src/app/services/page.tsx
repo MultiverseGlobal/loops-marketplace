@@ -54,7 +54,7 @@ export default function ServicesPage() {
                             Services.
                         </h1>
                         <p className="text-loops-muted text-sm font-medium">
-                            Student plugs at {campus?.name || 'Veritas'}.
+                            Student plugs at {campus?.name || 'your campus'}.
                         </p>
                     </div>
                     <div className="flex-1 max-w-xl">
@@ -80,7 +80,7 @@ export default function ServicesPage() {
                                 title={listing.title}
                                 price={`$${listing.price}`}
                                 category={listing.category}
-                                image={listing.images?.[0] || listing.image_url || "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=1000"}
+                                image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                 delay={idx * 0.05}
                             />
                         ))}
