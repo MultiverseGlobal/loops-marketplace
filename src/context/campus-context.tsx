@@ -12,7 +12,7 @@ type CampusBranding = {
     terms: Record<string, string>;
 };
 
-const DEFAULT_TERMS = {
+const CAMPUS_DEFAULT_TERMS = {
     communityName: 'Campus Loop',
     listingName: 'Drop',
     listingAction: 'Post a Drop',
@@ -28,7 +28,7 @@ const DEFAULT_TERMS = {
 type CampusContextType = {
     campus: CampusBranding | null;
     loading: boolean;
-    getTerm: (key: keyof typeof DEFAULT_TERMS) => string;
+    getTerm: (key: keyof typeof CAMPUS_DEFAULT_TERMS) => string;
 };
 
 const CampusContext = createContext<CampusContextType | undefined>(undefined);
@@ -56,7 +56,7 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
                         accent: dbCampus.accent_color || '#fbbf24',
                         name: dbCampus.name,
                         slug: dbCampus.slug,
-                        terms: dbCampus.terms || DEFAULT_TERMS,
+                        terms: dbCampus.terms || CAMPUS_DEFAULT_TERMS,
                     } as CampusBranding);
                 }
             }
@@ -74,8 +74,8 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
         }
     }, [campus]);
 
-    const getTerm = (key: keyof typeof DEFAULT_TERMS) => {
-        return campus?.terms?.[key] || DEFAULT_TERMS[key];
+    const getTerm = (key: keyof typeof CAMPUS_DEFAULT_TERMS) => {
+        return campus?.terms?.[key] || CAMPUS_DEFAULT_TERMS[key];
     };
 
     return (
