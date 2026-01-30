@@ -11,6 +11,7 @@ import { SkeletonCard } from "@/components/ui/skeleton-loader";
 import { SearchBar } from "@/components/ui/search-bar";
 import { useCampus } from "@/context/campus-context";
 import { Zap, Sparkles } from "lucide-react";
+import { FALLBACK_PRODUCT_IMAGE } from "@/lib/constants";
 
 export default function ServicesPage() {
     const [listings, setListings] = useState<any[]>([]);
