@@ -36,6 +36,7 @@ import { CampusProvider } from "../context/campus-context";
 import { ToastProvider } from "../context/toast-context";
 import { ModalProvider } from "../context/modal-context";
 import { BottomNav } from "../components/layout/bottom-nav";
+import { Analytics } from "@vercel/analytics/next";
 
 export default function RootLayout({
     children,
@@ -53,6 +54,7 @@ export default function RootLayout({
                         <ModalProvider>
                             <PageTransition>{children}</PageTransition>
                             <BottomNav />
+                            <Analytics />
                         </ModalProvider>
                     </ToastProvider>
                 </CampusProvider>
