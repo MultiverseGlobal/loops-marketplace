@@ -1,6 +1,6 @@
 'use client';
 
-import { Navbar } from "@/components/layout/navbar";
+import { Navbar } from "../../../components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,9 +10,9 @@ import { cn } from "../../../lib/utils";
 import { createClient } from "../../../lib/supabase/client";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useToast } from "@/context/toast-context";
+import { useToast } from "../../../context/toast-context";
 import { useCampus } from "../../../context/campus-context";
-import { useModal } from "@/context/modal-context";
+import { useModal } from "../../../context/modal-context";
 import { FALLBACK_PRODUCT_IMAGE } from "../../../lib/constants";
 
 export default function ListingDetailPage() {
