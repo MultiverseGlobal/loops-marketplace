@@ -9,7 +9,7 @@ import { Footer } from "@/components/layout/footer";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from "../lib/supabase/client";
-import { useCampus } from "../../context/campus-context";
+import { useCampus } from "../context/campus-context";
 import { motion } from "framer-motion";
 import { FALLBACK_PRODUCT_IMAGE } from "../lib/constants";
 import { cn } from "../lib/utils"; // Relative import fix
