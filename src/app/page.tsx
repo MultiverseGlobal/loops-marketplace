@@ -4,7 +4,7 @@ import { Button } from "../components/ui/button";
 import { Navbar } from "../components/layout/navbar";
 import { ProductCard } from "../components/ui/product-card";
 import { SkeletonCard } from "../components/ui/skeleton-loader";
-import { ArrowRight, Sparkles, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, Sparkles, ShieldCheck, Zap, MessageSquare } from "lucide-react";
 import { Footer } from "../components/layout/footer";
 import Link from "next/link";
 import { useState, useEffect } from "react";
