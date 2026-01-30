@@ -112,14 +112,14 @@ export default function MarketplacePage() {
             )}
 
             {/* App-like Header */}
-            <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-loops-border pt-20 pb-4 px-6">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <header className="bg-white/70 backdrop-blur-xl border-b border-loops-border pt-24 pb-6 px-6 relative z-10">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="space-y-1">
-                        <h1 className="font-display text-4xl font-bold tracking-tighter text-loops-main">
+                        <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-loops-main">
                             {getTerm('marketplaceName')}
                         </h1>
-                        <p className="text-loops-muted text-sm font-medium">
-                            Discover drops from {getTerm('communityName')}.
+                        <p className="text-loops-muted text-xs font-medium opacity-80 uppercase tracking-widest">
+                            {getTerm('communityName')} feed • Active Now
                         </p>
                     </div>
                     <div className="flex-1 max-w-xl">
@@ -134,15 +134,15 @@ export default function MarketplacePage() {
             <main className="max-w-7xl mx-auto px-6 py-10">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8">
                     {/* Category Quick Filter Chips */}
-                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2">
                         {CATEGORIES.map((cat) => (
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
                                 className={cn(
-                                    "px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border transition-all whitespace-nowrap",
+                                    "px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] border transition-all whitespace-nowrap",
                                     (selectedCategory === cat.id) || (cat.id === 'all' && !selectedCategory)
-                                        ? "bg-loops-main text-white border-loops-main shadow-lg shadow-loops-main/20 rotate-1 scale-105"
+                                        ? "bg-loops-main text-white border-loops-main shadow-md"
                                         : "bg-white text-loops-muted border-loops-border hover:border-loops-primary"
                                 )}
                             >
@@ -153,16 +153,16 @@ export default function MarketplacePage() {
 
                     {/* Sorting Dropdown */}
                     <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-loops-muted uppercase tracking-widest">Sort by:</span>
+                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">Sort:</span>
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="bg-white border border-loops-border rounded-xl px-4 py-2 text-sm font-bold text-loops-main focus:outline-none focus:ring-2 focus:ring-loops-primary/20 transition-all"
+                            className="bg-white border border-loops-border rounded-lg px-3 py-1.5 text-xs font-bold text-loops-main focus:outline-none focus:ring-2 focus:ring-loops-primary/10 transition-all cursor-pointer"
                         >
-                            <option value="newest">Newest Drops</option>
-                            <option value="oldest">Oldest Drops</option>
-                            <option value="price_low">Price: Low to High</option>
-                            <option value="price_high">Price: High to Low</option>
+                            <option value="newest">Newest</option>
+                            <option value="oldest">Oldest</option>
+                            <option value="price_low">Price ↑</option>
+                            <option value="price_high">Price ↓</option>
                         </select>
                     </div>
                 </div>

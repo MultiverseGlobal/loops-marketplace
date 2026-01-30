@@ -11,7 +11,7 @@ import { useCampus } from "@/context/campus-context";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (
-        <Link href={href} className="px-4 py-2 rounded-lg text-xs font-bold text-loops-muted hover:text-loops-primary hover:bg-loops-primary/5 transition-all tracking-widest uppercase">
+        <Link href={href} className="px-3 py-1.5 rounded-lg text-[10px] font-bold text-loops-muted hover:text-loops-primary hover:bg-loops-primary/5 transition-all tracking-[0.15em] uppercase">
             {children}
         </Link>
     );
@@ -107,9 +107,11 @@ export function Navbar() {
                                 <Button variant="ghost" className="text-loops-muted hover:text-loops-primary">Log in</Button>
                             </Link>
                             <Link href="/login?view=signup">
-                                <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-10 px-5 rounded-xl text-xs font-bold uppercase tracking-widest">
-                                    Join the Loop
-                                </Button>
+                                <Link href="/login?view=signup">
+                                    <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
+                                        Join the Loop
+                                    </Button>
+                                </Link>
                             </Link>
                         </>
                     )}
