@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useCampus } from "@/context/campus-context";
 import { motion } from "framer-motion";
 import { FALLBACK_PRODUCT_IMAGE } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
     const [listings, setListings] = useState<any[]>([]);
