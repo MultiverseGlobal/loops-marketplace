@@ -107,11 +107,9 @@ export function Navbar() {
                                 <Button variant="ghost" className="text-loops-muted hover:text-loops-primary">Log in</Button>
                             </Link>
                             <Link href="/login?view=signup">
-                                <Link href="/login?view=signup">
-                                    <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
-                                        Join the Loop
-                                    </Button>
-                                </Link>
+                                <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
+                                    Join the Loop
+                                </Button>
                             </Link>
                         </>
                     )}
