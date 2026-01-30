@@ -38,13 +38,13 @@ export function SearchBar({ onSearch, placeholder = "Search...", className, dela
 
     return (
         <div className={cn("relative group", className)}>
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-loops-muted group-focus-within:text-loops-primary transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-loops-muted group-focus-within:text-loops-primary transition-colors" />
             <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={placeholder}
-                className="w-full h-14 pl-12 pr-12 bg-loops-subtle border border-loops-border rounded-2xl text-loops-main placeholder:text-loops-muted/60 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm"
+                className="w-full h-12 pl-11 pr-11 bg-loops-subtle border border-loops-border rounded-xl text-sm text-loops-main placeholder:text-loops-muted/60 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm"
             />
             {query && (
                 <button

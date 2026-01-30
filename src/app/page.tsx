@@ -39,7 +39,7 @@ export default function Home() {
             <Navbar />
 
             {/* Hero Section: The "Wow" Factor */}
-            <section className="relative min-h-[90vh] flex items-center justify-center pt-32 pb-20 px-6 overflow-hidden">
+            <section className="relative min-h-[85vh] flex items-center justify-center pt-28 pb-16 px-6 overflow-hidden">
                 {/* Dynamic Background Elements */}
                 <div className="absolute inset-0 z-0">
                     <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-loops-primary/10 blur-[120px] rounded-full animate-float" />
@@ -47,13 +47,13 @@ export default function Home() {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03]" />
                 </div>
 
-                <div className="relative z-10 max-w-7xl mx-auto text-center space-y-12">
+                <div className="relative z-10 max-w-7xl mx-auto text-center space-y-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold bg-white border border-loops-border shadow-xl shadow-loops-primary/5 text-loops-primary uppercase tracking-[0.2em]"
+                        className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold bg-white border border-loops-border shadow-xl shadow-loops-primary/5 text-loops-primary uppercase tracking-[0.2em]"
                     >
-                        <Sparkles className="w-4 h-4 text-loops-accent" />
+                        <Sparkles className="w-3.5 h-3.5 text-loops-accent" />
                         Verified @ {campus?.name || 'Local Nodes'}
                     </motion.div>
 
@@ -61,7 +61,7 @@ export default function Home() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.1 }}
-                        className="font-display text-6xl sm:text-8xl md:text-[10rem] font-bold tracking-[ -0.05em] leading-[0.85] text-loops-main"
+                        className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-[-0.04em] leading-[0.9] text-loops-main"
                     >
                         Trade inside <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-br from-loops-primary via-loops-accent to-loops-secondary bg-[length:200%_auto] animate-gradient italic">
@@ -73,7 +73,7 @@ export default function Home() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="text-lg md:text-2xl text-loops-muted max-w-3xl mx-auto font-medium leading-relaxed opacity-80"
+                        className="text-base sm:text-lg md:text-xl text-loops-muted max-w-2xl mx-auto font-medium leading-relaxed opacity-80"
                     >
                         The economic nervous system of student life. Buy, sell, and offer skills safely within your verified university network.
                     </motion.p>
@@ -82,16 +82,16 @@ export default function Home() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="flex flex-col sm:flex-row gap-6 justify-center pt-8"
+                        className="flex flex-col sm:flex-row gap-4 justify-center pt-6"
                     >
                         <Link href="/browse">
-                            <Button size="lg" className="h-16 px-12 text-xl font-bold bg-loops-primary text-white hover:bg-loops-primary/90 transition-all shadow-2xl shadow-loops-primary/25 rounded-2xl group">
+                            <Button size="lg" className="h-14 px-10 text-lg font-bold bg-loops-primary text-white hover:bg-loops-primary/90 transition-all shadow-2xl shadow-loops-primary/25 rounded-2xl group">
                                 Start Trading
-                                <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
+                                <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
                             </Button>
                         </Link>
                         <Link href="/onboarding">
-                            <Button size="lg" variant="outline" className="h-16 px-12 text-xl font-bold border-loops-border bg-white/50 backdrop-blur-md hover:bg-white text-loops-main rounded-2xl">
+                            <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-bold border-loops-border bg-white/50 backdrop-blur-md hover:bg-white text-loops-main rounded-2xl">
                                 Join the Hub
                             </Button>
                         </Link>

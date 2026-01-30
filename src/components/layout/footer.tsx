@@ -9,16 +9,16 @@ export function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-white border-t border-loops-border pt-20 pb-10 px-6">
+        <footer className="bg-white border-t border-loops-border pt-16 pb-8 px-6">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     {/* Brand Column */}
                     <div className="space-y-6">
                         <Link href="/" className="flex items-center gap-2 group">
-                            <div className="w-10 h-10 bg-loops-primary rounded-xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:scale-105 transition-transform">
-                                <MessageSquare className="text-white w-6 h-6" />
+                            <div className="w-9 h-9 bg-loops-primary rounded-xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:scale-105 transition-transform">
+                                <MessageSquare className="text-white w-5 h-5" />
                             </div>
-                            <span className="text-2xl font-bold font-display tracking-tight text-loops-main">Loops</span>
+                            <span className="text-xl font-bold font-display tracking-tight text-loops-main">Loops</span>
                         </Link>
                         <p className="text-loops-muted text-sm leading-relaxed max-w-xs">
                             The economic nervous system of Nigerian student life. Trading safely within verified university networks.

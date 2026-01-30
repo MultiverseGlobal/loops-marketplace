@@ -55,7 +55,7 @@ export function Navbar() {
         <nav className="fixed top-0 w-full z-50 border-b border-loops-border bg-white/70 backdrop-blur-xl">
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-8">
-                    <Link href="/" className="font-display text-2xl font-bold tracking-tight text-loops-main hover:opacity-80 transition-opacity">
+                    <Link href="/" className="font-display text-xl font-bold tracking-tight text-loops-main hover:opacity-80 transition-opacity">
                         Loops
                     </Link>
                     <nav className="hidden md:flex items-center gap-1">
@@ -107,8 +107,8 @@ export function Navbar() {
                                 <Button variant="ghost" className="text-loops-muted hover:text-loops-primary">Log in</Button>
                             </Link>
                             <Link href="/login?view=signup">
-                                <Button className="bg-loops-primary text-white hover:bg-loops-primary/90">
-                                    Join the {getTerm('communityName')}
+                                <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-10 px-5 rounded-xl text-xs font-bold uppercase tracking-widest">
+                                    Join the Loop
                                 </Button>
                             </Link>
                         </>

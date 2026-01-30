@@ -34,9 +34,9 @@ export function ProductCard({ id, title, price, image, category, delay = 0 }: Pr
                         </span>
                     </div>
                 </div>
-                <div className="mt-4 space-y-1 px-1">
-                    <h3 className="font-bold text-loops-main group-hover:text-loops-primary transition-colors truncate">{title}</h3>
-                    <p className="text-loops-success font-bold tracking-tight">{price}</p>
+                <div className="mt-3 space-y-0.5 px-0.5">
+                    <h3 className="text-sm font-bold text-loops-main group-hover:text-loops-primary transition-colors truncate">{title}</h3>
+                    <p className="text-[13px] text-loops-success font-bold tracking-tight">{price}</p>
                 </div>
             </Link>
         </motion.div>
