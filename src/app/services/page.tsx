@@ -1,8 +1,8 @@
 'use client';
 
-import { Navbar } from "@/components/layout/navbar";
-import { ProductCard } from "@/components/ui/product-card";
-import { Button } from "@/components/ui/button";
+import { Navbar } from "../../components/layout/navbar";
+import { ProductCard } from "../../components/ui/product-card";
+import { Button } from "../../components/ui/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
