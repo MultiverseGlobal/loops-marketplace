@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
+import { cn } from "./lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -31,11 +31,11 @@ export const metadata: Metadata = {
     }
 };
 
-import { PageTransition } from "@/components/layout/page-transition";
-import { CampusProvider } from "@/context/campus-context";
-import { ToastProvider } from "@/context/toast-context";
-import { ModalProvider } from "@/context/modal-context";
-import { BottomNav } from "@/components/layout/bottom-nav";
+import { PageTransition } from "../components/layout/page-transition";
+import { CampusProvider } from "../context/campus-context";
+import { ToastProvider } from "../context/toast-context";
+import { ModalProvider } from "../context/modal-context";
+import { BottomNav } from "../components/layout/bottom-nav";
 
 export default function RootLayout({
     children,
