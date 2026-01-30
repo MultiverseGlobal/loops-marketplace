@@ -3,17 +3,20 @@
 import { Navbar } from "@/components/layout/navbar";
 import { ProductCard } from "@/components/ui/product-card";
 import { Button } from "@/components/ui/button";
-import { VerificationBanner } from "@/components/ui/verification-banner";
+import { Navbar } from "../../components/layout/navbar";
+import { ProductCard } from "../../components/ui/product-card";
+import { Button } from "../../components/ui/button";
+import { VerificationBanner } from "../../components/ui/verification-banner";
 import { Filter, LayoutGrid, List } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { SkeletonCard } from "@/components/ui/skeleton-loader";
-import { SearchBar } from "@/components/ui/search-bar";
-import { cn } from "@/lib/utils";
-import { useCampus } from "@/context/campus-context";
-import { CATEGORIES, FALLBACK_PRODUCT_IMAGE } from "@/lib/constants";
+import { createClient } from "../../lib/supabase/client";
+import { SkeletonCard } from "../../components/ui/skeleton-loader";
+import { SearchBar } from "../../components/ui/search-bar";
+import { cn } from "../../lib/utils";
+import { useCampus } from "../../context/campus-context";
+import { CATEGORIES, FALLBACK_PRODUCT_IMAGE } from "../../lib/constants";
 
 export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);

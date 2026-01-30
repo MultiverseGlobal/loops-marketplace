@@ -6,14 +6,14 @@ import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkl
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
+import { cn } from "../../../lib/utils";
+import { createClient } from "../../../lib/supabase/client";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/context/toast-context";
-import { useCampus } from "@/context/campus-context";
+import { useCampus } from "../../../context/campus-context";
 import { useModal } from "@/context/modal-context";
-import { FALLBACK_PRODUCT_IMAGE } from "@/lib/constants";
+import { FALLBACK_PRODUCT_IMAGE } from "../../../lib/constants";
 
 export default function ListingDetailPage() {
     const { id } = useParams();

@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { SkeletonCard } from "@/components/ui/skeleton-loader";
-import { SearchBar } from "@/components/ui/search-bar";
-import { useCampus } from "@/context/campus-context";
+import { createClient } from "../../lib/supabase/client";
+import { SkeletonCard } from "../../components/ui/skeleton-loader";
+import { SearchBar } from "../../components/ui/search-bar";
+import { useCampus } from "../../context/campus-context";
 import { HelpCircle, PackageSearch } from "lucide-react";
+import { FALLBACK_PRODUCT_IMAGE } from "../../lib/constants";
 
 export default function RequestsPage() {
     const [listings, setListings] = useState<any[]>([]);
@@ -78,7 +79,7 @@ export default function RequestsPage() {
                                 title={listing.title}
                                 price={`$${listing.price}`}
                                 category={listing.category}
-                                image={listing.images?.[0] || listing.image_url || "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=1000"}
+                                image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                 delay={idx * 0.05}
                             />
                         ))}
