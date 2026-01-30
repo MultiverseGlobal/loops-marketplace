@@ -1,8 +1,5 @@
 'use client';
 
-import { Navbar } from "@/components/layout/navbar";
-import { ProductCard } from "@/components/ui/product-card";
-import { Button } from "@/components/ui/button";
 import { Navbar } from "../../components/layout/navbar";
 import { ProductCard } from "../../components/ui/product-card";
 import { Button } from "../../components/ui/button";
