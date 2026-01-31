@@ -9,96 +9,104 @@ export function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-white border-t border-loops-border pt-16 pb-8 px-6">
+        <footer className="bg-white border-t border-loops-border pt-20 pb-10 px-4 sm:px-6">
             <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-8 gap-y-12 mb-20">
                     {/* Brand Column */}
-                    <div className="space-y-6">
-                        <Link href="/" className="flex items-center gap-2 group">
-                            <div className="w-9 h-9 bg-loops-primary rounded-xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:scale-105 transition-transform">
+                    <div className="col-span-2 lg:col-span-2 space-y-6">
+                        <Link href="/" className="flex items-center gap-2.5 group w-fit">
+                            <div className="w-10 h-10 bg-loops-primary rounded-xl flex items-center justify-center shadow-xl shadow-loops-primary/20 group-hover:scale-105 transition-transform duration-300">
                                 <MessageSquare className="text-white w-5 h-5" />
                             </div>
-                            <span className="text-xl font-bold font-display tracking-tight text-loops-main">Loops</span>
+                            <span className="text-2xl font-bold font-display tracking-tight text-loops-main">Loops</span>
                         </Link>
-                        <p className="text-loops-muted text-sm leading-relaxed max-w-xs">
-                            The economic nervous system of Nigerian student life. Trading safely within verified university networks.
+                        <p className="text-loops-muted text-sm leading-relaxed max-w-sm">
+                            The economic nervous system of Nigerian student life. <br className="hidden lg:block" />
+                            Trading safely within verified university networks.
                         </p>
-                        <div className="flex items-center gap-4">
-                            <a href="#" className="p-2 rounded-lg bg-loops-subtle text-loops-muted hover:text-loops-primary transition-colors">
+                        <div className="flex items-center gap-3">
+                            <a href="#" className="w-10 h-10 flex items-center justify-center rounded-xl bg-loops-subtle text-loops-muted hover:text-loops-primary hover:bg-loops-primary/5 transition-all">
                                 <Instagram className="w-5 h-5" />
                             </a>
-                            <a href="#" className="p-2 rounded-lg bg-loops-subtle text-loops-muted hover:text-loops-primary transition-colors">
+                            <a href="#" className="w-10 h-10 flex items-center justify-center rounded-xl bg-loops-subtle text-loops-muted hover:text-loops-primary hover:bg-loops-primary/5 transition-all">
                                 <Twitter className="w-5 h-5" />
                             </a>
                         </div>
                     </div>
 
                     {/* Discovery */}
-                    <div>
-                        <h4 className="font-bold text-loops-main mb-6 uppercase tracking-widest text-xs">Discovery</h4>
-                        <ul className="space-y-4">
-                            <li><Link href="/browse" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">{getTerm('marketplaceName')}</Link></li>
-                            <li><Link href="/services" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">Campus Services</Link></li>
-                            <li><Link href="/requests" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">Student Requests</Link></li>
+                    <div className="space-y-6">
+                        <h4 className="font-bold text-loops-main uppercase tracking-widest text-[10px]">Discovery</h4>
+                        <ul className="space-y-3">
+                            <li><NavLink href="/browse">{getTerm('marketplaceName')}</NavLink></li>
+                            <li><NavLink href="/services">Campus Services</NavLink></li>
+                            <li><NavLink href="/requests">Student Requests</NavLink></li>
                             <li><Link href="/request-campus" className="text-loops-primary font-bold hover:underline transition-all text-sm">Request a Campus</Link></li>
-                            <li><Link href="/listings/create" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">Post a Drop</Link></li>
+                            <li><NavLink href="/listings/create">Post a Drop</NavLink></li>
                         </ul>
                     </div>
 
-                    {/* Support & Safety */}
-                    <div>
-                        <h4 className="font-bold text-loops-main mb-6 uppercase tracking-widest text-xs">Support & Safety</h4>
-                        <ul className="space-y-4">
-                            <li><Link href="/safety" className="text-loops-muted hover:text-loops-primary transition-colors text-sm flex items-center gap-2">
-                                <ShieldCheck className="w-4 h-4" /> Safety Center
-                            </Link></li>
-                            <li><Link href="/faq" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">How it Works</Link></li>
+                    {/* Resources */}
+                    <div className="space-y-6">
+                        <h4 className="font-bold text-loops-main uppercase tracking-widest text-[10px]">Resources</h4>
+                        <ul className="space-y-3">
+                            <li><NavLink href="/safety">Safety Center</NavLink></li>
+                            <li><NavLink href="/faq">How it Works</NavLink></li>
                             <li><a
                                 href="https://wa.me/2348123456789?text=Hello%20Loops%20Team!%20I%20need%20help%20with..."
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-loops-success hover:text-loops-success/80 transition-colors text-sm font-bold flex items-center gap-2"
                             >
-                                <Phone className="w-4 h-4" /> LoopBot WhatsApp
+                                <Phone className="w-3.5 h-3.5" /> LoopBot
                             </a></li>
-                            <li><Link href="/terms" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">Terms of Service</Link></li>
-                            <li><Link href="/privacy" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">Privacy Policy</Link></li>
+                            <li><NavLink href="/terms">Terms</NavLink></li>
+                            <li><NavLink href="/privacy">Privacy</NavLink></li>
                         </ul>
                     </div>
 
-                    {/* Campus Column */}
-                    <div>
-                        <h4 className="font-bold text-loops-main mb-6 uppercase tracking-widest text-xs">Your Campus</h4>
-                        <div className="p-4 rounded-2xl bg-loops-subtle border border-loops-border">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-loops-success animate-pulse" />
-                                <span className="text-sm font-bold text-loops-main">{campus?.name || 'Veritas Pulse'}</span>
+                    {/* Local Node */}
+                    <div className="col-span-2 md:col-span-1 space-y-6">
+                        <h4 className="font-bold text-loops-main uppercase tracking-widest text-[10px]">Local Node</h4>
+                        <div className="p-5 rounded-2xl bg-loops-subtle border border-loops-border relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-16 h-16 bg-loops-success/5 rounded-full blur-2xl group-hover:bg-loops-success/10 transition-colors" />
+                            <div className="flex items-center gap-3 mb-3 relative z-10">
+                                <div className="w-2 h-2 rounded-full bg-loops-success animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                                <span className="text-sm font-bold text-loops-main truncate">{campus?.name || 'Veritas Pulse'}</span>
                             </div>
-                            <p className="text-[10px] text-loops-muted uppercase font-bold tracking-widest mb-4">Official Node Active</p>
-                            <Link href="/profile" className="text-xs font-bold text-loops-primary hover:underline">
+                            <p className="text-[9px] text-loops-muted uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Verified Active</p>
+                            <Link href="/profile" className="text-xs font-bold text-loops-primary hover:translate-x-1 transition-transform inline-flex items-center gap-1">
                                 Manage Profile →
                             </Link>
                         </div>
                     </div>
                 </div>
 
-                <div className="border-t border-loops-border pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-xs text-loops-muted font-medium">
-                        © {currentYear} Loops Marketplace. Built for Nigerian Students.
+                <div className="border-t border-loops-border pt-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <p className="text-[11px] text-loops-muted font-medium text-center md:text-left">
+                        © {currentYear} Loops Marketplace. <br className="md:hidden" />
+                        Built with <Heart className="inline w-3 h-3 text-loops-accent fill-loops-accent mx-0.5" /> for Nigerian Students.
                     </p>
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-1.5 text-xs text-loops-muted font-medium">
+                    <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-1.5 text-[11px] text-loops-muted font-bold uppercase tracking-widest">
                             <Globe className="w-3.5 h-3.5" />
-                            <span>NG-Region</span>
+                            <span>Region: NG</span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-loops-muted font-medium">
-                            <span>Made with</span>
-                            <Heart className="w-3.5 h-3.5 text-loops-accent fill-loops-accent" />
-                            <span>for {campus?.slug === 'veritas' ? 'Veritas' : 'Campus'}</span>
+                        <div className="w-px h-4 bg-loops-border hidden sm:block" />
+                        <div className="text-[11px] text-loops-muted font-medium">
+                            v0.1.0-beta
                         </div>
                     </div>
                 </div>
             </div>
         </footer>
+    );
+}
+
+function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
+    return (
+        <Link href={href} className="text-loops-muted hover:text-loops-primary transition-all text-sm block w-fit">
+            {children}
+        </Link>
     );
 }

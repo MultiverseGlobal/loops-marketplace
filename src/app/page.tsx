@@ -47,7 +47,7 @@ export default function Home() {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03]" />
                 </div>
 
-                <div className="relative z-10 max-w-7xl mx-auto text-center space-y-10">
+                <div className="relative z-10 max-w-7xl mx-auto text-center px-4 sm:px-6 space-y-12">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -100,7 +100,7 @@ export default function Home() {
             </section>
 
             {/* Bento Feature Grid */}
-            <section className="py-24 px-6 relative z-10 bg-white">
+            <section className="py-32 px-4 sm:px-6 relative z-10 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
                         {/* Big Card - Peer Privacy */}
@@ -177,8 +177,8 @@ export default function Home() {
             </section>
 
             {/* How it Works: Step by Step */}
-            <section className="py-32 px-6 bg-loops-subtle relative z-10">
-                <div className="max-w-7xl mx-auto text-center space-y-20">
+            <section className="py-32 px-4 sm:px-6 bg-loops-subtle relative z-10">
+                <div className="max-w-7xl mx-auto text-center space-y-24">
                     <div className="space-y-4">
                         <h2 className="font-display text-4xl md:text-5xl font-bold text-loops-main tracking-tight italic">How the Loop flows.</h2>
                         <p className="text-loops-muted text-lg max-w-xl mx-auto">Standard trading is broken. Loops makes it as fast as a heartbeat.</p>

@@ -111,15 +111,18 @@ export default function MarketplacePage() {
                 </div>
             )}
 
-            {/* App-like Header */}
-            <header className="bg-white/70 backdrop-blur-xl border-b border-loops-border pt-24 pb-6 px-6 relative z-10">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="space-y-1">
-                        <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-loops-main">
-                            {getTerm('marketplaceName')}
+            {/* App Header */}
+            <header className="bg-white/80 backdrop-blur-xl border-b border-loops-border pt-32 pb-8 px-4 sm:px-6 relative z-10">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-8">
+                    <div className="space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/10 text-loops-primary text-[10px] font-bold uppercase tracking-widest border border-loops-primary/20">
+                            <Sparkles className="w-3 h-3" /> Live Feed
+                        </div>
+                        <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tighter text-loops-main italic">
+                            {getTerm('marketplaceName')}.
                         </h1>
-                        <p className="text-loops-muted text-xs font-medium opacity-80 uppercase tracking-widest">
-                            {getTerm('communityName')} feed • Active Now
+                        <p className="text-loops-muted text-sm font-medium max-w-sm">
+                            Real-time student economy across {campus?.name || 'the node'}.
                         </p>
                     </div>
                     <div className="flex-1 max-w-xl">
