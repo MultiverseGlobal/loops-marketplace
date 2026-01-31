@@ -171,7 +171,7 @@ export default function ProfilePage() {
                                     onClick={() => setActiveTab('selling')}
                                     className={cn(
                                         "flex-1 sm:flex-none px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                                        { activeTab === 'selling'
+                                        activeTab === 'selling'
                                             ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
                                             : "text-loops-muted hover:text-loops-main"
                                     )}
