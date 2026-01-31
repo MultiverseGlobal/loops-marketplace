@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { UserCircle, LogOut, MessageSquare, Sparkles } from "lucide-react";
+import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
@@ -83,6 +83,13 @@ export function Navbar() {
                             </Link>
 
                             <div className="w-px h-6 bg-loops-border mx-2 hidden sm:block" />
+
+                            {profile?.is_admin && (
+                                <Link href="/admin" className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-loops-accent/10 border border-loops-accent/20 text-loops-accent hover:bg-loops-accent/20 transition-all group/admin">
+                                    <LayoutDashboard className="w-4 h-4" />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest">Admin Hub</span>
+                                </Link>
+                            )}
 
                             <Link href="/profile" className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-loops-subtle border border-loops-border hover:border-loops-primary/20 transition-all group">
                                 <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-loops-primary text-sm font-bold border border-loops-border shadow-sm overflow-hidden relative group-hover:scale-105 transition-transform">

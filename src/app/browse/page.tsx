@@ -4,7 +4,7 @@ import { Navbar } from "../../components/layout/navbar";
 import { ProductCard } from "../../components/ui/product-card";
 import { Button } from "../../components/ui/button";
 import { VerificationBanner } from "../../components/ui/verification-banner";
-import { Filter, LayoutGrid, List } from "lucide-react";
+import { Filter, LayoutGrid, List, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
