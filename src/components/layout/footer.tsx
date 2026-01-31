@@ -40,6 +40,7 @@ export function Footer() {
                             <li><Link href="/browse" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">{getTerm('marketplaceName')}</Link></li>
                             <li><Link href="/services" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">Campus Services</Link></li>
                             <li><Link href="/requests" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">Student Requests</Link></li>
+                            <li><Link href="/request-campus" className="text-loops-primary font-bold hover:underline transition-all text-sm">Request a Campus</Link></li>
                             <li><Link href="/listings/create" className="text-loops-muted hover:text-loops-primary transition-colors text-sm">Post a Drop</Link></li>
                         </ul>
                     </div>

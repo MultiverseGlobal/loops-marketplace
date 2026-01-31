@@ -1,13 +1,24 @@
--- Create ENUM for university types
-DO $$ 
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'uni_type') THEN
-        CREATE TYPE uni_type AS ENUM ('public', 'private');
-    END IF;
-END $$;
-
 -- Add uni_type column to campuses
-ALTER TABLE campuses ADD COLUMN IF NOT EXISTS type uni_type DEFAULT 'public';
+ALTER TABLE campuses ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'public';
+
+-- Add branding and terminology columns if they don't exist
+ALTER TABLE campuses 
+ADD COLUMN IF NOT EXISTS primary_color TEXT DEFAULT '#1e40af',
+ADD COLUMN IF NOT EXISTS secondary_color TEXT DEFAULT '#3b82f6',
+ADD COLUMN IF NOT EXISTS accent_color TEXT DEFAULT '#fbbf24',
+ADD COLUMN IF NOT EXISTS terms JSONB DEFAULT '{
+    "communityName": "Campus Loop",
+    "listingName": "Drop",
+    "listingAction": "Post a Drop",
+    "sellerName": "Plug",
+    "buyerName": "Hubber",
+    "statusActive": "Vibing",
+    "statusPending": "Locked In",
+    "statusCompleted": "Deal Sealed",
+    "marketplaceName": "The Feed",
+    "pickupLabel": "The Spot",
+    "reputationLabel": "Karma"
+}'::jsonb;
 
 -- Define Terminology Sets
 -- Public Uni Terms
