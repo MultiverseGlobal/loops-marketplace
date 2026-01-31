@@ -71,7 +71,7 @@ export default function ProfilePage() {
 
                     {/* Sidebar / Info */}
                     <div className="space-y-8">
-                        <div className="relative p-8 rounded-3xl bg-loops-subtle border border-loops-border shadow-2xl shadow-loops-primary/5 overflow-hidden group">
+                        <div className="relative p-6 md:p-8 rounded-3xl bg-loops-subtle border border-loops-border shadow-2xl shadow-loops-primary/5 overflow-hidden group">
                             {(!targetUserId || targetUserId === user?.id) && (
                                 <div className="absolute top-0 right-0 p-4">
                                     <Link href="/profile/settings">
@@ -126,7 +126,7 @@ export default function ProfilePage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-4 rounded-2xl bg-white border border-loops-border text-center shadow-sm">
                                         <div className="text-2xl font-bold font-display text-loops-primary tracking-tighter">{profile?.reputation || 0}</div>
-                                        <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Reputation Ledger</div>
+                                        <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">{getTerm('reputationLabel')}</div>
                                     </div>
                                     <div className="p-4 rounded-2xl bg-white border border-loops-border text-center shadow-sm">
                                         <div className="text-2xl font-bold font-display text-loops-success tracking-tighter">{Number(profile?.rating || 0).toFixed(1)}</div>
@@ -171,12 +171,12 @@ export default function ProfilePage() {
                                     onClick={() => setActiveTab('selling')}
                                     className={cn(
                                         "flex-1 sm:flex-none px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                                        activeTab === 'selling'
+                                        { activeTab === 'selling'
                                             ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
                                             : "text-loops-muted hover:text-loops-main"
                                     )}
                                 >
-                                    Selling (Merchant)
+                                    Selling ({getTerm('sellerName')})
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('buying')}
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                                             : "text-loops-muted hover:text-loops-main"
                                     )}
                                 >
-                                    Buying (Student)
+                                    Buying ({getTerm('buyerName')})
                                 </button>
                             </div>
                         )}
@@ -254,7 +254,7 @@ export default function ProfilePage() {
                                 </div>
                                 <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
                                     <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">Consumer History</h3>
+                                    <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">{getTerm('buyerName')} History</h3>
                                     <p className="text-loops-muted mt-2">When you message sellers or buy items, they will appear here for tracking.</p>
                                     <Link href="/browse" className="inline-block mt-4">
                                         <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>

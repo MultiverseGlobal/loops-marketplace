@@ -61,7 +61,7 @@ export default function Home() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.1 }}
-                        className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-[-0.04em] leading-[0.9] text-loops-main"
+                        className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-[-0.04em] leading-[0.9] text-loops-main"
                     >
                         Trade inside <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-br from-loops-primary via-loops-accent to-loops-secondary bg-[length:200%_auto] animate-gradient italic">
@@ -106,7 +106,7 @@ export default function Home() {
                         {/* Big Card - Peer Privacy */}
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="md:col-span-2 md:row-span-2 p-10 rounded-[2.5rem] bg-loops-subtle border border-loops-border flex flex-col justify-between group overflow-hidden relative shadow-sm hover:shadow-xl transition-all"
+                            className="md:col-span-2 md:row-span-2 p-8 md:p-12 rounded-[2.5rem] bg-loops-subtle border border-loops-border flex flex-col justify-between group overflow-hidden relative shadow-sm hover:shadow-xl transition-all"
                         >
                             <div className="absolute top-0 right-0 w-64 h-64 bg-loops-primary/5 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-loops-primary/10 transition-colors" />
                             <div className="space-y-6 relative z-10">
@@ -130,7 +130,7 @@ export default function Home() {
                         {/* Middle Top - Skill Swap */}
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="md:col-span-2 p-10 rounded-[2.5rem] bg-loops-main text-white flex flex-col justify-center gap-6 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all"
+                            className="md:col-span-2 p-8 md:p-12 rounded-[2.5rem] bg-loops-main text-white flex flex-col justify-center gap-6 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all"
                         >
                             <div className="absolute bottom-0 right-0 w-48 h-48 bg-loops-primary/20 rounded-full blur-3xl -mb-10 -mr-10" />
                             <div className="flex items-center justify-between relative z-10">
@@ -220,7 +220,7 @@ export default function Home() {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
                     {listings.length > 0 ? (
                         listings.map((listing, idx) => (
                             <ProductCard

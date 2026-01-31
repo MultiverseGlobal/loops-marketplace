@@ -170,11 +170,11 @@ export default function MarketplacePage() {
                 {/* Grid */}
                 <div className="py-2">
                     {loading ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-10">
                             {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
                         </div>
                     ) : listings.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-10">
                             {listings.map((listing, idx) => (
                                 <ProductCard
                                     key={listing.id}

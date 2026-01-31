@@ -405,7 +405,7 @@ export default function OnboardingPage() {
                             <div className="grid gap-4 max-w-sm mx-auto pt-8">
                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
                                     <Sparkles className="w-5 h-5 text-loops-accent" />
-                                    <span className="text-sm font-bold text-loops-main">Reputation Ledger activated</span>
+                                    <span className="text-sm font-bold text-loops-main">{getTerm('reputationLabel')} activated</span>
                                 </div>
                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
                                     <Check className="w-5 h-5 text-loops-success" />

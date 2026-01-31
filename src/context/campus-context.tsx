@@ -9,6 +9,7 @@ type CampusBranding = {
     accent: string;
     name: string;
     slug: string;
+    type: 'public' | 'private';
     terms: Record<string, string>;
 };
 
@@ -23,6 +24,7 @@ const CAMPUS_DEFAULT_TERMS = {
     statusCompleted: 'Deal Sealed',
     marketplaceName: 'The Feed',
     pickupLabel: 'The Spot',
+    reputationLabel: 'Karma',
 };
 
 type CampusContextType = {
@@ -56,6 +58,7 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
                         accent: dbCampus.accent_color || '#fbbf24',
                         name: dbCampus.name,
                         slug: dbCampus.slug,
+                        type: dbCampus.type || 'public',
                         terms: dbCampus.terms || CAMPUS_DEFAULT_TERMS,
                     } as CampusBranding);
                 }
