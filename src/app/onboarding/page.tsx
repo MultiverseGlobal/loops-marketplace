@@ -89,6 +89,7 @@ export default function OnboardingPage() {
     const [requestData, setRequestData] = useState({ name: "", email: "", reason: "" });
     const [requestLoading, setRequestLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [matricNumber, setMatricNumber] = useState("");
 
     const filteredCampuses = campuses.filter(c =>
         c.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -123,8 +124,8 @@ export default function OnboardingPage() {
             const userEmail = session?.user?.email;
 
             if (campus?.domain && !userEmail?.endsWith(campus.domain)) {
-                toast.error(`Access Restricted: You must use a @${campus.domain} email to join this campus.`);
-                return;
+                // Relaxed: Just a warning instead of a hard block
+                toast.error(`Verification Note: You're joining with a non-school email. Please ensure your Matric Number is accurate for verification.`);
             }
         }
         setStep(step + 1);
@@ -152,6 +153,7 @@ export default function OnboardingPage() {
                     store_category: storeCategory,
                     store_banner_color: storeBannerColor,
                     whatsapp_number: whatsappNumber,
+                    matric_number: matricNumber,
                     primary_role: primaryRole,
                     is_plug: primaryRole === 'plug',
                     updated_at: new Date().toISOString(),
@@ -409,6 +411,21 @@ export default function OnboardingPage() {
                                             className="w-full h-14 pl-12 pr-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm"
                                         />
                                     </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Matriculation / Student ID Number</label>
+                                    <div className="relative group">
+                                        <School className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-loops-muted group-focus-within:text-loops-primary transition-colors" />
+                                        <input
+                                            type="text"
+                                            value={matricNumber}
+                                            onChange={(e) => setMatricNumber(e.target.value)}
+                                            placeholder="e.g. VUG/CSC/21/5432"
+                                            className="w-full h-14 pl-12 pr-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm font-bold"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-loops-muted italic">Used to verify your student status at {campuses.find(c => c.id === selectedCampus)?.name || 'your campus'}.</p>
                                 </div>
 
                                 <div className="space-y-2">
