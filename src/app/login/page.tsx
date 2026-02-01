@@ -48,22 +48,38 @@ export default function LoginPage() {
         }
     };
 
+    const normalizePhoneNumber = (num: string) => {
+        let cleaned = num.replace(/\D/g, '');
+        if (cleaned.startsWith('0') && cleaned.length === 11) {
+            return `+234${cleaned.slice(1)}`;
+        }
+        if (cleaned.startsWith('234') && cleaned.length === 13) {
+            return `+${cleaned}`;
+        }
+        if (cleaned.length === 10) {
+            return `+234${cleaned}`;
+        }
+        return num.startsWith('+') ? num : `+${num}`;
+    };
+
     const handlePhoneLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setMessage(null);
 
         try {
+            const formattedPhone = normalizePhoneNumber(phoneNumber);
             if (!otpSent) {
                 const { error } = await supabase.auth.signInWithOtp({
-                    phone: phoneNumber,
+                    phone: formattedPhone,
                 });
                 if (error) throw error;
                 setOtpSent(true);
                 setMessage({ type: 'success', text: "OTP sent! Please check your messages." });
             } else {
+                const formattedPhone = normalizePhoneNumber(phoneNumber);
                 const { data, error } = await supabase.auth.verifyOtp({
-                    phone: phoneNumber,
+                    phone: formattedPhone,
                     token: otp,
                     type: 'sms',
                 });
