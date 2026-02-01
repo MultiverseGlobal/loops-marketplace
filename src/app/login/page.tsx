@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Sparkles, ArrowRight, Mail, Lock, User, Github, Chrome, MessageSquare } from "lucide-react";
+import { Sparkles, ArrowRight, Mail, Lock, User, Github, Chrome, MessageSquare, Phone, Eye, EyeOff, Loader2 } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
