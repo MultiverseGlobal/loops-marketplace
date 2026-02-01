@@ -7,6 +7,7 @@ ADD COLUMN IF NOT EXISTS store_name TEXT,
 ADD COLUMN IF NOT EXISTS is_plug BOOLEAN DEFAULT FALSE,
 ADD COLUMN IF NOT EXISTS store_banner_color TEXT DEFAULT 'bg-loops-primary',
 ADD COLUMN IF NOT EXISTS store_category TEXT,
+ADD COLUMN IF NOT EXISTS whatsapp_number TEXT,
 ADD COLUMN IF NOT EXISTS plug_type TEXT DEFAULT 'Individual' CHECK (plug_type IN ('Individual', 'Business', 'Organization'));
 
 -- 2. Update existing role data

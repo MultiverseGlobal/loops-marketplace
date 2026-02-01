@@ -91,7 +91,7 @@ export async function handleBotAction(from: string, intentData: BotIntent) {
 
     if (intentData.intent === 'search') {
         const query = intentData.query || intentData.title || '';
-        return `Searching the Node for "${query}"... Check the live results here: https://loops-marketplace.vercel.app/browse?q=${encodeURIComponent(query)}`;
+        return `Searching the Loop for "${query}"... Check the live results here: https://loops-marketplace.vercel.app/browse?q=${encodeURIComponent(query)}`;
     }
 
     return "I'm standing by. Tell me what you want to sell or find on campus!";

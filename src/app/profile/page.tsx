@@ -207,6 +207,23 @@ export default function ProfilePage() {
                                         </Link>
                                     </div>
                                 )}
+
+                                {user?.id === profile?.id && profile?.is_plug && (
+                                    <div className="pt-6 border-t border-loops-border">
+                                        <a
+                                            href={`https://wa.me/${profile?.whatsapp_number?.replace(/\D/g, '') || '2348123456789'}?text=Hello%20LoopBot!%20I%20want%20to%20manage%20my%20Pulse.`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block"
+                                        >
+                                            <Button className="w-full bg-loops-success text-white hover:bg-loops-success/90 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-loops-success/20">
+                                                <Phone className="w-4 h-4" />
+                                                Manage Pulse via LoopBot
+                                            </Button>
+                                        </a>
+                                        <p className="text-[9px] text-loops-muted text-center mt-3 font-medium uppercase tracking-[0.1em]">AI Assistant Connection Active</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

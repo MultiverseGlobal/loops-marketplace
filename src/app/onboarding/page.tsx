@@ -334,7 +334,7 @@ export default function OnboardingPage() {
                         >
                             <div className="space-y-4">
                                 <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">What's your primary goal?</h1>
-                                <p className="text-loops-muted text-lg">Don't worry, you can always do both. This just helps us personalize your hub.</p>
+                                <p className="text-loops-muted text-lg">Don't worry, you can always do both. This just helps us personalize your Loop.</p>
                             </div>
 
                             <div className="grid gap-4">
@@ -551,7 +551,7 @@ export default function OnboardingPage() {
                                     onClick={handleSubmit}
                                     disabled={loading}
                                 >
-                                    {loading ? "Finalizing..." : "Enter the Hub"}
+                                    {loading ? "Finalizing..." : "Enter the Loop"}
                                 </Button>
                             </div>
                         </motion.div>

@@ -11,6 +11,10 @@ export const metadata: Metadata = {
         default: "Loops | The Campus Marketplace",
         template: "%s | Loops"
     },
+    icons: {
+        icon: "/favicon.png",
+        apple: "/favicon.png",
+    },
     description: "The economic nervous system of Nigerian student life. Buy, sell, and trade safely within your verified university network.",
     keywords: ["campus marketplace", "nigerian university", "student trade", "loops", "university marketplace"],
     openGraph: {

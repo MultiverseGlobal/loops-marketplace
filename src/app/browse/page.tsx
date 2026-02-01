@@ -123,7 +123,7 @@ export default function MarketplacePage() {
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-loops-primary to-loops-energetic italic">{getTerm('marketplaceName')}</span>.
                         </h1>
                         <p className="text-loops-muted text-[12px] md:text-sm font-medium max-w-sm opacity-80">
-                            Real-time student economy across {campus?.name || 'the node'}.
+                            Real-time student economy across {campus?.name || 'the Loop'}.
                         </p>
                     </div>
                     <div className="flex-1 max-w-xl">

@@ -182,8 +182,8 @@ export default function LoginPage() {
             <main className="relative z-10 flex min-h-screen items-center justify-center p-4">
                 <div className="w-full max-w-md space-y-8 rounded-[2rem] border border-loops-border bg-white p-10 shadow-2xl shadow-loops-primary/10 transition-all duration-500 hover:shadow-loops-primary/20">
                     <div className="text-center space-y-4">
-                        <div className="mx-auto w-16 h-16 rounded-2xl bg-loops-primary/5 border border-loops-primary/20 flex items-center justify-center text-loops-primary mb-6 shadow-sm rotate-3 hover:rotate-0 transition-transform duration-500">
-                            <Sparkles className="w-8 h-8 filter drop-shadow-sm" />
+                        <div className="mx-auto w-16 h-16 rounded-2xl bg-loops-primary/5 border border-loops-primary/20 flex items-center justify-center mb-6 shadow-sm rotate-3 hover:rotate-0 transition-transform duration-500 overflow-hidden">
+                            <img src="/logo.png" alt="Loops" className="w-full h-full object-cover" />
                         </div>
                         <p className="text-sm font-bold text-loops-primary uppercase tracking-widest leading-none">Nigerian Campus Network</p>
                         <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tighter italic text-loops-main">

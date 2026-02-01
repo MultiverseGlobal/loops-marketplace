@@ -14,8 +14,8 @@ export function FeaturedHubs() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                     <div className="space-y-4">
-                        <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Curated Nodes</div>
-                        <h2 className="font-display text-5xl md:text-6xl font-bold text-loops-main tracking-tighter italic">Enter the Hubs.</h2>
+                        <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Curated Loops</div>
+                        <h2 className="font-display text-5xl md:text-6xl font-bold text-loops-main tracking-tighter italic">Enter the Loop.</h2>
                         <p className="text-loops-muted text-lg max-w-xl">Dedicated marketplaces for everything you need on campus.</p>
                     </div>
                 </div>
@@ -48,7 +48,7 @@ export function FeaturedHubs() {
                                             </div>
 
                                             <div className="space-y-1">
-                                                <h3 className="text-xl font-bold text-loops-main group-hover:text-loops-primary transition-colors">{hub.label} Hub</h3>
+                                                <h3 className="text-xl font-bold text-loops-main group-hover:text-loops-primary transition-colors">{hub.label} Loop</h3>
                                                 <p className="text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">Explore Pulse</p>
                                             </div>
                                         </div>

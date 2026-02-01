@@ -20,12 +20,24 @@ Confirm your Loops Account 🕸️
             border-radius: 24px;
         }
         .header {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo {
+            width: 48px;
+            height: 48px;
+            background-color: #6366f1;
+            border-radius: 12px;
+            display: block;
+        }
+        .brand-name {
             color: #6366f1;
             font-size: 32px;
             font-weight: 800;
             font-style: italic;
             letter-spacing: -1px;
-            margin-bottom: 24px;
         }
         .body-text {
             color: #1e293b;
@@ -54,13 +66,17 @@ Confirm your Loops Account 🕸️
 </head>
 <body>
     <div class="container">
-        <div class="header">LOOPS.</div>
+        <div class="header">
+            <!-- Updated with production URL -->
+            <img src="https://loops-marketplace.vercel.app/logo.png" class="logo" alt="Loops" />
+            <span class="brand-name">LOOPS.</span>
+        </div>
         <p class="body-text">
-            Welcome to the Campus Pulse. Your nodes are almost active. <br><br>
+            Welcome to the Campus Pulse. Your Loops are almost active. <br><br>
             Please confirm your student email to unlock the marketplace and start listing.
         </p>
-        <a href="{{ .ConfirmationURL }}" class="btn">Confirm Node Access</a>
-        <div class="footer">Loops Marketplace | Campus OS</div>
+        <a href="{{ .ConfirmationURL }}" class="btn">Confirm Loop Access</a>
+        <div class="footer">Loops Marketplace | Loop OS</div>
     </div>
 </body>
 </html>

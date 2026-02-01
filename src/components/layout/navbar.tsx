@@ -56,8 +56,8 @@ export function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
                 <div className="flex items-center gap-12">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="w-10 h-10 bg-loops-primary rounded-xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:rotate-12 transition-transform duration-500">
-                            <MessageSquare className="text-white w-5 h-5" />
+                        <div className="w-10 h-10 bg-loops-primary rounded-xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:rotate-12 transition-transform duration-500 overflow-hidden">
+                            <img src="/logo.png" alt="Loops" className="w-full h-full object-cover" />
                         </div>
                         <span className="font-display text-2xl font-bold tracking-tighter text-loops-main">
                             Loops
@@ -87,7 +87,7 @@ export function Navbar() {
                             {profile?.is_admin && (
                                 <Link href="/admin" className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-loops-accent/10 border border-loops-accent/20 text-loops-accent hover:bg-loops-accent/20 transition-all group/admin">
                                     <LayoutDashboard className="w-4 h-4" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest">Admin Hub</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest">Loop Command</span>
                                 </Link>
                             )}
 
@@ -101,7 +101,7 @@ export function Navbar() {
                                 </div>
                                 <div className="hidden md:block text-left">
                                     <div className="text-[10px] font-bold text-loops-main uppercase tracking-widest leading-none">Me</div>
-                                    <div className="text-[9px] text-loops-muted font-medium mt-1">Manage Hub</div>
+                                    <div className="text-[9px] text-loops-muted font-medium mt-1">Plug Profile</div>
                                 </div>
                             </Link>
 

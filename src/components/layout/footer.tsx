@@ -15,8 +15,8 @@ export function Footer() {
                     {/* Brand Column */}
                     <div className="col-span-2 lg:col-span-2 space-y-6">
                         <Link href="/" className="flex items-center gap-2.5 group w-fit">
-                            <div className="w-10 h-10 bg-loops-primary rounded-xl flex items-center justify-center shadow-xl shadow-loops-primary/20 group-hover:scale-105 transition-transform duration-300">
-                                <MessageSquare className="text-white w-5 h-5" />
+                            <div className="w-10 h-10 bg-loops-primary rounded-xl flex items-center justify-center shadow-xl shadow-loops-primary/20 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+                                <img src="/logo.png" alt="Loops" className="w-full h-full object-cover" />
                             </div>
                             <span className="text-2xl font-bold font-display tracking-tight text-loops-main">Loops</span>
                         </Link>
@@ -52,22 +52,14 @@ export function Footer() {
                         <ul className="space-y-3">
                             <li><NavLink href="/safety">Safety Center</NavLink></li>
                             <li><NavLink href="/faq">How it Works</NavLink></li>
-                            <li><a
-                                href="https://wa.me/2348123456789?text=Hello%20Loops%20Team!%20I%20need%20help%20with..."
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-loops-success hover:text-loops-success/80 transition-colors text-sm font-bold flex items-center gap-2"
-                            >
-                                <Phone className="w-3.5 h-3.5" /> LoopBot
-                            </a></li>
                             <li><NavLink href="/terms">Terms</NavLink></li>
                             <li><NavLink href="/privacy">Privacy</NavLink></li>
                         </ul>
                     </div>
 
-                    {/* Local Node */}
+                    {/* Local Loop */}
                     <div className="col-span-2 md:col-span-1 space-y-6">
-                        <h4 className="font-bold text-loops-main uppercase tracking-widest text-[10px]">Local Node</h4>
+                        <h4 className="font-bold text-loops-main uppercase tracking-widest text-[10px]">Local Loop</h4>
                         <div className="p-5 rounded-2xl bg-loops-subtle border border-loops-border relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-16 h-16 bg-loops-success/5 rounded-full blur-2xl group-hover:bg-loops-success/10 transition-colors" />
                             <div className="flex items-center gap-3 mb-3 relative z-10">
@@ -75,9 +67,6 @@ export function Footer() {
                                 <span className="text-sm font-bold text-loops-main truncate">{campus?.name || 'Veritas Pulse'}</span>
                             </div>
                             <p className="text-[9px] text-loops-muted uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Verified Active</p>
-                            <Link href="/profile" className="text-xs font-bold text-loops-primary hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                                Manage Profile →
-                            </Link>
                         </div>
                     </div>
                 </div>

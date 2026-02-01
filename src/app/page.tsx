@@ -79,7 +79,7 @@ export default function Home() {
                         className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold bg-white border border-loops-border shadow-xl shadow-loops-primary/5 text-loops-primary uppercase tracking-[0.2em]"
                     >
                         <Sparkles className="w-3.5 h-3.5 text-loops-accent" />
-                        Verified @ {campus?.name || 'Local Nodes'}
+                        Verified @ {campus?.name || 'Local Loops'}
                     </motion.div>
 
                     <motion.h1
@@ -149,7 +149,7 @@ export default function Home() {
                             </div>
                             <div className="pt-8 relative z-10">
                                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-loops-border text-xs font-bold text-loops-primary uppercase tracking-widest shadow-sm">
-                                    Official Node Active
+                                    Official Loop Active
                                 </div>
                             </div>
                         </motion.div>
@@ -181,7 +181,7 @@ export default function Home() {
                                 <MessageSquare className="w-6 h-6" />
                             </div>
                             <div className="space-y-1">
-                                <h4 className="font-bold text-loops-main">Meeting Nodes</h4>
+                                <h4 className="font-bold text-loops-main">Meeting Loops</h4>
                                 <p className="text-xs text-loops-muted">Secure pickup spots on campus.</p>
                             </div>
                         </motion.div>
