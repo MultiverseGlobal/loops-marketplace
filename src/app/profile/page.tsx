@@ -14,7 +14,7 @@ import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
 import { CURRENCY } from "@/lib/constants";
 import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
-import { UserPlus, UserMinus, Users } from "lucide-react";
+import { UserPlus, UserMinus, Users, User } from "lucide-react";
 import { Rating } from "@/components/ui/rating";
 
 export default function ProfilePage() {
