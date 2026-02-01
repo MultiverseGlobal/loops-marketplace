@@ -9,7 +9,7 @@ import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Z
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
 import { CURRENCY } from "@/lib/constants";
@@ -37,6 +37,8 @@ export default function ProfilePage() {
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewComment, setReviewComment] = useState("");
     const [submittingReview, setSubmittingReview] = useState(false);
+    const [reviews, setReviews] = useState<any[]>([]);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -46,15 +48,20 @@ export default function ProfilePage() {
             const userIdToFetch = targetUserId || authUser?.id;
 
             if (userIdToFetch) {
-                // Fetch Profile and Listings
-                const [profileRes, listingsRes, followRes] = await Promise.all([
+                // Fetch Profile, Listings, and Reviews
+                const [profileRes, listingsRes, followRes, reviewsRes] = await Promise.all([
                     supabase.from('profiles').select('*, campuses(*)').eq('id', userIdToFetch).single(),
                     supabase.from('listings').select('*').eq('seller_id', userIdToFetch).order('created_at', { ascending: false }),
-                    getFollowCounts(userIdToFetch)
+                    getFollowCounts(userIdToFetch),
+                    supabase.from('reviews')
+                        .select('*, reviewer:profiles(full_name, avatar_url)')
+                        .eq('reviewee_id', userIdToFetch)
+                        .order('created_at', { ascending: false })
                 ]);
 
                 if (profileRes.data) setProfile(profileRes.data);
                 if (listingsRes.data) setListings(listingsRes.data);
+                if (reviewsRes.data) setReviews(reviewsRes.data);
 
                 setFollowersCount(followRes.followers);
                 setFollowingCount(followRes.following);
@@ -241,14 +248,18 @@ export default function ProfilePage() {
                                                 Send Message
                                             </Button>
                                         </Link>
-                                        <Button
-                                            onClick={() => setReviewModalOpen(true)}
-                                            variant="outline"
-                                            className="w-full border-loops-primary/20 text-loops-primary hover:bg-loops-primary/5 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]"
-                                        >
-                                            <Star className="w-4 h-4" />
-                                            Rate this Plug
-                                        </Button>
+
+                                        {/* Show Rate this Plug only if viewing someone else's profile and they are a plug OR have listings */}
+                                        {(profile?.is_plug || listings.length > 0) && (
+                                            <Button
+                                                onClick={() => setReviewModalOpen(true)}
+                                                variant="outline"
+                                                className="w-full border-loops-primary/20 text-loops-primary hover:bg-loops-primary/5 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]"
+                                            >
+                                                <Star className="w-4 h-4" />
+                                                Rate this Plug
+                                            </Button>
+                                        )}
                                     </div>
                                 )}
 
@@ -285,7 +296,7 @@ export default function ProfilePage() {
                                     </div>
                                 )}
 
-                                {user?.id === profile?.id && profile?.is_plug && (
+                                {user?.id === profile?.id && (profile?.is_plug || profile?.primary_role === 'plug') && (
                                     <div className="pt-6 border-t border-loops-border">
                                         <a
                                             href={`https://wa.me/${profile?.whatsapp_number?.replace(/\D/g, '') || '2348123456789'}?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Pulse%20and%20list%20new%20items.`}
@@ -308,12 +319,12 @@ export default function ProfilePage() {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-12">
                         {/* Archetype Tabs */}
-                        {(!targetUserId || targetUserId === user?.id) && (
-                            <div className="flex gap-2 p-1 bg-loops-subtle border border-loops-border rounded-2xl w-full sm:w-fit">
+                        {(!targetUserId || targetUserId === user?.id) ? (
+                            <div className="flex flex-wrap gap-2 p-1 bg-loops-subtle border border-loops-border rounded-2xl w-full sm:w-fit">
                                 <button
                                     onClick={() => setActiveTab('selling')}
                                     className={cn(
-                                        "flex-1 sm:flex-none px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
                                         activeTab === 'selling'
                                             ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
                                             : "text-loops-muted hover:text-loops-main"
@@ -324,7 +335,7 @@ export default function ProfilePage() {
                                 <button
                                     onClick={() => setActiveTab('buying')}
                                     className={cn(
-                                        "flex-1 sm:flex-none px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
                                         activeTab === 'buying'
                                             ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
                                             : "text-loops-muted hover:text-loops-main"
@@ -332,11 +343,48 @@ export default function ProfilePage() {
                                 >
                                     Buying ({getTerm('buyerName')})
                                 </button>
+                                <button
+                                    onClick={() => setActiveTab('reviews' as any)}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        (activeTab as string) === 'reviews'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    Reviews ({reviews.length})
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-wrap gap-2 p-1 bg-loops-subtle border border-loops-border rounded-2xl w-full sm:w-fit">
+                                <button
+                                    onClick={() => setActiveTab('selling')}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        activeTab === 'selling'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    {getTerm('sellerName')} Pulse
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('reviews' as any)}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        (activeTab as string) === 'reviews'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    Ratings
+                                </button>
                             </div>
                         )}
 
                         {/* Tab Content */}
                         {activeTab === 'selling' ? (
+                            // ... Existing Selling Content ...
                             <div className="space-y-6">
                                 <div className="flex items-end justify-between">
                                     <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
@@ -388,7 +436,7 @@ export default function ProfilePage() {
                                     </div>
                                 )}
                             </div>
-                        ) : (
+                        ) : activeTab === 'buying' ? (
                             <div className="space-y-6">
                                 <div className="flex items-end justify-between">
                                     <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
@@ -403,6 +451,48 @@ export default function ProfilePage() {
                                         <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>
                                     </Link>
                                 </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">Student Feedback</h2>
+                                    <div className="flex items-center gap-2 text-loops-primary">
+                                        <Star className="w-5 h-5 fill-current" />
+                                        <span className="text-xl font-bold">{Number(profile?.rating || 0).toFixed(1)}</span>
+                                    </div>
+                                </div>
+
+                                {reviews.length > 0 ? (
+                                    <div className="grid gap-6">
+                                        {reviews.map((review) => (
+                                            <div key={review.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
+                                                            {review.reviewer?.avatar_url ? (
+                                                                <img src={review.reviewer.avatar_url} alt="" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <User className="w-5 h-5 text-loops-muted" />
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-bold text-sm text-loops-main">{review.reviewer?.full_name || 'Anonymous Student'}</div>
+                                                            <div className="text-[10px] text-loops-muted uppercase font-bold tracking-widest">{new Date(review.created_at).toLocaleDateString()}</div>
+                                                        </div>
+                                                    </div>
+                                                    <Rating value={review.rating} size="sm" />
+                                                </div>
+                                                <p className="text-sm text-loops-muted leading-relaxed italic">"{review.comment}"</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
+                                        <Sparkles className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                        <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Pulse yet.</h3>
+                                        <p className="text-loops-muted mt-2">Ratings from the campus community will appear here.</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
