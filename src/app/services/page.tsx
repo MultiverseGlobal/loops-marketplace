@@ -27,7 +27,7 @@ export default function ServicesPage() {
 
             let query = supabase
                 .from('listings')
-                .select('*')
+                .select('*, profiles(full_name)')
                 .eq('status', 'active')
                 .eq('category', 'services')
                 .order('created_at', { ascending: false });
@@ -82,6 +82,7 @@ export default function ServicesPage() {
                                 price={`$${listing.price}`}
                                 category={listing.category}
                                 image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
+                                author={listing.profiles?.full_name}
                                 delay={idx * 0.05}
                             />
                         ))}

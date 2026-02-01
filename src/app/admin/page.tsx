@@ -18,7 +18,28 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+
 export default function AdminDashboard() {
+    const [counts, setCounts] = useState({ students: 0, listings: 0, campuses: 0 });
+    const supabase = createClient();
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            const { count: studentCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+            const { count: listingCount } = await supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active');
+            const { count: campusCount } = await supabase.from('campuses').select('*', { count: 'exact', head: true });
+
+            setCounts({
+                students: studentCount || 0,
+                listings: listingCount || 0,
+                campuses: campusCount || 0
+            });
+        };
+        fetchStats();
+    }, [supabase]);
+
     return (
         <AdminGuard>
             <div className="min-h-screen bg-loops-bg">
@@ -43,9 +64,27 @@ export default function AdminDashboard() {
 
                         {/* Quick Stats */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                            <StatCard title="Total Students" value="2.4k" change="+12% this week" icon={Users} color="loops-primary" />
-                            <StatCard title="Active Listings" value="842" change="+5% this week" icon={Package} color="loops-accent" />
-                            <StatCard title="Active Campuses" value="12" change="Stable" icon={School} color="loops-secondary" />
+                            <StatCard
+                                title="Total Students"
+                                value={counts.students >= 1000 ? `${(counts.students / 1000).toFixed(1)}k` : counts.students}
+                                change={`${counts.students > 0 ? '+100%' : '0%'} total`}
+                                icon={Users}
+                                color="loops-primary"
+                            />
+                            <StatCard
+                                title="Active Listings"
+                                value={counts.listings}
+                                change="Live data"
+                                icon={Package}
+                                color="loops-accent"
+                            />
+                            <StatCard
+                                title="Active Campuses"
+                                value={counts.campuses}
+                                change="Stable"
+                                icon={School}
+                                color="loops-secondary"
+                            />
                             <StatCard title="Node Load" value="Optimal" change="All healthy" icon={TrendingUp} color="loops-success" />
                         </div>
 

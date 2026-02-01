@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { User } from "lucide-react";
 
 interface ProductCardProps {
     id: string;
@@ -10,9 +11,10 @@ interface ProductCardProps {
     image: string;
     category: string;
     delay?: number;
+    author?: string;
 }
 
-export function ProductCard({ id, title, price, image, category, delay = 0 }: ProductCardProps) {
+export function ProductCard({ id, title, price, image, category, delay = 0, author = "Campus Plug" }: ProductCardProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -38,6 +40,10 @@ export function ProductCard({ id, title, price, image, category, delay = 0 }: Pr
                     <h3 className="text-[13px] md:text-sm font-bold text-loops-main group-hover:text-loops-primary transition-colors truncate tracking-tight">{title}</h3>
                     <div className="flex items-center justify-between">
                         <p className="text-[12px] md:text-[13px] text-loops-primary font-black tracking-tighter">{price}</p>
+                        <div className="flex items-center gap-1.5 opacity-60">
+                            <User className="w-2.5 h-2.5 text-loops-muted" />
+                            <span className="text-[9px] font-bold text-loops-muted uppercase tracking-wider truncate max-w-[80px]">{author}</span>
+                        </div>
                         <div className="w-1.5 h-1.5 rounded-full bg-loops-primary/20 animate-pulse-subtle" />
                     </div>
                 </div>
