@@ -78,7 +78,7 @@ export default function Home() {
                         animate={{ opacity: 1, y: 0 }}
                         className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold bg-white border border-loops-border shadow-xl shadow-loops-primary/5 text-loops-primary uppercase tracking-[0.2em]"
                     >
-                        <Sparkles className="w-3.5 h-3.5 text-loops-accent" />
+                        <Sparkles className="w-3.5 h-3.5 text-loops-teal" />
                         Verified @ {campus?.name || 'Local Loops'}
                     </motion.div>
 
@@ -89,7 +89,7 @@ export default function Home() {
                         className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-[-0.04em] leading-[0.9] text-loops-main"
                     >
                         Trade inside <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-br from-loops-primary via-loops-accent to-loops-secondary bg-[length:200%_auto] animate-gradient italic">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-br from-loops-primary to-loops-teal bg-[length:200%_auto] animate-gradient italic">
                             the Pulse.
                         </span>
                     </motion.h1>
@@ -295,7 +295,7 @@ export default function Home() {
             <section className="py-32 px-6">
                 <div className="max-w-5xl mx-auto rounded-[3.5rem] bg-loops-main p-12 md:p-24 text-center relative overflow-hidden shadow-3xl">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-loops-primary opacity-20 blur-[100px]" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-loops-secondary opacity-20 blur-[100px]" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-loops-teal opacity-20 blur-[100px]" />
 
                     <div className="relative z-10 space-y-10">
                         <h2 className="font-display text-4xl md:text-7xl font-bold text-white tracking-tighter leading-none text-balance">
