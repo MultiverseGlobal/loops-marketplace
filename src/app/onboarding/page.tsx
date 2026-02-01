@@ -27,7 +27,9 @@ export default function OnboardingPage() {
     const [bio, setBio] = useState("");
     const [storeName, setStoreName] = useState("");
     const [whatsappNumber, setWhatsappNumber] = useState("");
-    const [primaryRole, setPrimaryRole] = useState<'buying' | 'selling'>('buying');
+    const [primaryRole, setPrimaryRole] = useState<'buying' | 'plug'>('buying');
+    const [storeCategory, setStoreCategory] = useState("");
+    const [storeBannerColor, setStoreBannerColor] = useState("bg-loops-primary");
     const [loading, setLoading] = useState(false);
     const [campuses, setCampuses] = useState<Campus[]>([]);
     const [showRequestForm, setShowRequestForm] = useState(false);
@@ -74,8 +76,11 @@ export default function OnboardingPage() {
                     full_name: fullName,
                     bio: bio,
                     store_name: storeName,
+                    store_category: storeCategory,
+                    store_banner_color: storeBannerColor,
                     whatsapp_number: whatsappNumber,
                     primary_role: primaryRole,
+                    is_plug: primaryRole === 'plug',
                     updated_at: new Date().toISOString(),
                 });
 
@@ -342,9 +347,9 @@ export default function OnboardingPage() {
                                         color: 'text-loops-primary'
                                     },
                                     {
-                                        id: 'selling',
-                                        title: 'The Campus Merchant',
-                                        desc: 'I want to sell items, offer services, and build a business.',
+                                        id: 'plug',
+                                        title: 'The Campus Plug',
+                                        desc: 'I want to sell items, offer services, and build a campus business.',
                                         icon: Sparkles,
                                         color: 'text-loops-secondary'
                                     }
@@ -382,14 +387,14 @@ export default function OnboardingPage() {
                                 <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
                                     Back
                                 </Button>
-                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white shadow-xl shadow-loops-primary/20" onClick={() => setStep(primaryRole === 'selling' ? 4 : 6)}>
-                                    {primaryRole === 'selling' ? "Step Inside" : "Verify & Finish"}
+                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white shadow-xl shadow-loops-primary/20" onClick={() => setStep(primaryRole === 'plug' ? 4 : 6)}>
+                                    {primaryRole === 'plug' ? "Step Inside" : "Verify & Finish"}
                                 </Button>
                             </div>
                         </motion.div>
                     )}
 
-                    {step === 4 && primaryRole === 'selling' && (
+                    {step === 4 && primaryRole === 'plug' && (
                         <motion.div
                             key="step4"
                             initial={{ opacity: 0, x: 20 }}
@@ -398,9 +403,9 @@ export default function OnboardingPage() {
                             className="space-y-8"
                         >
                             <div className="space-y-4">
-                                <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Merchant Setup</div>
-                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Name your <span className="text-gradient italic">Pulse</span></h1>
-                                <p className="text-loops-muted text-lg">Every merchant needs a brand. What should peers call your storefront?</p>
+                                <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Plug Setup</div>
+                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Select your <span className="text-gradient italic">Vibe</span></h1>
+                                <p className="text-loops-muted text-lg">Detailed stores sell 3x more. Pick a banner color and name your Pulse.</p>
                             </div>
 
                             <div className="space-y-6">
@@ -410,10 +415,26 @@ export default function OnboardingPage() {
                                         type="text"
                                         value={storeName}
                                         onChange={(e) => setStoreName(e.target.value)}
-                                        placeholder="e.g. Alex's Gadget Hub"
+                                        placeholder="e.g. Benin City Sneaker Plug"
                                         className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm"
                                     />
-                                    <p className="text-[10px] text-loops-muted italic">This will appear on your listings and profile header.</p>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Banner Accent</label>
+                                    <div className="flex gap-4">
+                                        {['bg-loops-primary', 'bg-loops-secondary', 'bg-loops-accent', 'bg-black'].map((color) => (
+                                            <button
+                                                key={color}
+                                                onClick={() => setStoreBannerColor(color)}
+                                                className={cn(
+                                                    "w-12 h-12 rounded-full transition-all border-4",
+                                                    color,
+                                                    storeBannerColor === color ? "border-loops-main scale-110 shadow-lg" : "border-transparent opacity-60 hover:opacity-100"
+                                                )}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
@@ -422,13 +443,13 @@ export default function OnboardingPage() {
                                     Back
                                 </Button>
                                 <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white" disabled={!storeName} onClick={handleNext}>
-                                    Brand Active
+                                    Activate Vibe
                                 </Button>
                             </div>
                         </motion.div>
                     )}
 
-                    {step === 5 && primaryRole === 'selling' && (
+                    {step === 5 && primaryRole === 'plug' && (
                         <motion.div
                             key="step5"
                             initial={{ opacity: 0, x: 20 }}
@@ -437,24 +458,30 @@ export default function OnboardingPage() {
                             className="space-y-8"
                         >
                             <div className="space-y-4">
-                                <div className="text-[10px] font-bold text-loops-secondary uppercase tracking-[0.2em]">Automated Pulse</div>
-                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Connect <span className="text-secondary-gradient italic">L-Bot</span></h1>
-                                <p className="text-loops-muted text-lg">Power your commerce via WhatsApp. List items, search, and get notified instantly.</p>
+                                <div className="text-[10px] font-bold text-loops-secondary uppercase tracking-[0.2em]">Growth Strategy</div>
+                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Define your <span className="text-secondary-gradient italic">Niche</span></h1>
+                                <p className="text-loops-muted text-lg">What are you plugging? This helps us route buyers to your store.</p>
                             </div>
 
                             <div className="space-y-6">
-                                <div className="p-6 rounded-2xl bg-loops-secondary/5 border border-loops-secondary/20 space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-loops-secondary text-white flex items-center justify-center shadow-lg">
-                                            <Sparkles className="w-5 h-5" />
-                                        </div>
-                                        <div className="font-bold text-loops-main">AI-Powered Selling</div>
-                                    </div>
-                                    <p className="text-xs text-loops-muted leading-relaxed">By linking WhatsApp, you can simply text "Sell my iPhone for $400" and L-Bot will handle the listing for you.</p>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Primary Category</label>
+                                    <select
+                                        value={storeCategory}
+                                        onChange={(e) => setStoreCategory(e.target.value)}
+                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-secondary focus:outline-none focus:ring-1 focus:ring-loops-secondary transition-all"
+                                    >
+                                        <option value="">Select Niche...</option>
+                                        <option value="Electronics">Electronics Plug</option>
+                                        <option value="Fashion">Fashion Plug</option>
+                                        <option value="Books">Academics/Books</option>
+                                        <option value="Food">Food/Snacks</option>
+                                        <option value="Services">Services (Graphics, Code, etc)</option>
+                                    </select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">WhatsApp Number</label>
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">WhatsApp Connectivity</label>
                                     <input
                                         type="tel"
                                         value={whatsappNumber}
@@ -462,16 +489,16 @@ export default function OnboardingPage() {
                                         placeholder="2348123456789"
                                         className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-secondary focus:outline-none focus:ring-1 focus:ring-loops-secondary transition-all shadow-sm"
                                     />
-                                    <p className="text-[10px] text-loops-muted italic">Include country code without '+'.</p>
+                                    <p className="text-[10px] text-loops-muted italic">Mandatory for the L-Bot AI Listing assistant.</p>
                                 </div>
                             </div>
 
                             <div className="flex gap-4">
                                 <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
-                                    Skip
+                                    Back
                                 </Button>
-                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-secondary text-white shadow-xl shadow-loops-secondary/20" onClick={handleNext}>
-                                    Power Up
+                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-secondary text-white shadow-xl shadow-loops-secondary/20" disabled={!storeCategory || !whatsappNumber} onClick={handleNext}>
+                                    Go Live
                                 </Button>
                             </div>
                         </motion.div>
@@ -496,21 +523,22 @@ export default function OnboardingPage() {
                                 </p>
                             </div>
 
-                            {primaryRole === 'selling' && (
-                                <div className="p-6 rounded-2xl bg-loops-primary/5 border border-loops-primary/10 max-w-sm mx-auto space-y-2">
-                                    <div className="text-[10px] font-bold text-loops-primary uppercase tracking-widest">Storefront Activated</div>
-                                    <div className="text-xl font-display font-bold text-loops-main">{storeName}</div>
+                            {primaryRole === 'plug' && (
+                                <div className={cn("p-6 rounded-2xl border max-w-sm mx-auto space-y-2 text-white", storeBannerColor)}>
+                                    <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">Verified Plug Storefront</div>
+                                    <div className="text-2xl font-display font-bold">{storeName}</div>
+                                    <div className="text-xs font-medium opacity-90">{storeCategory} Hub</div>
                                 </div>
                             )}
 
                             <div className="grid gap-4 max-w-sm mx-auto pt-4">
                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
                                     <Sparkles className="w-5 h-5 text-loops-accent" />
-                                    <span className="text-sm font-bold text-loops-main">{getTerm('reputationLabel')} activated</span>
+                                    <span className="text-sm font-bold text-loops-main">Plug Reputation activated</span>
                                 </div>
                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
                                     <Check className="w-5 h-5 text-loops-success" />
-                                    <span className="text-sm font-bold text-loops-main">Unlimited listings enabled</span>
+                                    <span className="text-sm font-bold text-loops-main">Unlimited Listings enabled</span>
                                 </div>
                             </div>
 

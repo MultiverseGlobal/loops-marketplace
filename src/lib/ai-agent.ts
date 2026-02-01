@@ -71,14 +71,14 @@ export async function handleBotAction(from: string, intentData: BotIntent) {
         const { error } = await supabase
             .from('listings')
             .insert({
-                user_id: profile.id,
+                seller_id: profile.id,
                 campus_id: profile.campus_id,
                 title: intentData.title,
                 price: intentData.price || 0,
                 category: intentData.category || 'Other',
                 description: `Posted via WhatsApp: ${intentData.title}`,
                 status: 'active',
-                type: 'item'
+                type: 'product'
             });
 
         if (error) {

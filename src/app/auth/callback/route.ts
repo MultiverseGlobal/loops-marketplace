@@ -70,7 +70,9 @@ export async function GET(request: NextRequest) {
                 .single()
 
             const redirectTo = profile?.campus_id ? '/browse?verified=true' : '/onboarding'
-            return NextResponse.redirect(new URL(redirectTo, request.url))
+            // Ensure we use the dynamic origin of the request to avoid port mismatches
+            const redirectUrl = new URL(redirectTo, request.url)
+            return NextResponse.redirect(redirectUrl)
         }
     } else if (!code) {
         console.error('❌ Missing code, token_hash or type in callback URL')

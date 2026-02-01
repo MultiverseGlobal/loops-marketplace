@@ -45,6 +45,7 @@ export default function ListingDetailPage() {
                             id,
                             full_name,
                             store_name,
+                            store_banner_color,
                             reputation,
                             email_verified
                         )
@@ -261,7 +262,7 @@ export default function ListingDetailPage() {
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 text-loops-success text-sm font-bold uppercase tracking-widest">
                                 <ShieldCheck className="w-4 h-4" />
-                                <span>Verified {campus?.name || 'Campus'} Listing</span>
+                                <span>Verified {campus?.name || 'Campus'} Plug</span>
                             </div>
                             <h1 className="font-display text-5xl md:text-6xl font-bold tracking-tighter text-loops-main leading-none">{listing.title}</h1>
                             <div className="flex items-center gap-6">
@@ -291,13 +292,12 @@ export default function ListingDetailPage() {
                                         <div className="flex items-center gap-2">
                                             <div className="font-bold text-loops-main">{listing.profiles?.full_name}</div>
                                             {listing.profiles?.store_name && (
-                                                <>
-                                                    <div className="w-1 h-1 rounded-full bg-loops-border" />
-                                                    <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.2em]">{listing.profiles.store_name} Hub</div>
-                                                </>
+                                                <div className={cn("px-2 py-0.5 rounded-lg text-[8px] font-black text-white uppercase tracking-[0.2em]", listing.profiles.store_banner_color || 'bg-loops-primary')}>
+                                                    {listing.profiles.store_name}
+                                                </div>
                                             )}
                                         </div>
-                                        <div className="text-[10px] text-loops-muted uppercase tracking-widest font-bold">{getTerm('sellerName')} Reputation: {listing.profiles?.reputation || 0}</div>
+                                        <div className="text-[10px] text-loops-muted uppercase tracking-widest font-bold">Plug Reputation: {listing.profiles?.reputation || 0}</div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">

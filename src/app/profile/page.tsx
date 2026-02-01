@@ -144,9 +144,9 @@ export default function ProfilePage() {
                                         )}
                                     </div>
                                     {profile?.store_name && (
-                                        <div className="flex items-center gap-2 px-3 py-1 bg-loops-primary/5 border border-loops-primary/10 rounded-lg w-fit">
-                                            <Sparkles className="w-3.5 h-3.5 text-loops-primary" />
-                                            <span className="text-[9px] font-black text-loops-primary uppercase tracking-[0.2em]">{profile.store_name} Hub</span>
+                                        <div className={cn("flex items-center gap-2 px-3 py-1 border border-white/10 rounded-lg w-fit text-white shadow-lg", profile.store_banner_color || "bg-loops-primary")}>
+                                            <Sparkles className="w-3.5 h-3.5" />
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]">{profile.store_name} Plug</span>
                                         </div>
                                     )}
                                     <div className="flex items-center gap-2 text-loops-muted font-medium">

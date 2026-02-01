@@ -54,7 +54,7 @@ export default function MarketplacePage() {
 
             let query = supabase
                 .from('listings')
-                .select('*, profiles(full_name, store_name)')
+                .select('*, profiles(full_name, store_name, store_banner_color, is_plug)')
                 .eq('status', 'active');
 
             // Apply sorting
