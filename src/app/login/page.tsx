@@ -197,13 +197,13 @@ export default function LoginPage() {
             <Navbar />
 
             <main className="relative z-10 flex min-h-screen items-center justify-center p-4">
-                <div className="w-full max-w-md space-y-8 rounded-[2rem] border border-loops-border bg-white p-10 shadow-2xl shadow-loops-primary/10 transition-all duration-500 hover:shadow-loops-primary/20">
+                <div className="w-full max-w-md space-y-6 sm:space-y-8 rounded-3xl sm:rounded-[2rem] border border-loops-border bg-white p-6 sm:p-10 shadow-2xl shadow-loops-primary/10 transition-all duration-500 hover:shadow-loops-primary/20">
                     <div className="text-center space-y-4">
-                        <div className="mx-auto w-16 h-16 rounded-2xl bg-white border border-loops-border flex items-center justify-center mb-6 shadow-sm rotate-3 hover:rotate-0 transition-transform duration-500 overflow-hidden">
-                            <InfinityLogo className="w-12 h-12" />
+                        <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white border border-loops-border flex items-center justify-center mb-4 sm:mb-6 shadow-sm rotate-3 hover:rotate-0 transition-transform duration-500 overflow-hidden">
+                            <InfinityLogo className="w-8 h-8 sm:w-12 sm:h-12" />
                         </div>
                         <p className="text-sm font-bold text-loops-primary uppercase tracking-widest leading-none">Nigerian Campus Network</p>
-                        <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tighter italic text-loops-main">
+                        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter italic text-loops-main">
                             {view === 'signup' ? "Join the Loop." : "Welcome back."}
                         </h1>
                         <p className="text-loops-muted text-sm font-medium pt-2">
@@ -218,9 +218,9 @@ export default function LoginPage() {
                         <Button
                             onClick={handleGoogleLogin}
                             variant="outline"
-                            className="w-full h-14 rounded-2xl border-loops-border bg-loops-subtle/50 hover:bg-loops-subtle text-loops-main font-bold shadow-sm flex items-center justify-center gap-3 transition-all active:scale-95"
+                            className="w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl border-loops-border bg-loops-subtle/50 hover:bg-loops-subtle text-loops-main font-bold shadow-sm flex items-center justify-center gap-3 transition-all active:scale-95 text-xs sm:text-base"
                         >
-                            <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" viewBox="0 0 24 24">
                                 <path
                                     fill="currentColor"
                                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -247,16 +247,16 @@ export default function LoginPage() {
                                 setOtpSent(false);
                             }}
                             variant="outline"
-                            className="w-full h-14 rounded-2xl border-loops-border bg-loops-subtle/50 hover:bg-loops-subtle text-loops-main font-bold shadow-sm flex items-center justify-center gap-3 transition-all active:scale-95"
+                            className="w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl border-loops-border bg-loops-subtle/50 hover:bg-loops-subtle text-loops-main font-bold shadow-sm flex items-center justify-center gap-3 transition-all active:scale-95 text-xs sm:text-base"
                         >
                             {authMethod === 'email' ? (
                                 <>
-                                    <Phone className="w-5 h-5 text-loops-primary" />
+                                    <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-loops-primary" />
                                     Continue with Phone
                                 </>
                             ) : (
                                 <>
-                                    <Mail className="w-5 h-5 text-loops-primary" />
+                                    <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-loops-primary" />
                                     Return to Email Login
                                 </>
                             )}
@@ -287,7 +287,7 @@ export default function LoginPage() {
                                         onChange={(e) => setFullName(e.target.value)}
                                         placeholder="John Doe"
                                         required
-                                        className="w-full h-16 rounded-2xl bg-loops-subtle border border-loops-border px-8 text-loops-main placeholder:text-loops-muted/40 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm"
+                                        className="w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl bg-loops-subtle border border-loops-border px-6 sm:px-8 text-loops-main placeholder:text-loops-muted/40 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm text-sm sm:text-base"
                                     />
                                 </div>
                             )}
@@ -304,7 +304,7 @@ export default function LoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="you@university.edu"
                                     required
-                                    className="w-full h-16 rounded-2xl bg-loops-subtle border border-loops-border px-8 text-loops-main placeholder:text-loops-muted/40 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm"
+                                    className="w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl bg-loops-subtle border border-loops-border px-6 sm:px-8 text-loops-main placeholder:text-loops-muted/40 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm text-sm sm:text-base"
                                 />
                             </div>
 
@@ -322,14 +322,14 @@ export default function LoginPage() {
                                         placeholder="••••••••"
                                         required
                                         minLength={6}
-                                        className="w-full h-16 rounded-2xl bg-loops-subtle border border-loops-border px-8 pr-14 text-loops-main placeholder:text-loops-muted/40 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm"
+                                        className="w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl bg-loops-subtle border border-loops-border px-6 sm:px-8 pr-12 text-loops-main placeholder:text-loops-muted/40 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm text-sm sm:text-base"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="absolute right-4 top-1/2 -translate-y-1/2 text-loops-muted hover:text-loops-primary transition-colors"
                                     >
-                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                        {showPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
                                     </button>
                                 </div>
                             </div>
@@ -352,11 +352,11 @@ export default function LoginPage() {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-16 text-lg font-bold bg-loops-primary hover:bg-loops-primary/90 text-white rounded-2xl shadow-xl shadow-loops-primary/20 transition-all border-none hover:scale-[1.02] active:scale-95"
+                                className="w-full h-14 sm:h-16 text-base sm:text-lg font-bold bg-loops-primary hover:bg-loops-primary/90 text-white rounded-xl sm:rounded-2xl shadow-xl shadow-loops-primary/20 transition-all border-none hover:scale-[1.02] active:scale-95"
                             >
                                 {loading ? (
                                     <>
-                                        <Loader2 className="w-5 h-5 animate-spin mr-3" />
+                                        <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin mr-2 sm:mr-3" />
                                         {view === 'signup' ? 'Creating Account...' : 'Signing In...'}
                                     </>
                                 ) : (
@@ -379,7 +379,7 @@ export default function LoginPage() {
                                     placeholder="+234..."
                                     required
                                     disabled={otpSent}
-                                    className="w-full h-16 rounded-2xl bg-loops-subtle border border-loops-border px-8 text-loops-main placeholder:text-loops-muted/40 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm"
+                                    className="w-full h-14 sm:h-16 rounded-xl sm:rounded-2xl bg-loops-subtle border border-loops-border px-6 sm:px-8 text-loops-main placeholder:text-loops-muted/40 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium shadow-sm text-sm sm:text-base"
                                 />
                             </div>
 

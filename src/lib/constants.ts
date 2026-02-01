@@ -7,4 +7,7 @@ export const CATEGORIES = [
     { id: "others", label: "Others", icon: "MoreHorizontal", color: "#94a3b8" },
 ];
 
+export const CURRENCY = "₦";
+export const CURRENCY_CODE = "NGN";
+
 export const FALLBACK_PRODUCT_IMAGE = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000";

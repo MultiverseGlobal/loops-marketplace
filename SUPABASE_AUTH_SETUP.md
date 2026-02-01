@@ -9,18 +9,27 @@ To enable Google and Phone (SMS) authentication for Loops, follow these steps in
     - Create a new project.
     - Go to **APIs & Services > OAuth consent screen** (Configure as "External").
     - Go to **Credentials > Create Credentials > OAuth client ID**.
-    - Select **Web application**.
+    - Add `https://loops-stores.vercel.app` and `http://localhost:3000` to **Authorized JavaScript origins**.
     - Add `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback` to **Authorized redirect URIs** (Copy this from the Supabase Google Provider settings).
 4. Paste the **Client ID** and **Secret** back into Supabase and click **Save**.
 
-## 2. Phone (SMS) Setup 📱
-1. Go to **Authentication > Providers > Phone**.
-2. Toggle on "Enable Phone".
-3. Select an SMS Provider (e.g., **Twilio** or **MessageBird**).
-    - You will need an account and API keys from your chosen provider.
-    - **Twilio** is the most common. You'll need your `Account SID`, `Auth Token`, and a `Twilio Phone Number`.
-4. Toggle on "Enable Phone Confirmation" if you want to verify numbers via OTP.
+## 2. Phone (SMS) via Twilio 📱
+1. Create a [Twilio Account](https://www.twilio.com/).
+2. In your Twilio Console, find your **Project Info**:
+    - **Account SID**: Copy this.
+    - **Auth Token**: Copy this.
+3. **Get a Phone Number**: Click "Get a Trial Number" or buy a number with SMS capabilities.
+4. **Link to Supabase**:
+    - Go to **Supabase > Authentication > Providers > Phone**.
+    - Enabled: **ON**.
+    - Phone Provider: **Twilio**.
+    - Twilio Account SID: Paste your SID.
+    - Twilio Auth Token: Paste your Token.
+    - Twilio Message Service SID (Optional) or **Twilio Phone Number**: Paste your Twilio number.
 5. Click **Save**.
+
+> [!TIP]
+> **Nigerian Numbers**: If you are testing in Nigeria, ensure your Twilio number has "International SMS" enabled in the Twilio Programmable Messaging settings.
 
 ## 3. Redirect URLs 🔄
 1. Go to **Authentication > URL Configuration**.

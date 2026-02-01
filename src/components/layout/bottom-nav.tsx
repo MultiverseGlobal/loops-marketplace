@@ -44,8 +44,8 @@ export function BottomNav() {
     ];
 
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none">
-            <nav className="bg-white/80 backdrop-blur-2xl border border-loops-border/50 shadow-[0_-8px_40px_-12px_rgba(0,0,0,0.15)] rounded-[2rem] flex items-center justify-around h-16 pointer-events-auto">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2 pointer-events-none">
+            <nav className="bg-white/90 backdrop-blur-2xl border border-loops-border/40 shadow-[0_-8px_40px_-12px_rgba(0,0,0,0.15)] rounded-2xl flex items-center justify-around h-14 pointer-events-auto">
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
@@ -55,13 +55,13 @@ export function BottomNav() {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className="relative -top-3"
+                                className="relative -top-2.5"
                             >
                                 <div className={cn(
-                                    "w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all active:scale-95",
+                                    "w-12 h-12 rounded-xl flex items-center justify-center shadow-2xl transition-all active:scale-95",
                                     isActive ? "bg-loops-primary text-white" : "bg-loops-main text-white"
                                 )}>
-                                    <Icon className="w-7 h-7" />
+                                    <Icon className="w-6 h-6" />
                                 </div>
                             </Link>
                         );
@@ -74,10 +74,10 @@ export function BottomNav() {
                             className="flex flex-col items-center justify-center gap-1 group relative flex-1"
                         >
                             <div className={cn(
-                                "p-2 rounded-xl transition-all duration-300 group-active:scale-90",
+                                "p-1.5 rounded-lg transition-all duration-300 group-active:scale-90",
                                 isActive ? "bg-loops-primary/10 text-loops-primary" : "text-loops-muted group-hover:text-loops-main"
                             )}>
-                                <Icon className={cn("w-6 h-6", isActive && "animate-pulse-subtle")} />
+                                <Icon className={cn("w-5 h-5", isActive && "animate-pulse-subtle")} />
                             </div>
                             <span className={cn(
                                 "text-[10px] font-bold uppercase tracking-widest transition-all",

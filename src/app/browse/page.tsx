@@ -14,7 +14,7 @@ import { SkeletonCard } from "../../components/ui/skeleton-loader";
 import { SearchBar } from "../../components/ui/search-bar";
 import { cn } from "../../lib/utils";
 import { useCampus } from "../../context/campus-context";
-import { CATEGORIES, FALLBACK_PRODUCT_IMAGE } from "../../lib/constants";
+import { CATEGORIES, FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../lib/constants";
 
 export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);
@@ -113,13 +113,13 @@ export default function MarketplacePage() {
             )}
 
             {/* App Header */}
-            <header className="bg-white/80 backdrop-blur-xl border-b border-loops-border pt-24 md:pt-32 pb-6 md:pb-8 px-4 sm:px-6 relative z-10">
+            <header className="bg-white/80 backdrop-blur-xl border-b border-loops-border pt-20 md:pt-32 pb-4 md:pb-8 px-4 sm:px-6 relative z-10">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8">
-                    <div className="space-y-1.5 md:space-y-2">
+                    <div className="space-y-1 sm:space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/10 text-loops-primary text-[9px] md:text-[10px] font-bold uppercase tracking-widest border border-loops-primary/20">
-                            <Sparkles className="w-3 h-3 text-loops-accent animate-[pulse-subtle_2s_ease-in-out_infinite]" /> Live Feed
+                            <Sparkles className="w-3 h-3 text-loops-accent animate-[pulse-subtle_2s_ease-in-out_infinite]" /> Live Loop
                         </div>
-                        <h1 className="font-display text-3xl md:text-5xl font-extrabold tracking-tighter text-loops-main">
+                        <h1 className="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter text-loops-main">
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-loops-primary to-loops-energetic italic">{getTerm('marketplaceName')}</span>.
                         </h1>
                         <p className="text-loops-muted text-[12px] md:text-sm font-medium max-w-sm opacity-80">
@@ -163,8 +163,8 @@ export default function MarketplacePage() {
                     </div>
 
                     {/* Sorting Dropdown */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">Sort:</span>
+                    <div className="flex items-center gap-3 ml-auto sm:ml-0">
+                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-60">Sort</span>
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
@@ -191,7 +191,7 @@ export default function MarketplacePage() {
                                     key={listing.id}
                                     id={listing.id}
                                     title={listing.title}
-                                    price={`$${listing.price}`}
+                                    price={`${CURRENCY}${listing.price}`}
                                     category={listing.category}
                                     image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                     author={listing.profiles}

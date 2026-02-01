@@ -12,7 +12,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "../lib/supabase/client";
 import { useCampus } from "../context/campus-context";
 import { motion } from "framer-motion";
-import { FALLBACK_PRODUCT_IMAGE } from "../lib/constants";
+import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../lib/constants";
 import { cn } from "../lib/utils"; // Relative import fix
 
 // FORCE REDEPLOY: Build resolution fix
@@ -64,7 +64,7 @@ export default function Home() {
             <Navbar />
 
             {/* Hero Section: The "Wow" Factor */}
-            <section className="relative min-h-[85vh] flex items-center justify-center pt-28 pb-16 px-6 overflow-hidden">
+            <section className="relative min-h-[70vh] flex items-center justify-center pt-24 pb-12 px-6 overflow-hidden">
                 {/* Dynamic Background Elements */}
                 <div className="absolute inset-0 z-0">
                     <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-loops-primary/10 blur-[120px] rounded-full animate-float" />
@@ -140,8 +140,8 @@ export default function Home() {
                                 <div className="w-14 h-14 rounded-2xl bg-white border border-loops-border flex items-center justify-center text-loops-primary shadow-sm">
                                     <ShieldCheck className="w-7 h-7" />
                                 </div>
-                                <h3 className="font-display text-4xl font-bold text-loops-main tracking-tight leading-none">
-                                    Verified <br />Peer Privacy.
+                                <h3 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-loops-main italic leading-[0.85]">
+                                    One <br className="hidden sm:block" /> {getTerm('communityName')}.
                                 </h3>
                                 <p className="text-loops-muted text-lg max-w-sm leading-relaxed">
                                     Every user is authenticated with their institutional ID. No bots, no outsiders—just real students you can trust.
@@ -239,7 +239,7 @@ export default function Home() {
                 <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
                     <div className="space-y-4">
                         <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Live on campus</div>
-                        <h2 className="font-display text-5xl md:text-6xl font-bold text-loops-main tracking-tighter italic">Trending Drops.</h2>
+                        <h2 className="font-display text-4xl sm:text-6xl font-bold text-loops-main tracking-tighter italic">Trending Drops.</h2>
                         <p className="text-loops-muted text-lg max-w-xl">Fresh items and services moving right now at {campus?.name || 'Veritas University'}.</p>
                     </div>
                     <Link href="/browse" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-loops-subtle text-loops-main font-bold hover:bg-loops-border transition-all">
@@ -254,7 +254,7 @@ export default function Home() {
                                 key={listing.id}
                                 id={listing.id}
                                 title={listing.title}
-                                price={`$${listing.price}`}
+                                price={`${CURRENCY}${listing.price}`}
                                 category={listing.category}
                                 image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                 author={listing.profiles?.full_name}
@@ -269,7 +269,7 @@ export default function Home() {
 
             {/* Social Proof: Campus Stats */}
             <section className="py-20 border-y border-loops-border bg-white relative z-10 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-6">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
                         <div className="space-y-1">
                             <div className="text-3xl font-bold text-loops-main font-display">{counts.campuses >= 1000 ? `${(counts.campuses / 1000).toFixed(1)}k` : counts.campuses}+</div>

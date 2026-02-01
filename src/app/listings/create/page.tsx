@@ -11,6 +11,7 @@ import { ImageUpload } from "@/components/ui/image-upload";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
+import { CURRENCY } from "@/lib/constants";
 
 type ListingType = 'product' | 'service' | 'request';
 
@@ -174,9 +175,13 @@ export default function CreateListingPage() {
                                 </FormGroup>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <FormGroup label="Price / Budget ($)">
+                                    <FormGroup label={
+                                        type === 'request' ? `Max Budget (${CURRENCY})` :
+                                            type === 'service' ? `Service Fee (${CURRENCY})` :
+                                                `Price (${CURRENCY})`
+                                    }>
                                         <div className="relative">
-                                            <DollarSign className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-loops-primary font-bold" />
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-loops-primary">{CURRENCY}</div>
                                             <input
                                                 type="number"
                                                 value={price}
@@ -186,7 +191,7 @@ export default function CreateListingPage() {
                                             />
                                         </div>
                                     </FormGroup>
-                                    <FormGroup label="Pickup Location (Hostel/Dept)">
+                                    <FormGroup label={type === 'service' ? "Location (Remote/Hostel)" : "Pickup Location (Hostel/Dept)"}>
                                         <div className="relative">
                                             <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-loops-primary font-bold" />
                                             <input
@@ -261,7 +266,7 @@ export default function CreateListingPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <h2 className="text-4xl font-bold font-display tracking-tight text-loops-main">{title || "No Title"}</h2>
-                                    <div className="text-3xl font-bold text-loops-success tracking-tighter">${price || "0.00"}</div>
+                                    <div className="text-3xl font-bold text-loops-success tracking-tighter">{CURRENCY}{price || "0.00"}</div>
                                 </div>
                                 <div className="bg-loops-subtle p-6 rounded-2xl">
                                     <p className="text-loops-muted leading-relaxed italic text-sm">"{description || "No description provided."}"</p>

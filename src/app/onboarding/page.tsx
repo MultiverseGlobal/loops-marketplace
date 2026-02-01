@@ -131,9 +131,9 @@ export default function OnboardingPage() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-loops-primary/10 via-loops-bg to-loops-bg pointer-events-none" />
             <Navbar />
 
-            <main className="pt-32 pb-20 max-w-2xl mx-auto px-6 relative z-10">
+            <main className="pt-24 sm:pt-32 pb-16 sm:pb-20 max-w-2xl mx-auto px-4 sm:px-6 relative z-10">
                 {/* Progress Bar */}
-                <div className="flex gap-2 mb-12">
+                <div className="flex gap-1 sm:gap-2 mb-8 sm:mb-12">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
                         <div
                             key={i}
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
                             className="space-y-8"
                         >
                             <div className="space-y-4">
-                                <h1 className="text-4xl font-extrabold font-display tracking-tight text-loops-main">
+                                <h1 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-loops-main">
                                     Select your <span className="text-gradient italic">campus</span>
                                 </h1>
                                 <p className="text-loops-muted text-[16px] md:text-lg opacity-80">Loops is built on trust. Choose your verified university network to join the local {getTerm('communityName')}.</p>
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
                                         key={campus.id}
                                         onClick={() => setSelectedCampus(campus.id)}
                                         className={cn(
-                                            "flex items-center justify-between p-6 rounded-2xl border transition-all text-left group",
+                                            "flex items-center justify-between p-4 sm:p-6 rounded-xl sm:rounded-2xl border transition-all text-left group",
                                             selectedCampus === campus.id
                                                 ? "bg-loops-primary/5 border-loops-primary"
                                                 : "bg-loops-subtle border-loops-border hover:border-loops-primary/20"
@@ -195,7 +195,7 @@ export default function OnboardingPage() {
                             </div>
 
                             <Button
-                                className="w-full h-14 text-lg font-medium"
+                                className="w-full h-12 sm:h-14 text-base sm:text-lg font-medium rounded-xl sm:rounded-2xl"
                                 disabled={!selectedCampus}
                                 onClick={handleNext}
                             >

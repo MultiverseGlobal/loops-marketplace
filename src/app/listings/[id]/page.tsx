@@ -13,7 +13,7 @@ import Link from "next/link";
 import { useToast } from "../../../context/toast-context";
 import { useCampus } from "../../../context/campus-context";
 import { useModal } from "../../../context/modal-context";
-import { FALLBACK_PRODUCT_IMAGE } from "../../../lib/constants";
+import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../../lib/constants";
 import { followUser, unfollowUser, getFollowStatus } from "../../../lib/follows";
 import { UserPlus, UserMinus } from "lucide-react";
 
@@ -260,13 +260,13 @@ export default function ListingDetailPage() {
                     {/* Listing Info */}
                     <div className="mt-10 lg:mt-0 space-y-8">
                         <div className="space-y-4">
-                            <div className="flex items-center gap-2 text-loops-success text-sm font-bold uppercase tracking-widest">
-                                <ShieldCheck className="w-4 h-4" />
+                            <div className="flex items-center gap-1.5 text-loops-success text-[10px] font-bold uppercase tracking-widest">
+                                <ShieldCheck className="w-3.5 h-3.5" />
                                 <span>Verified {campus?.name || 'Campus'} Plug</span>
                             </div>
-                            <h1 className="font-display text-5xl md:text-6xl font-bold tracking-tighter text-loops-main leading-none">{listing.title}</h1>
+                            <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-loops-main leading-tight sm:leading-none">{listing.title}</h1>
                             <div className="flex items-center gap-6">
-                                <p className="text-4xl font-bold text-loops-primary tracking-tighter">${listing.price}</p>
+                                <p className="text-3xl sm:text-4xl font-bold text-loops-primary tracking-tighter">{CURRENCY}{listing.price}</p>
                                 <div className="h-8 w-px bg-loops-border" />
                                 <div className="flex items-center gap-1.5 px-3 py-1 bg-loops-primary/5 rounded-full border border-loops-primary/10">
                                     <span className="text-[10px] text-loops-primary uppercase font-bold tracking-widest leading-none">Type: {listing.type}</span>
@@ -369,21 +369,21 @@ export default function ListingDetailPage() {
                             </div>
                         ) : (
                             <>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <Button
                                         onClick={handleInteraction}
                                         disabled={isInteracting}
-                                        className="h-16 text-xl font-bold bg-white border border-loops-border hover:bg-loops-subtle text-loops-main shadow-sm transition-all"
+                                        className="h-14 sm:h-16 text-base sm:text-xl font-bold bg-white border border-loops-border hover:bg-loops-subtle text-loops-main shadow-sm transition-all"
                                     >
-                                        <MessageSquare className="w-5 h-5 mr-3 text-loops-primary" />
-                                        {isInteracting ? "..." : `Chat with the ${getTerm('sellerName')}`}
+                                        <MessageSquare className="w-5 h-5 mr-2 sm:mr-3 text-loops-primary flex-shrink-0" />
+                                        <span className="truncate">{isInteracting ? "..." : `Chat with ${getTerm('sellerName')}`}</span>
                                     </Button>
                                     <Button
                                         onClick={handleInteraction}
                                         disabled={isInteracting}
-                                        className="h-16 text-xl font-bold bg-loops-primary hover:bg-loops-primary/90 text-white shadow-xl shadow-loops-primary/20 transition-all"
+                                        className="h-14 sm:h-16 text-base sm:text-xl font-bold bg-loops-primary hover:bg-loops-primary/90 text-white shadow-xl shadow-loops-primary/20 transition-all font-display"
                                     >
-                                        <Sparkles className="w-5 h-5 mr-3 text-loops-accent" />
+                                        <Sparkles className="w-5 h-5 mr-2 sm:mr-3 text-loops-accent flex-shrink-0" />
                                         {isInteracting ? "..." : "Make Offer"}
                                     </Button>
                                 </div>

@@ -46,10 +46,10 @@ export default function RequestsPage() {
             <Navbar />
 
             {/* App Header */}
-            <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-loops-border pt-20 pb-4 px-6">
+            <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-loops-border pt-20 pb-4 px-4 sm:px-6">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-1">
-                        <h1 className="font-display text-4xl font-bold tracking-tighter text-loops-main">
+                        <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tighter text-loops-main">
                             Requests.
                         </h1>
                         <p className="text-loops-muted text-sm font-medium">
@@ -77,7 +77,7 @@ export default function RequestsPage() {
                                 key={listing.id}
                                 id={listing.id}
                                 title={listing.title}
-                                price={`$${listing.price}`}
+                                price={`${CURRENCY}${listing.price}`}
                                 category={listing.category}
                                 image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                 author={listing.profiles?.full_name}

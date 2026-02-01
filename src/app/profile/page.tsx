@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
+import { CURRENCY } from "@/lib/constants";
 import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
 import { UserPlus, UserMinus, Users } from "lucide-react";
 
@@ -102,7 +103,7 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
 
-            <main className="pt-32 pb-20 max-w-7xl mx-auto px-6">
+            <main className="pt-24 sm:pt-32 pb-16 sm:pb-20 max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
                     {/* Sidebar / Info */}
@@ -119,7 +120,7 @@ export default function ProfilePage() {
                             )}
 
                             <div className="relative z-10 space-y-6">
-                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-loops-primary to-loops-secondary p-1 shadow-lg shadow-loops-primary/20">
+                                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-loops-primary to-loops-secondary p-1 shadow-lg shadow-loops-primary/20">
                                     <div className="w-full h-full rounded-[14px] bg-white flex items-center justify-center overflow-hidden relative">
                                         {profile?.avatar_url ? (
                                             <Image
@@ -138,7 +139,7 @@ export default function ProfilePage() {
 
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                        <h1 className="text-3xl font-bold font-display tracking-tight text-loops-main">{profile?.full_name || 'Student Name'}</h1>
+                                        <h1 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-loops-main">{profile?.full_name || 'Student Name'}</h1>
                                         {profile?.is_verified && (
                                             <ShieldCheck className="w-6 h-6 text-loops-success" />
                                         )}
@@ -211,7 +212,7 @@ export default function ProfilePage() {
                                 {user?.id === profile?.id && profile?.is_plug && (
                                     <div className="pt-6 border-t border-loops-border">
                                         <a
-                                            href={`https://wa.me/${profile?.whatsapp_number?.replace(/\D/g, '') || '2348123456789'}?text=Hello%20LoopBot!%20I%20want%20to%20manage%20my%20Pulse.`}
+                                            href={`https://wa.me/${profile?.whatsapp_number?.replace(/\D/g, '') || '2348123456789'}?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Pulse%20and%20list%20new%20items.`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="block"
@@ -295,7 +296,7 @@ export default function ProfilePage() {
                                                     <h3 className="font-bold text-xl truncate group-hover:text-loops-primary transition-colors text-loops-main tracking-tight">
                                                         {listing.title}
                                                     </h3>
-                                                    <div className="text-loops-success font-bold text-lg">${listing.price}</div>
+                                                    <div className="text-loops-success font-bold text-lg">{CURRENCY}{listing.price}</div>
                                                 </div>
                                                 <Button variant="ghost" size="icon" className="text-loops-muted group-hover:text-loops-primary transition-colors">
                                                     <ExternalLink className="w-5 h-5" />
