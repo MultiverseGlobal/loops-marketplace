@@ -15,6 +15,7 @@ import { useCampus } from "@/context/campus-context";
 import { CURRENCY } from "@/lib/constants";
 import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
 import { UserPlus, UserMinus, Users } from "lucide-react";
+import { Rating } from "@/components/ui/rating";
 
 export default function ProfilePage() {
     const [user, setUser] = useState<any>(null);
@@ -153,6 +154,12 @@ export default function ProfilePage() {
                                     <div className="flex items-center gap-2 text-loops-muted font-medium">
                                         <MapPin className="w-4 h-4 text-loops-primary" />
                                         <span>{profile?.campuses?.name || 'Campus Member'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 py-1">
+                                        <Rating value={profile?.rating || 0} size="sm" />
+                                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">
+                                            {profile?.rating ? Number(profile.rating).toFixed(1) : 'No ratings'}
+                                        </span>
                                     </div>
                                     <div className="flex items-center gap-2 text-loops-muted text-[10px] font-bold uppercase tracking-widest">
                                         <Calendar className="w-4 h-4" />

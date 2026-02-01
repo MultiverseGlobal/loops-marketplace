@@ -16,6 +16,7 @@ import { useModal } from "../../../context/modal-context";
 import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../../lib/constants";
 import { followUser, unfollowUser, getFollowStatus } from "../../../lib/follows";
 import { UserPlus, UserMinus } from "lucide-react";
+import { Rating } from "../../../components/ui/rating";
 
 export default function ListingDetailPage() {
     const { id } = useParams();
@@ -47,6 +48,7 @@ export default function ListingDetailPage() {
                             store_name,
                             store_banner_color,
                             reputation,
+                            rating,
                             email_verified
                         )
                     `)
@@ -297,7 +299,10 @@ export default function ListingDetailPage() {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="text-[10px] text-loops-muted uppercase tracking-widest font-bold">Plug Reputation: {listing.profiles?.reputation || 0}</div>
+                                        <div className="flex items-center gap-2">
+                                            <Rating value={listing.profiles?.rating || 0} size="sm" />
+                                            <div className="text-[10px] text-loops-muted uppercase tracking-widest font-bold">Pulse: {listing.profiles?.reputation || 0}</div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
