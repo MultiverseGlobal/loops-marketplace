@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useCampus } from "@/context/campus-context";
-import { MessageSquare, ShieldCheck, Instagram, Twitter, Globe, Heart, Phone } from "lucide-react";
+import { MessageSquare, Github, Twitter, Instagram, Mail, MapPin, Globe, Heart } from "lucide-react";
+import { InfinityLogo } from "@/components/ui/infinity-logo";
 
 export function Footer() {
     const { getTerm, campus } = useCampus();
@@ -15,8 +16,8 @@ export function Footer() {
                     {/* Brand Column */}
                     <div className="col-span-2 lg:col-span-2 space-y-6">
                         <Link href="/" className="flex items-center gap-2.5 group w-fit">
-                            <div className="w-10 h-10 bg-loops-primary rounded-xl flex items-center justify-center shadow-xl shadow-loops-primary/20 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
-                                <img src="/logo.png" alt="Loops" className="w-full h-full object-cover" />
+                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-xl shadow-loops-primary/20 group-hover:scale-105 transition-transform duration-300 overflow-hidden border border-loops-border">
+                                <InfinityLogo className="w-8 h-8" />
                             </div>
                             <span className="text-2xl font-bold font-display tracking-tight text-loops-main">Loops</span>
                         </Link>

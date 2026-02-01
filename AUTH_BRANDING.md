@@ -28,12 +28,12 @@ Confirm your Loops Account 🕸️
         .logo {
             width: 48px;
             height: 48px;
-            background-color: #6366f1;
+            background-color: transparent;
             border-radius: 12px;
             display: block;
         }
         .brand-name {
-            color: #6366f1;
+            color: #10b981;
             font-size: 32px;
             font-weight: 800;
             font-style: italic;
@@ -47,13 +47,13 @@ Confirm your Loops Account 🕸️
         }
         .btn {
             display: inline-block;
-            background-color: #6366f1;
+            background-color: #10b981;
             color: white !important;
             padding: 16px 32px;
             border-radius: 12px;
             text-decoration: none !important;
             font-weight: 700;
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
         }
         .footer {
             margin-top: 40px;
@@ -67,8 +67,7 @@ Confirm your Loops Account 🕸️
 <body>
     <div class="container">
         <div class="header">
-            <!-- Updated with production URL -->
-            <img src="https://loops-marketplace.vercel.app/logo.png" class="logo" alt="Loops" />
+            <img src="https://loops-stores.vercel.app/logo.png" class="logo" alt="Loops" />
             <span class="brand-name">LOOPS.</span>
         </div>
         <p class="body-text">
@@ -86,4 +85,4 @@ Confirm your Loops Account 🕸️
 1. Go to **Supabase Dashboard**.
 2. Navigate to **Authentication** -> **Email Templates**.
 3. Paste the code above into the **Confirm Signup** editor.
-4. **IMPORTANT**: Also go to **URL Configuration** and ensure your **Site URL** is set to your actual dev address (e.g. `http://localhost:3000` or your Vercel URL).
+4. **IMPORTANT**: Also go to **URL Configuration** and ensure your **Site URL** is set to your actual dev address (e.g. `http://localhost:3000` or `https://loops-stores.vercel.app`).

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard } from "lucide-react";
+import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
@@ -56,8 +57,8 @@ export function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
                 <div className="flex items-center gap-12">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="w-10 h-10 bg-loops-primary rounded-xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:rotate-12 transition-transform duration-500 overflow-hidden">
-                            <img src="/logo.png" alt="Loops" className="w-full h-full object-cover" />
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:rotate-12 transition-transform duration-500 overflow-hidden border border-loops-border">
+                            <InfinityLogo className="w-8 h-8" />
                         </div>
                         <span className="font-display text-2xl font-bold tracking-tighter text-loops-main">
                             Loops

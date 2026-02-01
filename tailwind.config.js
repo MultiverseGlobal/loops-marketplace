@@ -7,8 +7,9 @@ module.exports = {
         extend: {
             colors: {
                 loops: {
-                    primary: "var(--loops-primary, #059669)",
-                    secondary: "var(--loops-secondary, #2563eb)",
+                    primary: "#10b981", // Emerald-500
+                    teal: "#059669",    // Teal-600
+                    mint: "#34d399",    // Mint-400
                     accent: "var(--loops-accent, #f59e0b)",
                     vibrant: "#FF3366", // Energetic pink
                     energetic: "#7C3AED", // Vibrant purple
