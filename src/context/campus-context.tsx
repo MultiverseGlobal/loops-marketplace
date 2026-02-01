@@ -18,7 +18,7 @@ const CAMPUS_DEFAULT_TERMS = {
     listingName: 'Drop',
     listingAction: 'Post a Drop',
     sellerName: 'Plug',
-    buyerName: 'Hubber',
+    buyerName: 'Buyer',
     statusActive: 'Vibing',
     statusPending: 'Locked In',
     statusCompleted: 'Deal Sealed',

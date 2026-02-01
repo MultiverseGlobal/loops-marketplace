@@ -6,19 +6,33 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronRight, School, User, Sparkles, ShieldCheck } from "lucide-react";
+import { Check, ChevronRight, School, User, Sparkles, ShieldCheck, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
+
+const NIGERIAN_UNI_DOMAINS: Record<string, string> = {
+    "University of Lagos": "unilag.edu.ng",
+    "University of Ibadan": "ui.edu.ng",
+    "University of Benin": "uniben.edu.ng",
+    "Covenant University": "covenantuniversity.edu.ng",
+    "Babcock University": "babcock.edu.ng",
+    "Obafemi Awolowo University": "oauife.edu.ng",
+    "Ahmadu Bello University": "abu.edu.ng",
+    "University of Nigeria": "unn.edu.ng",
+    "Lagos State University": "lasu.edu.ng",
+    "Federal University of Technology Akure": "futa.edu.ng",
+    "Nnamdi Azikiwe University": "unizik.edu.ng",
+    "University of Port Harcourt": "uniport.edu.ng",
+};
 
 interface Campus {
     id: string;
     name: string;
     slug: string;
     location: string;
+    domain: string;
 }
-
-// Fallback is no longer needed as we fetch from DB and have a "Request a Campus" button
 
 export default function OnboardingPage() {
     const [step, setStep] = useState(1);
@@ -35,6 +49,11 @@ export default function OnboardingPage() {
     const [showRequestForm, setShowRequestForm] = useState(false);
     const [requestData, setRequestData] = useState({ name: "", email: "", reason: "" });
     const [requestLoading, setRequestLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredCampuses = campuses.filter(c =>
+        c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     const supabase = createClient();
     const router = useRouter();
     const toast = useToast();
@@ -172,37 +191,57 @@ export default function OnboardingPage() {
                                 <p className="text-loops-muted text-[16px] md:text-lg opacity-80">Loops is built on trust. Choose your verified university network to join the local {getTerm('communityName')}.</p>
                             </div>
 
-                            <div className="grid gap-4">
-                                {campuses.map((campus: any) => (
-                                    <button
-                                        key={campus.id}
-                                        onClick={() => setSelectedCampus(campus.id)}
-                                        className={cn(
-                                            "flex items-center justify-between p-4 sm:p-6 rounded-xl sm:rounded-2xl border transition-all text-left group",
-                                            selectedCampus === campus.id
-                                                ? "bg-loops-primary/5 border-loops-primary"
-                                                : "bg-loops-subtle border-loops-border hover:border-loops-primary/20"
-                                        )}
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className={cn(
-                                                "w-12 h-12 rounded-xl flex items-center justify-center transition-colors shadow-sm",
-                                                selectedCampus === campus.id ? "bg-loops-primary text-white" : "bg-white text-loops-muted border border-loops-border"
-                                            )}>
-                                                <School className="w-6 h-6" />
+                            <div className="space-y-4">
+                                <div className="relative group">
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-loops-muted group-focus-within:text-loops-primary transition-colors" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search for your university..."
+                                        className="w-full h-14 pl-12 pr-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm font-medium"
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        value={searchTerm}
+                                    />
+                                </div>
+
+                                <div className="max-h-[300px] overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+                                    {filteredCampuses.map((campus: any) => (
+                                        <button
+                                            key={campus.id}
+                                            onClick={() => {
+                                                setSelectedCampus(campus.id);
+                                                setSearchTerm(campus.name);
+                                            }}
+                                            className={cn(
+                                                "w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left group",
+                                                selectedCampus === campus.id
+                                                    ? "bg-loops-primary/5 border-loops-primary"
+                                                    : "bg-white border-loops-border hover:border-loops-primary/20"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn(
+                                                    "w-10 h-10 rounded-lg flex items-center justify-center transition-colors shadow-sm",
+                                                    selectedCampus === campus.id ? "bg-loops-primary text-white" : "bg-loops-subtle text-loops-muted border border-loops-border"
+                                                )}>
+                                                    <School className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <div className="font-bold text-loops-main">{campus.name}</div>
+                                                    <div className="text-[10px] uppercase font-bold text-loops-muted tracking-widest opacity-60 italic">@{campus.domain}</div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <div className="font-bold text-lg text-loops-main">{campus.name}</div>
-                                                <div className="text-sm text-loops-muted">@{campus.domain}</div>
-                                            </div>
+                                            {selectedCampus === campus.id && (
+                                                <Check className="w-5 h-5 text-loops-primary" />
+                                            )}
+                                        </button>
+                                    ))}
+
+                                    {filteredCampuses.length === 0 && (
+                                        <div className="py-8 text-center bg-loops-subtle/50 rounded-2xl border border-dashed border-loops-border">
+                                            <p className="text-sm text-loops-muted italic">" {searchTerm} " not found in the Loop.</p>
                                         </div>
-                                        {selectedCampus === campus.id && (
-                                            <div className="w-6 h-6 rounded-full bg-loops-primary flex items-center justify-center">
-                                                <Check className="w-4 h-4 text-white" />
-                                            </div>
-                                        )}
-                                    </button>
-                                ))}
+                                    )}
+                                </div>
                             </div>
 
                             <Button
@@ -249,9 +288,19 @@ export default function OnboardingPage() {
                                                         required
                                                         type="text"
                                                         value={requestData.name}
-                                                        onChange={(e) => setRequestData({ ...requestData, name: e.target.value })}
+                                                        onChange={(e) => {
+                                                            const name = e.target.value;
+                                                            setRequestData({ ...requestData, name });
+                                                            // Try to auto-match domain
+                                                            const match = Object.entries(NIGERIAN_UNI_DOMAINS).find(([uni]) =>
+                                                                name.toLowerCase().includes(uni.toLowerCase())
+                                                            );
+                                                            if (match && !requestData.email.includes('@')) {
+                                                                setRequestData(prev => ({ ...prev, name, email: `yourname@${match[1]}` }));
+                                                            }
+                                                        }}
                                                         placeholder="e.g. University of Benin"
-                                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all"
+                                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all font-bold"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
@@ -358,7 +407,7 @@ export default function OnboardingPage() {
                                 {[
                                     {
                                         id: 'buying',
-                                        title: 'The Student Consumer',
+                                        title: 'The Student Buyer',
                                         desc: 'I want to find deals, buy textbooks, and request services.',
                                         icon: User,
                                         color: 'text-loops-primary'
