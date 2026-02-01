@@ -2,6 +2,9 @@
 -- This script moves sensitive data to a private table with strict RLS.
 -- RUN THIS IN SUPABASE SQL EDITOR
 
+-- 0. Ensure profiles table has the necessary columns for security policies
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
+
 -- 1. Create a private table for student verification data
 CREATE TABLE IF NOT EXISTS public.student_verifications (
     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
