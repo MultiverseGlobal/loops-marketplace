@@ -48,18 +48,29 @@ export default function OnboardingPage() {
                 return;
             }
 
-            // Fetch real campuses from DB
-            // Fetch only Veritas for launch phase
+            // Fetch all active campuses from DB
             const { data } = await supabase
                 .from('campuses')
                 .select('*')
-                .ilike('name', '%Veritas%');
+                .order('name', { ascending: true });
             if (data) setCampuses(data);
         };
         setup();
     }, [router, supabase]);
 
-    const handleNext = () => setStep(step + 1);
+    const handleNext = async () => {
+        if (step === 1) {
+            const campus = campuses.find(c => c.id === selectedCampus);
+            const { data: { session } } = await supabase.auth.getSession();
+            const userEmail = session?.user?.email;
+
+            if (campus?.domain && !userEmail?.endsWith(campus.domain)) {
+                toast.error(`Access Restricted: You must use a @${campus.domain} email to join this campus.`);
+                return;
+            }
+        }
+        setStep(step + 1);
+    };
     const handleBack = () => setStep(step - 1);
 
     const handleSubmit = async () => {

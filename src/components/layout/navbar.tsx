@@ -54,10 +54,10 @@ export function Navbar() {
 
     return (
         <nav className="fixed top-0 w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
                 <div className="flex items-center gap-12">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:rotate-12 transition-transform duration-500 overflow-hidden border border-loops-border">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:rotate-12 transition-transform duration-500 overflow-hidden border border-loops-border">
                             <InfinityLogo className="w-9 h-9" />
                         </div>
                         <span className="font-display text-2xl font-bold tracking-tighter text-loops-main">
@@ -92,7 +92,7 @@ export function Navbar() {
                                 </Link>
                             )}
 
-                            <Link href="/profile" className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-loops-subtle border border-loops-border hover:border-loops-primary/20 transition-all group">
+                            <Link href="/profile" className="hidden sm:flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-loops-subtle border border-loops-border hover:border-loops-primary/20 transition-all group">
                                 <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-loops-primary text-sm font-bold border border-loops-border shadow-sm overflow-hidden relative group-hover:scale-105 transition-transform">
                                     {profile?.avatar_url ? (
                                         <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />

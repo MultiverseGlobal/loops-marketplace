@@ -33,6 +33,10 @@ export default function ProfilePage() {
     const [followingCount, setFollowingCount] = useState(0);
     const [isFollowing, setIsFollowing] = useState(false);
     const [followLoading, setFollowLoading] = useState(false);
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewComment, setReviewComment] = useState("");
+    const [submittingReview, setSubmittingReview] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -95,6 +99,30 @@ export default function ProfilePage() {
             toast.error("Failed to update follow status.");
         } finally {
             setFollowLoading(false);
+        }
+    };
+
+    const handleReviewSubmit = async () => {
+        if (!user) return router.push('/login');
+        setSubmittingReview(true);
+        try {
+            const { error } = await supabase
+                .from('reviews')
+                .insert({
+                    reviewer_id: user.id,
+                    reviewee_id: targetUserId,
+                    rating: reviewRating,
+                    comment: reviewComment
+                });
+
+            if (error) throw error;
+            toast.success("Review submitted! The campus Pulse has been updated.");
+            setReviewModalOpen(false);
+            setReviewComment("");
+        } catch (err: any) {
+            toast.error(err.message || "Failed to submit review.");
+        } finally {
+            setSubmittingReview(false);
         }
     };
 
@@ -213,6 +241,47 @@ export default function ProfilePage() {
                                                 Send Message
                                             </Button>
                                         </Link>
+                                        <Button
+                                            onClick={() => setReviewModalOpen(true)}
+                                            variant="outline"
+                                            className="w-full border-loops-primary/20 text-loops-primary hover:bg-loops-primary/5 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]"
+                                        >
+                                            <Star className="w-4 h-4" />
+                                            Rate this Plug
+                                        </Button>
+                                    </div>
+                                )}
+
+                                {reviewModalOpen && (
+                                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-loops-main/40 backdrop-blur-md">
+                                        <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-loops-border space-y-6">
+                                            <div className="text-center space-y-2">
+                                                <h3 className="text-xl font-bold font-display italic">Seal the Deal.</h3>
+                                                <p className="text-loops-muted text-sm px-4">Rate your experience with this student plug to help the community.</p>
+                                            </div>
+
+                                            <div className="flex justify-center py-4">
+                                                <Rating value={reviewRating} readonly={false} onChange={setReviewRating} size="lg" />
+                                            </div>
+
+                                            <textarea
+                                                value={reviewComment}
+                                                onChange={(e) => setReviewComment(e.target.value)}
+                                                placeholder="Add a quick note about the trade..."
+                                                className="w-full p-4 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none transition-all resize-none text-sm h-24"
+                                            />
+
+                                            <div className="flex gap-3">
+                                                <Button variant="ghost" className="flex-1 h-12 rounded-xl text-loops-muted font-bold uppercase tracking-widest text-[10px]" onClick={() => setReviewModalOpen(false)}>Cancel</Button>
+                                                <Button
+                                                    disabled={submittingReview}
+                                                    className="flex-1 h-12 rounded-xl bg-loops-primary text-white font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-loops-primary/20"
+                                                    onClick={handleReviewSubmit}
+                                                >
+                                                    {submittingReview ? "Submitting..." : "Post Review"}
+                                                </Button>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
