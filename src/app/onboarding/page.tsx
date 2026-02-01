@@ -142,8 +142,10 @@ export default function OnboardingPage() {
                             className="space-y-8"
                         >
                             <div className="space-y-4">
-                                <h1 className="text-4xl font-bold font-display">Select your campus</h1>
-                                <p className="text-loops-muted text-lg">Loops is built on trust. Choose your verified university network to join the local {getTerm('communityName')}.</p>
+                                <h1 className="text-4xl font-extrabold font-display tracking-tight text-loops-main">
+                                    Select your <span className="text-gradient italic">campus</span>
+                                </h1>
+                                <p className="text-loops-muted text-[16px] md:text-lg opacity-80">Loops is built on trust. Choose your verified university network to join the local {getTerm('communityName')}.</p>
                             </div>
 
                             <div className="grid gap-4">

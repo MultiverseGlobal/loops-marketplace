@@ -29,14 +29,11 @@ export function BottomNav() {
         return () => subscription.unsubscribe();
     }, [supabase.auth]);
 
-    // Don't show on landing page if you want a cleaner landing, 
-    // but usually web-apps show it everywhere once logged in.
-    // For this app, let's keep it for functional app pages only.
-    const isLandingPage = pathname === "/";
-    const isOnboarding = pathname === "/onboarding";
+    // Define routes where the bottom nav should be hidden
+    const hideOnRoutes = ["/", "/onboarding", "/login", "/signup", "/auth"];
+    const shouldHide = hideOnRoutes.includes(pathname) || pathname.startsWith("/auth/");
 
-    // We can decide to hide it on specific pages if needed
-    if (isOnboarding) return null;
+    if (shouldHide) return null;
 
     const navItems = [
         { label: "Feed", href: "/browse", icon: Home },

@@ -47,7 +47,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body
                 suppressHydrationWarning
-                className={cn(inter.variable, outfit.variable, "font-sans antialiased bg-loops-bg text-loops-main selection:bg-loops-secondary/30 pb-24 md:pb-0")}
+                className={cn(inter.variable, outfit.variable, "font-sans antialiased bg-loops-bg text-loops-main selection:bg-loops-secondary/30")}
             >
                 <CampusProvider>
                     <ToastProvider>
