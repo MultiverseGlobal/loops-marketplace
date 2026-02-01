@@ -44,6 +44,7 @@ export default function ListingDetailPage() {
                         profiles:seller_id (
                             id,
                             full_name,
+                            store_name,
                             reputation,
                             email_verified
                         )
@@ -287,7 +288,15 @@ export default function ListingDetailPage() {
                                         {listing.profiles?.full_name?.charAt(0)}
                                     </div>
                                     <div>
-                                        <div className="font-bold text-loops-main">{listing.profiles?.full_name}</div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="font-bold text-loops-main">{listing.profiles?.full_name}</div>
+                                            {listing.profiles?.store_name && (
+                                                <>
+                                                    <div className="w-1 h-1 rounded-full bg-loops-border" />
+                                                    <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.2em]">{listing.profiles.store_name} Hub</div>
+                                                </>
+                                            )}
+                                        </div>
                                         <div className="text-[10px] text-loops-muted uppercase tracking-widest font-bold">{getTerm('sellerName')} Reputation: {listing.profiles?.reputation || 0}</div>
                                     </div>
                                 </div>

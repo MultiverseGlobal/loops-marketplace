@@ -25,6 +25,8 @@ export default function OnboardingPage() {
     const [selectedCampus, setSelectedCampus] = useState("");
     const [fullName, setFullName] = useState("");
     const [bio, setBio] = useState("");
+    const [storeName, setStoreName] = useState("");
+    const [whatsappNumber, setWhatsappNumber] = useState("");
     const [primaryRole, setPrimaryRole] = useState<'buying' | 'selling'>('buying');
     const [loading, setLoading] = useState(false);
     const [campuses, setCampuses] = useState<Campus[]>([]);
@@ -71,6 +73,8 @@ export default function OnboardingPage() {
                     campus_id: selectedCampus,
                     full_name: fullName,
                     bio: bio,
+                    store_name: storeName,
+                    whatsapp_number: whatsappNumber,
                     primary_role: primaryRole,
                     updated_at: new Date().toISOString(),
                 });
@@ -121,7 +125,7 @@ export default function OnboardingPage() {
             <main className="pt-32 pb-20 max-w-2xl mx-auto px-6 relative z-10">
                 {/* Progress Bar */}
                 <div className="flex gap-2 mb-12">
-                    {[1, 2, 3, 4].map((i) => (
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
                         <div
                             key={i}
                             className={cn(
@@ -378,14 +382,102 @@ export default function OnboardingPage() {
                                 <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
                                     Back
                                 </Button>
-                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white shadow-xl shadow-loops-primary/20" onClick={handleNext}>
-                                    Confirm Persona
+                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white shadow-xl shadow-loops-primary/20" onClick={() => setStep(primaryRole === 'selling' ? 4 : 6)}>
+                                    {primaryRole === 'selling' ? "Step Inside" : "Verify & Finish"}
                                 </Button>
                             </div>
                         </motion.div>
                     )}
 
-                    {step === 4 && (
+                    {step === 4 && primaryRole === 'selling' && (
+                        <motion.div
+                            key="step4"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            className="space-y-8"
+                        >
+                            <div className="space-y-4">
+                                <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Merchant Setup</div>
+                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Name your <span className="text-gradient italic">Pulse</span></h1>
+                                <p className="text-loops-muted text-lg">Every merchant needs a brand. What should peers call your storefront?</p>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Storefront Name</label>
+                                    <input
+                                        type="text"
+                                        value={storeName}
+                                        onChange={(e) => setStoreName(e.target.value)}
+                                        placeholder="e.g. Alex's Gadget Hub"
+                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm"
+                                    />
+                                    <p className="text-[10px] text-loops-muted italic">This will appear on your listings and profile header.</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
+                                    Back
+                                </Button>
+                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white" disabled={!storeName} onClick={handleNext}>
+                                    Brand Active
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {step === 5 && primaryRole === 'selling' && (
+                        <motion.div
+                            key="step5"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            className="space-y-8"
+                        >
+                            <div className="space-y-4">
+                                <div className="text-[10px] font-bold text-loops-secondary uppercase tracking-[0.2em]">Automated Pulse</div>
+                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Connect <span className="text-secondary-gradient italic">L-Bot</span></h1>
+                                <p className="text-loops-muted text-lg">Power your commerce via WhatsApp. List items, search, and get notified instantly.</p>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="p-6 rounded-2xl bg-loops-secondary/5 border border-loops-secondary/20 space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-loops-secondary text-white flex items-center justify-center shadow-lg">
+                                            <Sparkles className="w-5 h-5" />
+                                        </div>
+                                        <div className="font-bold text-loops-main">AI-Powered Selling</div>
+                                    </div>
+                                    <p className="text-xs text-loops-muted leading-relaxed">By linking WhatsApp, you can simply text "Sell my iPhone for $400" and L-Bot will handle the listing for you.</p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">WhatsApp Number</label>
+                                    <input
+                                        type="tel"
+                                        value={whatsappNumber}
+                                        onChange={(e) => setWhatsappNumber(e.target.value)}
+                                        placeholder="2348123456789"
+                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-secondary focus:outline-none focus:ring-1 focus:ring-loops-secondary transition-all shadow-sm"
+                                    />
+                                    <p className="text-[10px] text-loops-muted italic">Include country code without '+'.</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
+                                    Skip
+                                </Button>
+                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-secondary text-white shadow-xl shadow-loops-secondary/20" onClick={handleNext}>
+                                    Power Up
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {step === 6 && (
                         <motion.div
                             key="step3"
                             initial={{ opacity: 0, scale: 0.95 }}
@@ -404,7 +496,14 @@ export default function OnboardingPage() {
                                 </p>
                             </div>
 
-                            <div className="grid gap-4 max-w-sm mx-auto pt-8">
+                            {primaryRole === 'selling' && (
+                                <div className="p-6 rounded-2xl bg-loops-primary/5 border border-loops-primary/10 max-w-sm mx-auto space-y-2">
+                                    <div className="text-[10px] font-bold text-loops-primary uppercase tracking-widest">Storefront Activated</div>
+                                    <div className="text-xl font-display font-bold text-loops-main">{storeName}</div>
+                                </div>
+                            )}
+
+                            <div className="grid gap-4 max-w-sm mx-auto pt-4">
                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
                                     <Sparkles className="w-5 h-5 text-loops-accent" />
                                     <span className="text-sm font-bold text-loops-main">{getTerm('reputationLabel')} activated</span>
@@ -416,7 +515,7 @@ export default function OnboardingPage() {
                             </div>
 
                             <div className="flex gap-4">
-                                <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
+                                <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={() => setStep(3)}>
                                     Edit info
                                 </Button>
                                 <Button

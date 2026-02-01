@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { motion } from "framer-motion";
-import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Zap, MessageSquare, Phone } from "lucide-react";
+import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Zap, MessageSquare, Phone, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -143,6 +143,12 @@ export default function ProfilePage() {
                                             <ShieldCheck className="w-6 h-6 text-loops-success" />
                                         )}
                                     </div>
+                                    {profile?.store_name && (
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-loops-primary/5 border border-loops-primary/10 rounded-lg w-fit">
+                                            <Sparkles className="w-3.5 h-3.5 text-loops-primary" />
+                                            <span className="text-[9px] font-black text-loops-primary uppercase tracking-[0.2em]">{profile.store_name} Hub</span>
+                                        </div>
+                                    )}
                                     <div className="flex items-center gap-2 text-loops-muted font-medium">
                                         <MapPin className="w-4 h-4 text-loops-primary" />
                                         <span>{profile?.campuses?.name || 'Campus Member'}</span>

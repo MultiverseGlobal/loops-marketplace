@@ -54,7 +54,7 @@ export default function MarketplacePage() {
 
             let query = supabase
                 .from('listings')
-                .select('*, profiles(full_name)')
+                .select('*, profiles(full_name, store_name)')
                 .eq('status', 'active');
 
             // Apply sorting
@@ -194,7 +194,7 @@ export default function MarketplacePage() {
                                     price={`$${listing.price}`}
                                     category={listing.category}
                                     image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
-                                    author={listing.profiles?.full_name}
+                                    author={listing.profiles}
                                     delay={idx * 0.05}
                                 />
                             ))}
