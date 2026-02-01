@@ -153,13 +153,28 @@ export default function OnboardingPage() {
                     store_category: storeCategory,
                     store_banner_color: storeBannerColor,
                     whatsapp_number: whatsappNumber,
-                    matric_number: matricNumber,
                     primary_role: primaryRole,
                     is_plug: primaryRole === 'plug',
                     updated_at: new Date().toISOString(),
                 });
 
             if (upsertError) throw upsertError;
+
+            // Save sensitive verification info to a private table
+            if (matricNumber) {
+                const { error: verifyError } = await supabase
+                    .from('student_verifications')
+                    .upsert({
+                        user_id: user.id,
+                        matric_number: matricNumber,
+                        updated_at: new Date().toISOString()
+                    });
+
+                if (verifyError) {
+                    console.error("Verification Storage Error:", verifyError);
+                    // We don't block onboarding for this, but log it
+                }
+            }
 
             toast.success(`Profile Activated. Welcome to the ${getTerm('communityName')}!`);
             router.push('/browse');
