@@ -12,6 +12,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
+import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
+import { UserPlus, UserMinus, Users } from "lucide-react";
 
 export default function ProfilePage() {
     const [user, setUser] = useState<any>(null);
@@ -25,6 +27,11 @@ export default function ProfilePage() {
     const toast = useToast();
     const { campus, getTerm } = useCampus();
 
+    const [followersCount, setFollowersCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
+
     useEffect(() => {
         const fetchProfile = async () => {
             const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -33,32 +40,61 @@ export default function ProfilePage() {
             const userIdToFetch = targetUserId || authUser?.id;
 
             if (userIdToFetch) {
-                const { data: profileData } = await supabase
-                    .from('profiles')
-                    .select('*, campuses(*)')
-                    .eq('id', userIdToFetch)
-                    .single();
+                // Fetch Profile and Listings
+                const [profileRes, listingsRes, followRes] = await Promise.all([
+                    supabase.from('profiles').select('*, campuses(*)').eq('id', userIdToFetch).single(),
+                    supabase.from('listings').select('*').eq('seller_id', userIdToFetch).order('created_at', { ascending: false }),
+                    getFollowCounts(userIdToFetch)
+                ]);
 
-                if (profileData) {
-                    setProfile(profileData);
-                    // Set default tab only for the owner
-                    if (!targetUserId && profileData.primary_role) {
-                        setActiveTab(profileData.primary_role as 'selling' | 'buying');
-                    }
+                if (profileRes.data) setProfile(profileRes.data);
+                if (listingsRes.data) setListings(listingsRes.data);
+
+                setFollowersCount(followRes.followers);
+                setFollowingCount(followRes.following);
+
+                // If viewing someone else, check if we follow them
+                if (targetUserId && authUser && targetUserId !== authUser.id) {
+                    const status = await getFollowStatus(targetUserId);
+                    setIsFollowing(status);
                 }
 
-                const { data: listingsData } = await supabase
-                    .from('listings')
-                    .select('*')
-                    .eq('seller_id', userIdToFetch)
-                    .order('created_at', { ascending: false });
-
-                if (listingsData) setListings(listingsData);
+                // Set default tab only for the owner
+                if (!targetUserId && profileRes.data?.primary_role) {
+                    setActiveTab(profileRes.data.primary_role as 'selling' | 'buying');
+                }
             }
             setLoading(false);
         };
         fetchProfile();
     }, [supabase, targetUserId]);
+
+    const handleFollowToggle = async () => {
+        if (!user) {
+            toast.error("Please login to follow plugs.");
+            return;
+        }
+        if (!targetUserId) return;
+
+        setFollowLoading(true);
+        try {
+            if (isFollowing) {
+                await unfollowUser(targetUserId);
+                setIsFollowing(false);
+                setFollowersCount(prev => prev - 1);
+                toast.success(`Unfollowed ${profile?.full_name}`);
+            } else {
+                await followUser(targetUserId);
+                setIsFollowing(true);
+                setFollowersCount(prev => prev + 1);
+                toast.success(`Following ${profile?.full_name}!`);
+            }
+        } catch (err) {
+            toast.error("Failed to update follow status.");
+        } finally {
+            setFollowLoading(false);
+        }
+    };
 
     if (loading) return null;
 
@@ -125,37 +161,44 @@ export default function ProfilePage() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-4 rounded-2xl bg-white border border-loops-border text-center shadow-sm">
-                                        <div className="text-2xl font-bold font-display text-loops-primary tracking-tighter">{profile?.reputation || 0}</div>
-                                        <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">{getTerm('reputationLabel')}</div>
+                                        <div className="text-2xl font-bold font-display text-loops-primary tracking-tighter">{followersCount}</div>
+                                        <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Followers</div>
                                     </div>
                                     <div className="p-4 rounded-2xl bg-white border border-loops-border text-center shadow-sm">
-                                        <div className="text-2xl font-bold font-display text-loops-success tracking-tighter">{Number(profile?.rating || 0).toFixed(1)}</div>
-                                        <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">User Rating</div>
+                                        <div className="text-2xl font-bold font-display text-loops-success tracking-tighter">{followingCount}</div>
+                                        <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Following</div>
                                     </div>
                                 </div>
 
                                 {user?.id !== profile?.id && (
                                     <div className="pt-6 border-t border-loops-border space-y-3">
-                                        <Link href={`/messages?u=${profile?.id}`}>
-                                            <Button className="w-full bg-loops-primary text-white hover:bg-loops-primary/90 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]">
+                                        <Button
+                                            onClick={handleFollowToggle}
+                                            disabled={followLoading}
+                                            className={cn(
+                                                "w-full h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] transition-all",
+                                                isFollowing ? "bg-loops-subtle text-loops-muted border-loops-border" : "bg-loops-primary text-white hover:bg-loops-primary/90 shadow-lg shadow-loops-primary/20"
+                                            )}
+                                        >
+                                            {isFollowing ? (
+                                                <>
+                                                    <UserMinus className="w-4 h-4" />
+                                                    Unfollow Plug
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <UserPlus className="w-4 h-4" />
+                                                    Follow Plug
+                                                </>
+                                            )}
+                                        </Button>
+
+                                        <Link href={`/messages?u=${profile?.id}`} className="block">
+                                            <Button variant="outline" className="w-full border-loops-border text-loops-primary hover:bg-loops-primary/5 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]">
                                                 <MessageSquare className="w-4 h-4" />
-                                                Send {getTerm('communityName')} Message
+                                                Send Message
                                             </Button>
                                         </Link>
-
-                                        {profile?.whatsapp_number && (
-                                            <a
-                                                href={`https://wa.me/${profile.whatsapp_number.replace(/\D/g, '')}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="block"
-                                            >
-                                                <Button variant="outline" className="w-full border-green-500/20 text-green-600 hover:bg-green-50 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px]">
-                                                    <Phone className="w-4 h-4" />
-                                                    Chat on WhatsApp
-                                                </Button>
-                                            </a>
-                                        )}
                                     </div>
                                 )}
                             </div>

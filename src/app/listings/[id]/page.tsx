@@ -14,6 +14,8 @@ import { useToast } from "../../../context/toast-context";
 import { useCampus } from "../../../context/campus-context";
 import { useModal } from "../../../context/modal-context";
 import { FALLBACK_PRODUCT_IMAGE } from "../../../lib/constants";
+import { followUser, unfollowUser, getFollowStatus } from "../../../lib/follows";
+import { UserPlus, UserMinus } from "lucide-react";
 
 export default function ListingDetailPage() {
     const { id } = useParams();
@@ -28,6 +30,9 @@ export default function ListingDetailPage() {
     const toast = useToast();
     const { campus, getTerm } = useCampus();
     const modal = useModal();
+
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -47,7 +52,12 @@ export default function ListingDetailPage() {
                     .single();
 
                 if (error) throw error;
-                if (data) setListing(data);
+                if (data) {
+                    setListing(data);
+                    // Check follow status
+                    const following = await getFollowStatus(data.seller_id);
+                    setIsFollowing(following);
+                }
             } catch (err) {
             } finally {
                 setLoading(false);
@@ -193,6 +203,29 @@ export default function ListingDetailPage() {
         }
     };
 
+    const handleFollow = async () => {
+        if (!currentUser) {
+            router.push('/login');
+            return;
+        }
+        setFollowLoading(true);
+        try {
+            if (isFollowing) {
+                await unfollowUser(listing.seller_id);
+                setIsFollowing(false);
+                toast.success(`Unfollowed ${listing.profiles?.full_name}`);
+            } else {
+                await followUser(listing.seller_id);
+                setIsFollowing(true);
+                toast.success(`Following ${listing.profiles?.full_name}!`);
+            }
+        } catch (err) {
+            toast.error("Failed to update follow status.");
+        } finally {
+            setFollowLoading(false);
+        }
+    };
+
     const isOwner = currentUser?.id === listing.seller_id;
 
     return (
@@ -258,9 +291,35 @@ export default function ListingDetailPage() {
                                         <div className="text-[10px] text-loops-muted uppercase tracking-widest font-bold">{getTerm('sellerName')} Reputation: {listing.profiles?.reputation || 0}</div>
                                     </div>
                                 </div>
-                                <Link href={`/profile?u=${listing.seller_id}`}>
-                                    <Button variant="ghost" className="text-loops-primary text-xs font-bold uppercase tracking-widest hover:bg-loops-primary/10 transition-all">View Profile</Button>
-                                </Link>
+                                <div className="flex items-center gap-2">
+                                    {!isOwner && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleFollow}
+                                            disabled={followLoading}
+                                            className={cn(
+                                                "text-[10px] font-bold uppercase tracking-widest h-9 rounded-lg transition-all",
+                                                isFollowing ? "bg-loops-subtle text-loops-muted border-loops-border" : "border-loops-primary text-loops-primary hover:bg-loops-primary/5"
+                                            )}
+                                        >
+                                            {isFollowing ? (
+                                                <>
+                                                    <UserMinus className="w-3.5 h-3.5 mr-1.5" />
+                                                    Unfollow
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <UserPlus className="w-3.5 h-3.5 mr-1.5" />
+                                                    Follow
+                                                </>
+                                            )}
+                                        </Button>
+                                    )}
+                                    <Link href={`/profile?u=${listing.seller_id}`}>
+                                        <Button variant="ghost" className="text-loops-primary text-xs font-bold uppercase tracking-widest hover:bg-loops-primary/10 transition-all">View Profile</Button>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
 

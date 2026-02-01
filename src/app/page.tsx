@@ -3,6 +3,7 @@
 import { Button } from "../components/ui/button";
 import { Navbar } from "../components/layout/navbar";
 import { ProductCard } from "../components/ui/product-card";
+import { FeaturedHubs } from "../components/ui/featured-hubs";
 import { SkeletonCard } from "../components/ui/skeleton-loader";
 import { ArrowRight, Sparkles, ShieldCheck, Zap, MessageSquare } from "lucide-react";
 import { Footer } from "../components/layout/footer";
@@ -122,6 +123,8 @@ export default function Home() {
                     </motion.div>
                 </div>
             </section>
+
+            <FeaturedHubs />
 
             {/* Bento Feature Grid */}
             <section className="py-32 px-4 sm:px-6 relative z-10 bg-white">

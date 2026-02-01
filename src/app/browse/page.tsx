@@ -4,7 +4,8 @@ import { Navbar } from "../../components/layout/navbar";
 import { ProductCard } from "../../components/ui/product-card";
 import { Button } from "../../components/ui/button";
 import { VerificationBanner } from "../../components/ui/verification-banner";
-import { Filter, LayoutGrid, List, Sparkles } from "lucide-react";
+import * as Icons from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -138,20 +139,27 @@ export default function MarketplacePage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8">
                     {/* Category Quick Filter Chips */}
                     <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2">
-                        {CATEGORIES.map((cat) => (
-                            <button
-                                key={cat.id}
-                                onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
-                                className={cn(
-                                    "px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] border transition-all whitespace-nowrap",
-                                    (selectedCategory === cat.id) || (cat.id === 'all' && !selectedCategory)
-                                        ? "bg-loops-main text-white border-loops-main shadow-md"
-                                        : "bg-white text-loops-muted border-loops-border hover:border-loops-primary"
-                                )}
-                            >
-                                {cat.label}
-                            </button>
-                        ))}
+                        {CATEGORIES.map((cat) => {
+                            const Icon = (Icons as any)[cat.icon] || Icons.HelpCircle;
+                            const isActive = (selectedCategory === cat.id) || (cat.id === 'all' && !selectedCategory);
+
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
+                                    className={cn(
+                                        "px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] border transition-all whitespace-nowrap flex items-center gap-2",
+                                        isActive
+                                            ? "bg-loops-main text-white border-loops-main shadow-lg"
+                                            : "bg-white text-loops-muted border-loops-border hover:border-loops-primary"
+                                    )}
+                                    style={isActive ? { backgroundColor: cat.color, borderColor: cat.color } : {}}
+                                >
+                                    <Icon className={cn("w-3.5 h-3.5", isActive ? "text-white" : "opacity-50")} style={!isActive ? { color: cat.color } : {}} />
+                                    {cat.label}
+                                </button>
+                            );
+                        })}
                     </div>
 
                     {/* Sorting Dropdown */}
