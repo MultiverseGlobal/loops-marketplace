@@ -11,7 +11,7 @@ import { SkeletonCard } from "../../components/ui/skeleton-loader";
 import { SearchBar } from "../../components/ui/search-bar";
 import { useCampus } from "../../context/campus-context";
 import { HelpCircle, PackageSearch } from "lucide-react";
-import { FALLBACK_PRODUCT_IMAGE } from "../../lib/constants";
+import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../lib/constants";
 
 export default function RequestsPage() {
     const [listings, setListings] = useState<any[]>([]);
