@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --loops-primary: #10b981;
+  --loops-secondary: #059669;
+  --loops-accent: #34d399;
+}
+
 body {
   @apply bg-loops-bg text-loops-main;
 }

@@ -49,7 +49,11 @@ export default function OnboardingPage() {
             }
 
             // Fetch real campuses from DB
-            const { data } = await supabase.from('campuses').select('*');
+            // Fetch only Veritas for launch phase
+            const { data } = await supabase
+                .from('campuses')
+                .select('*')
+                .ilike('name', '%Veritas%');
             if (data) setCampuses(data);
         };
         setup();
@@ -199,12 +203,14 @@ export default function OnboardingPage() {
                                 <ChevronRight className="w-5 h-5 ml-2" />
                             </Button>
 
-                            <div className="pt-4 text-center">
+                            <div className="pt-8 text-center space-y-4">
+                                <p className="text-sm text-loops-muted">Not from Veritas University?</p>
                                 <button
                                     onClick={() => setShowRequestForm(true)}
-                                    className="text-loops-primary font-bold hover:underline"
+                                    className="w-full h-14 rounded-2xl border border-dashed border-loops-primary/40 text-loops-primary font-bold hover:bg-loops-primary/5 transition-all flex items-center justify-center gap-2"
                                 >
-                                    Don't see your school? Request it here
+                                    <Sparkles className="w-4 h-4" />
+                                    Nominate your Campus for the next Loop
                                 </button>
                             </div>
 

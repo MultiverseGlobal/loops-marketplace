@@ -9,8 +9,8 @@ export function InfinityLogo({ className = "w-10 h-10", gradientId = "logo-gradi
         >
             <defs>
                 <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#10b981" /> {/* Emerald-500 */}
-                    <stop offset="100%" stopColor="#059669" /> {/* Teal-600 */}
+                    <stop offset="0%" stopColor="var(--loops-primary)" />
+                    <stop offset="100%" stopColor="var(--loops-secondary)" />
                 </linearGradient>
             </defs>
             <path
