@@ -141,7 +141,7 @@ export default function SettingsPage() {
                                         onChange={(e) => setWhatsappNumber(e.target.value)}
                                         className="w-full h-14 px-4 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none transition-all font-bold"
                                     />
-                                    <p className="text-[9px] text-loops-muted ml-1 italic">Enables a direct "Chat on WhatsApp" button on your Pulse.</p>
+                                    <p className="text-[9px] text-loops-muted ml-1 italic">Enables the <b>Loops AI Bot</b> and a direct "Chat" button on your Pulse.</p>
                                 </div>
                             </div>
                         </div>
