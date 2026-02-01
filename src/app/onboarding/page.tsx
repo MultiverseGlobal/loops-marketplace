@@ -22,8 +22,47 @@ const NIGERIAN_UNI_DOMAINS: Record<string, string> = {
     "University of Nigeria": "unn.edu.ng",
     "Lagos State University": "lasu.edu.ng",
     "Federal University of Technology Akure": "futa.edu.ng",
+    "Federal University of Technology Minna": "futminna.edu.ng",
+    "Federal University of Technology Owerri": "futo.edu.ng",
     "Nnamdi Azikiwe University": "unizik.edu.ng",
     "University of Port Harcourt": "uniport.edu.ng",
+    "University of Jos": "unijos.edu.ng",
+    "University of Calabar": "unical.edu.ng",
+    "University of Abuja": "uniabuja.edu.ng",
+    "Bayero University Kano": "buk.edu.ng",
+    "Landmark University": "lmu.edu.ng",
+    "Pan-Atlantic University": "pau.edu.ng",
+    "American University of Nigeria": "aun.edu.ng",
+    "Bowen University": "bowen.edu.ng",
+    "Redeemer's University": "run.edu.ng",
+    "Afe Babalola University": "abuad.edu.ng",
+    "Nile University of Nigeria": "nileuniversity.edu.ng",
+    "Baze University": "bazeuniversity.edu.ng",
+    "Kwara State University": "kwasu.edu.ng",
+    "Ladoke Akintola University": "lautech.edu.ng",
+    "Rivers State University": "rsu.edu.ng",
+    "Enugu State University": "esut.edu.ng",
+    "Ambrose Alli University": "aauekpoma.edu.ng",
+    "Delta State University": "delsu.edu.ng",
+    "Abia State University": "abiastateuniversity.edu.ng",
+    "Ekiti State University": "eksu.edu.ng",
+    "Olabisi Onabanjo University": "oouagoiwoye.edu.ng",
+    "Adekunle Ajasin University": "aaua.edu.ng",
+    "Benue State University": "bsum.edu.ng",
+    "Kaduna State University": "kasu.edu.ng",
+    "Imo State University": "imsu.edu.ng",
+    "Ebonyi State University": "ebsu.edu.ng",
+    "Niger Delta University": "ndu.edu.ng",
+    "Tai Solarin University": "tasued.edu.ng",
+    "Osun State University": "uniosun.edu.ng",
+    "Kogi State University": "ksu.edu.ng",
+    "Benson Idahosa University": "biu.edu.ng",
+    "Igbinedion University": "iuokada.edu.ng",
+    "Madonna University": "madonnauniversity.edu.ng",
+    "Ajayi Crowther University": "acu.edu.ng",
+    "Al-Hikmah University": "alhikmah.edu.ng",
+    "Lead City University": "lcu.edu.ng",
+    "Veritas University": "veritas.edu.ng"
 };
 
 interface Campus {
@@ -203,7 +242,7 @@ export default function OnboardingPage() {
                                     />
                                 </div>
 
-                                <div className="max-h-[300px] overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+                                <div className="max-h-[340px] overflow-y-auto pr-2 space-y-2 custom-scrollbar pb-2">
                                     {filteredCampuses.map((campus: any) => (
                                         <button
                                             key={campus.id}
@@ -212,33 +251,38 @@ export default function OnboardingPage() {
                                                 setSearchTerm(campus.name);
                                             }}
                                             className={cn(
-                                                "w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left group",
+                                                "w-full flex items-center justify-between p-4 rounded-2xl border transition-all text-left group animate-in fade-in slide-in-from-bottom-2 duration-300",
                                                 selectedCampus === campus.id
-                                                    ? "bg-loops-primary/5 border-loops-primary"
-                                                    : "bg-white border-loops-border hover:border-loops-primary/20"
+                                                    ? "bg-loops-primary text-white border-loops-primary shadow-lg shadow-loops-primary/20 scale-[1.02]"
+                                                    : "bg-white border-loops-border hover:border-loops-primary/40 hover:shadow-md"
                                             )}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div className={cn(
-                                                    "w-10 h-10 rounded-lg flex items-center justify-center transition-colors shadow-sm",
-                                                    selectedCampus === campus.id ? "bg-loops-primary text-white" : "bg-loops-subtle text-loops-muted border border-loops-border"
+                                                    "w-10 h-10 rounded-xl flex items-center justify-center transition-colors shadow-inner",
+                                                    selectedCampus === campus.id ? "bg-white/20 text-white" : "bg-loops-subtle text-loops-muted border border-loops-border"
                                                 )}>
                                                     <School className="w-5 h-5" />
                                                 </div>
                                                 <div>
-                                                    <div className="font-bold text-loops-main">{campus.name}</div>
-                                                    <div className="text-[10px] uppercase font-bold text-loops-muted tracking-widest opacity-60 italic">@{campus.domain}</div>
+                                                    <div className={cn("font-bold transition-colors", selectedCampus === campus.id ? "text-white" : "text-loops-main")}>{campus.name}</div>
+                                                    <div className={cn("text-[10px] uppercase font-bold tracking-widest opacity-60 italic", selectedCampus === campus.id ? "text-white/80" : "text-loops-muted")}>@{campus.domain}</div>
                                                 </div>
                                             </div>
                                             {selectedCampus === campus.id && (
-                                                <Check className="w-5 h-5 text-loops-primary" />
+                                                <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm">
+                                                    <Check className="w-3 h-3 text-loops-primary" />
+                                                </div>
                                             )}
                                         </button>
                                     ))}
 
                                     {filteredCampuses.length === 0 && (
-                                        <div className="py-8 text-center bg-loops-subtle/50 rounded-2xl border border-dashed border-loops-border">
-                                            <p className="text-sm text-loops-muted italic">" {searchTerm} " not found in the Loop.</p>
+                                        <div className="py-10 text-center bg-loops-subtle/30 rounded-[2rem] border border-dashed border-loops-border/60 space-y-4">
+                                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
+                                                <Search className="w-6 h-6 text-loops-muted/40" />
+                                            </div>
+                                            <p className="text-sm text-loops-muted italic px-8">" {searchTerm} " hasn't joined the Loop yet.</p>
                                         </div>
                                     )}
                                 </div>
