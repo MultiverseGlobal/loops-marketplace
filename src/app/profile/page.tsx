@@ -1,5 +1,6 @@
 'use client';
 
+// Force rebuild to fix syntax error
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
