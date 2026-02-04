@@ -20,6 +20,8 @@ export default function AdminDashboard() {
         pendingApps: 0
     });
     const [applications, setApplications] = useState<any[]>([]);
+    const [userSearch, setUserSearch] = useState("");
+    const [foundUser, setFoundUser] = useState<any>(null);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
@@ -110,11 +112,59 @@ export default function AdminDashboard() {
         } finally {
             setProcessingId(null);
         }
-    };
+        const searchUser = async () => {
+            if (!userSearch) return;
+            setLoading(true);
+            const { data } = await supabase
+                .from('profiles')
+                .select('*')
+                .ilike('email', userSearch) // Allow partial match or exact
+                .single();
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center bg-loops-bg">Loading Loop Command...</div>;
+            // If not found by email, try ID
+            if (!data) {
+                const { data: dataById } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', userSearch)
+                    .single();
+                setFoundUser(dataById);
+            } else {
+                setFoundUser(data);
+            }
+            setLoading(false);
+        };
 
-    return (
+        const togglePlugStatus = async (userId: string, currentStatus: boolean) => {
+            setProcessingId(userId);
+            try {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({
+                        is_plug: !currentStatus,
+                        reputation: !currentStatus ? 100 : 0 // Give initial rep boost
+                    })
+                    .eq('id', userId);
+
+                if (error) throw error;
+
+                toast.success(`User ${!currentStatus ? 'promoted to Plug 🔌' : 'demoted'}`);
+
+                // Refresh found user
+                if (foundUser?.id === userId) {
+                    setFoundUser({ ...foundUser, is_plug: !currentStatus });
+                }
+
+            } catch (err) {
+                toast.error("Failed to update user");
+            } finally {
+                setProcessingId(null);
+            }
+        };
+
+        if (loading) return <div className="min-h-screen flex items-center justify-center bg-loops-bg">Loading Loop Command...</div>;
+
+        return (
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
             <main className="pt-32 pb-20 max-w-7xl mx-auto px-6">
@@ -132,7 +182,50 @@ export default function AdminDashboard() {
                     <StatCard icon={Activity} label="Pending Plugs" value={stats.pendingApps} color="text-loops-energetic" />
                 </div>
 
+                </div>
+
                 <div className="space-y-8">
+                     {/* User Manager Section */}
+                     <div className="bg-white border border-loops-border rounded-3xl overflow-hidden shadow-sm p-8">
+                        <div className="flex items-center gap-2 mb-6">
+                            <Users className="w-5 h-5 text-loops-primary" />
+                            <h2 className="text-xl font-bold font-display">User Manager</h2>
+                        </div>
+                        
+                        <div className="flex gap-4 mb-6">
+                            <input
+                                type="text"
+                                value={userSearch}
+                                onChange={(e) => setUserSearch(e.target.value)}
+                                placeholder="Search by email or user ID..."
+                                className="flex-1 h-12 px-4 rounded-xl bg-loops-subtle border border-loops-border"
+                            />
+                            <Button onClick={searchUser} className="h-12 bg-loops-primary text-white font-bold">Search</Button>
+                        </div>
+
+                        {foundUser && (
+                            <div className="p-6 bg-loops-subtle rounded-2xl border border-loops-border flex items-center justify-between">
+                                <div>
+                                    <h3 className="font-bold text-lg">{foundUser.full_name}</h3>
+                                    <p className="text-sm text-loops-muted">{foundUser.id}</p>
+                                    <p className="text-sm text-loops-muted font-mono">{foundUser.email || "No email visible"}</p>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <div className={cn("px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest", foundUser.is_plug ? "bg-green-100 text-green-600" : "bg-gray-200 text-gray-500")}>
+                                        {foundUser.is_plug ? "Verified Plug" : "Standard User"}
+                                    </div>
+                                    <Button
+                                        onClick={() => togglePlugStatus(foundUser.id, foundUser.is_plug)}
+                                        disabled={processingId === foundUser.id}
+                                        className={cn("font-bold", foundUser.is_plug ? "bg-red-100 text-red-600 hover:bg-red-200" : "bg-loops-primary text-white")}
+                                    >
+                                        {foundUser.is_plug ? "Revoke Badge" : "Verify Plug"}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Seller Applications Section */}
                     <div className="bg-white border border-loops-border rounded-3xl overflow-hidden shadow-sm">
                         <div className="p-8 border-b border-loops-border flex items-center justify-between">
@@ -214,8 +307,8 @@ export default function AdminDashboard() {
                         )}
                     </div>
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }
 

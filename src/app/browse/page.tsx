@@ -61,7 +61,9 @@ export default function MarketplacePage() {
 
             // Apply sorting
             if (sortBy === 'newest') {
-                query = query.order('created_at', { ascending: false });
+                // Priority placement: Plugs first, then newest
+                query = query.order('is_plug_priority', { ascending: false, foreignTable: 'profiles' })
+                    .order('created_at', { ascending: false });
             } else if (sortBy === 'oldest') {
                 query = query.order('created_at', { ascending: true });
             } else if (sortBy === 'price_low') {
