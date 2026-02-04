@@ -1,5 +1,6 @@
 'use client';
 
+
 import { Navbar } from "../../../components/layout/navbar";
 import { Button } from "../../../components/ui/button";
 import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle } from "lucide-react";
