@@ -14,7 +14,7 @@ import { SkeletonCard } from "../../components/ui/skeleton-loader";
 import { SearchBar } from "../../components/ui/search-bar";
 import { cn } from "../../lib/utils";
 import { useCampus } from "../../context/campus-context";
-import { CATEGORIES, FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../lib/constants";
+import { PRODUCT_CATEGORIES, SERVICE_CATEGORIES, FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../lib/constants";
 
 export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);
@@ -25,6 +25,7 @@ export default function MarketplacePage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<string>("newest");
+    const [activeType, setActiveType] = useState<'product' | 'service'>('product');
     const supabase = createClient();
     const { campus, getTerm } = useCampus();
 
@@ -55,7 +56,8 @@ export default function MarketplacePage() {
             let query = supabase
                 .from('listings')
                 .select('*, profiles(full_name, store_name, store_banner_color, is_plug)')
-                .eq('status', 'active');
+                .eq('status', 'active')
+                .eq('type', activeType);
 
             // Apply sorting
             if (sortBy === 'newest') {
@@ -89,11 +91,17 @@ export default function MarketplacePage() {
 
         // Debounce effect is handled by SearchBar, but we need to re-fetch when state changes
         fetchListings();
-    }, [supabase, searchQuery, selectedCategory, sortBy]);
+    }, [supabase, searchQuery, selectedCategory, sortBy, activeType]);
 
-    // Check if user just verified their email
+    // Check if user just verified their email or wants a specific view
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
+
+        const viewParam = params.get('view');
+        if (viewParam === 'product' || viewParam === 'service') {
+            setActiveType(viewParam as 'product' | 'service');
+        }
+
         if (params.get('verified') === 'true') {
             // Remove the parameter from URL
             window.history.replaceState({}, '', '/browse');
@@ -137,9 +145,35 @@ export default function MarketplacePage() {
 
             <main className="max-w-7xl mx-auto px-6 py-10">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8">
+                    {/* Main Type Toggle */}
+                    <div className="flex p-1 bg-loops-subtle border border-loops-border rounded-2xl w-fit">
+                        <button
+                            onClick={() => { setActiveType('product'); setSelectedCategory('all'); }}
+                            className={cn(
+                                "px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                activeType === 'product'
+                                    ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                    : "text-loops-muted hover:text-loops-main"
+                            )}
+                        >
+                            Products
+                        </button>
+                        <button
+                            onClick={() => { setActiveType('service'); setSelectedCategory('all'); }}
+                            className={cn(
+                                "px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                activeType === 'service'
+                                    ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                    : "text-loops-muted hover:text-loops-main"
+                            )}
+                        >
+                            Services
+                        </button>
+                    </div>
+
                     {/* Category Quick Filter Chips */}
                     <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2">
-                        {CATEGORIES.map((cat) => {
+                        {(activeType === 'product' ? PRODUCT_CATEGORIES : SERVICE_CATEGORIES).map((cat) => {
                             const Icon = (Icons as any)[cat.icon] || Icons.HelpCircle;
                             const isActive = (selectedCategory === cat.id) || (cat.id === 'all' && !selectedCategory);
 
@@ -208,6 +242,24 @@ export default function MarketplacePage() {
                             </Link>
                         </div>
                     )}
+                </div>
+
+                {/* Cross-Visibility Link */}
+                <div className="mt-20 pt-10 border-t border-loops-border text-center">
+                    <p className="text-loops-muted text-xs font-bold uppercase tracking-widest mb-4 opacity-50">
+                        Looking for {activeType === 'product' ? 'Campus Services' : 'Marketplace Items'}?
+                    </p>
+                    <Button
+                        variant="ghost"
+                        onClick={() => {
+                            setActiveType(activeType === 'product' ? 'service' : 'product');
+                            setSelectedCategory('all');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="text-loops-primary hover:bg-loops-primary/5 font-bold uppercase tracking-[0.2em] text-[10px]"
+                    >
+                        Switch to {activeType === 'product' ? 'Services Hub' : 'Product Marketplace'} <Icons.ArrowRight className="w-3.5 h-3.5 ml-2" />
+                    </Button>
                 </div>
             </main>
         </div>

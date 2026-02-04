@@ -455,7 +455,7 @@ export default function ListingDetailPage() {
                                         className="h-14 sm:h-16 text-base sm:text-xl font-bold bg-[#25D366] hover:bg-[#25D366]/90 text-white shadow-xl shadow-[#25D366]/20 transition-all font-display sm:col-span-2"
                                     >
                                         <MessageSquare className="w-5 h-5 mr-2 sm:mr-3 flex-shrink-0" />
-                                        Chat on WhatsApp
+                                        {listing.type === 'service' ? 'Interested in Hiring? Chat on WhatsApp' : 'Ready to Buy? Chat on WhatsApp'}
                                     </Button>
 
                                     {/* Secondary: Internal Chat (Hidden/Secondary if WA exists, or backup) */}
@@ -470,8 +470,27 @@ export default function ListingDetailPage() {
                                 </div>
                                 <p className="text-center text-[10px] uppercase tracking-widest font-bold text-loops-muted bg-loops-subtle py-2 rounded-lg italic flex items-center justify-center gap-2">
                                     <ShieldCheck className="w-3 h-3 text-loops-primary" />
-                                    Safety First: Always meet in public places.
                                 </p>
+
+                                {/* Cross-Visibility Card */}
+                                <div className="p-6 rounded-2xl bg-gradient-to-br from-loops-primary/5 to-transparent border border-loops-primary/10 space-y-3">
+                                    <div className="flex items-center gap-2 text-loops-primary font-bold text-[10px] uppercase tracking-widest">
+                                        <Sparkles className="w-3.5 h-3.5" />
+                                        <span>Campus Hub Tips</span>
+                                    </div>
+                                    <p className="text-xs text-loops-muted leading-relaxed">
+                                        {listing.type === 'product'
+                                            ? "Need this delivered, set up, or fixed? Check out campus services from fellow students."
+                                            : "Looking for products or tools related to this service? Check out the student marketplace."}
+                                    </p>
+                                    <Link
+                                        href={`/browse?view=${listing.type === 'product' ? 'service' : 'product'}`}
+                                        className="inline-flex items-center gap-2 text-loops-primary font-bold text-[10px] uppercase tracking-widest hover:underline"
+                                    >
+                                        View {listing.type === 'product' ? 'Services Hub' : 'Product Marketplace'}
+                                        <Icons.ArrowRight className="w-3 h-3" />
+                                    </Link>
+                                </div>
                             </>
                         )}
 
