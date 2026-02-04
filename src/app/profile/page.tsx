@@ -343,189 +343,188 @@ export default function ProfilePage() {
                             )}
                         </div>
                     </div>
-                </div>
 
-                {/* Main Content */}
-                <div className="lg:col-span-2 space-y-12">
-                    {/* Archetype Tabs */}
-                    {(!targetUserId || targetUserId === user?.id) ? (
-                        <div className="flex flex-wrap gap-2 p-1 bg-loops-subtle border border-loops-border rounded-2xl w-full sm:w-fit">
-                            <button
-                                onClick={() => setActiveTab('selling')}
-                                className={cn(
-                                    "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                                    activeTab === 'selling'
-                                        ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
-                                        : "text-loops-muted hover:text-loops-main"
-                                )}
-                            >
-                                Selling ({getTerm('sellerName')})
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('buying')}
-                                className={cn(
-                                    "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                                    activeTab === 'buying'
-                                        ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
-                                        : "text-loops-muted hover:text-loops-main"
-                                )}
-                            >
-                                Buying ({getTerm('buyerName')})
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('reviews' as any)}
-                                className={cn(
-                                    "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                                    (activeTab as string) === 'reviews'
-                                        ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
-                                        : "text-loops-muted hover:text-loops-main"
-                                )}
-                            >
-                                Reviews ({reviews.length})
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="flex flex-wrap gap-2 p-1 bg-loops-subtle border border-loops-border rounded-2xl w-full sm:w-fit">
-                            <button
-                                onClick={() => setActiveTab('selling')}
-                                className={cn(
-                                    "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                                    activeTab === 'selling'
-                                        ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
-                                        : "text-loops-muted hover:text-loops-main"
-                                )}
-                            >
-                                {getTerm('sellerName')} Pulse
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('reviews' as any)}
-                                className={cn(
-                                    "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
-                                    (activeTab as string) === 'reviews'
-                                        ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
-                                        : "text-loops-muted hover:text-loops-main"
-                                )}
-                            >
-                                Ratings
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Tab Content */}
-                    {activeTab === 'selling' ? (
-                        // ... Existing Selling Content ...
-                        <div className="space-y-6">
-                            <div className="flex items-end justify-between">
-                                <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
-                                    {(!targetUserId || targetUserId === user?.id) ? `Your Active ${getTerm('listingName')}` : `${profile?.full_name}'s ${getTerm('listingName')}`}
-                                </h2>
-                                {(!targetUserId || targetUserId === user?.id) && (
-                                    <Link href="/listings/create">
-                                        <Button variant="link" className="text-loops-primary p-0 h-auto font-bold uppercase tracking-widest text-xs h-10">Post Something New</Button>
-                                    </Link>
-                                )}
+                    {/* Main Content */}
+                    <div className="lg:col-span-2 space-y-12">
+                        {/* Archetype Tabs */}
+                        {(!targetUserId || targetUserId === user?.id) ? (
+                            <div className="flex flex-wrap gap-2 p-1 bg-loops-subtle border border-loops-border rounded-2xl w-full sm:w-fit">
+                                <button
+                                    onClick={() => setActiveTab('selling')}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        activeTab === 'selling'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    Selling ({getTerm('sellerName')})
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('buying')}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        activeTab === 'buying'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    Buying ({getTerm('buyerName')})
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('reviews' as any)}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        (activeTab as string) === 'reviews'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    Reviews ({reviews.length})
+                                </button>
                             </div>
+                        ) : (
+                            <div className="flex flex-wrap gap-2 p-1 bg-loops-subtle border border-loops-border rounded-2xl w-full sm:w-fit">
+                                <button
+                                    onClick={() => setActiveTab('selling')}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        activeTab === 'selling'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    {getTerm('sellerName')} Pulse
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('reviews' as any)}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        (activeTab as string) === 'reviews'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    Ratings
+                                </button>
+                            </div>
+                        )}
 
-                            {listings.length > 0 ? (
-                                <div className="grid gap-4">
-                                    {listings.map((listing) => (
-                                        <Link
-                                            key={listing.id}
-                                            href={`/listings/${listing.id}`}
-                                            className="group p-6 rounded-2xl bg-loops-subtle border border-loops-border hover:bg-white hover:border-loops-primary/30 transition-all flex items-center gap-6 shadow-sm hover:shadow-lg hover:shadow-loops-primary/5"
-                                        >
-                                            <div className="w-16 h-16 rounded-xl bg-white border border-loops-border overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">
-                                                {listing.type === 'product' ? <Package className="w-8 h-8 text-loops-primary opacity-20" /> : <Zap className="w-8 h-8 text-loops-primary opacity-20" />}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-loops-primary/5 text-loops-primary uppercase tracking-widest">
-                                                        {listing.type}
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-loops-muted uppercase tracking-tighter italic">
-                                                        Status: {listing.status}
-                                                    </span>
-                                                </div>
-                                                <h3 className="font-bold text-xl truncate group-hover:text-loops-primary transition-colors text-loops-main tracking-tight">
-                                                    {listing.title}
-                                                </h3>
-                                                <div className="text-loops-success font-bold text-lg">{CURRENCY}{listing.price}</div>
-                                            </div>
-                                            <Button variant="ghost" size="icon" className="text-loops-muted group-hover:text-loops-primary transition-colors">
-                                                <ExternalLink className="w-5 h-5" />
-                                            </Button>
+                        {/* Tab Content */}
+                        {activeTab === 'selling' ? (
+                            // ... Existing Selling Content ...
+                            <div className="space-y-6">
+                                <div className="flex items-end justify-between">
+                                    <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
+                                        {(!targetUserId || targetUserId === user?.id) ? `Your Active ${getTerm('listingName')}` : `${profile?.full_name}'s ${getTerm('listingName')}`}
+                                    </h2>
+                                    {(!targetUserId || targetUserId === user?.id) && (
+                                        <Link href="/listings/create">
+                                            <Button variant="link" className="text-loops-primary p-0 h-auto font-bold uppercase tracking-widest text-xs h-10">Post Something New</Button>
                                         </Link>
-                                    ))}
+                                    )}
                                 </div>
-                            ) : (
-                                <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
-                                    <Package className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">Your {getTerm('listingName')} is silent.</h3>
-                                    <p className="text-loops-muted mt-2">You haven't posted any listings in the {getTerm('communityName')} yet.</p>
-                                </div>
-                            )}
-                        </div>
-                    ) : activeTab === 'buying' ? (
-                        <div className="space-y-6">
-                            <div className="flex items-end justify-between">
-                                <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
-                                    Purchase Tracking
-                                </h2>
-                            </div>
-                            <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
-                                <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">{getTerm('buyerName')} History</h3>
-                                <p className="text-loops-muted mt-2">When you message sellers or buy items, they will appear here for tracking.</p>
-                                <Link href="/browse" className="inline-block mt-4">
-                                    <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>
-                                </Link>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">Student Feedback</h2>
-                                <div className="flex items-center gap-2 text-loops-primary">
-                                    <Star className="w-5 h-5 fill-current" />
-                                    <span className="text-xl font-bold">{Number(profile?.rating || 0).toFixed(1)}</span>
-                                </div>
-                            </div>
 
-                            {reviews.length > 0 ? (
-                                <div className="grid gap-6">
-                                    {reviews.map((review) => (
-                                        <div key={review.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
-                                            <div className="flex justify-between items-start">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
-                                                        {review.reviewer?.avatar_url ? (
-                                                            <img src={review.reviewer.avatar_url} alt="" className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            <User className="w-5 h-5 text-loops-muted" />
-                                                        )}
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-bold text-sm text-loops-main">{review.reviewer?.full_name || 'Anonymous Student'}</div>
-                                                        <div className="text-[10px] text-loops-muted uppercase font-bold tracking-widest">{new Date(review.created_at).toLocaleDateString()}</div>
-                                                    </div>
+                                {listings.length > 0 ? (
+                                    <div className="grid gap-4">
+                                        {listings.map((listing) => (
+                                            <Link
+                                                key={listing.id}
+                                                href={`/listings/${listing.id}`}
+                                                className="group p-6 rounded-2xl bg-loops-subtle border border-loops-border hover:bg-white hover:border-loops-primary/30 transition-all flex items-center gap-6 shadow-sm hover:shadow-lg hover:shadow-loops-primary/5"
+                                            >
+                                                <div className="w-16 h-16 rounded-xl bg-white border border-loops-border overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">
+                                                    {listing.type === 'product' ? <Package className="w-8 h-8 text-loops-primary opacity-20" /> : <Zap className="w-8 h-8 text-loops-primary opacity-20" />}
                                                 </div>
-                                                <Rating value={review.rating} size="sm" />
-                                            </div>
-                                            <p className="text-sm text-loops-muted leading-relaxed italic">"{review.comment}"</p>
-                                        </div>
-                                    ))}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-loops-primary/5 text-loops-primary uppercase tracking-widest">
+                                                            {listing.type}
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-tighter italic">
+                                                            Status: {listing.status}
+                                                        </span>
+                                                    </div>
+                                                    <h3 className="font-bold text-xl truncate group-hover:text-loops-primary transition-colors text-loops-main tracking-tight">
+                                                        {listing.title}
+                                                    </h3>
+                                                    <div className="text-loops-success font-bold text-lg">{CURRENCY}{listing.price}</div>
+                                                </div>
+                                                <Button variant="ghost" size="icon" className="text-loops-muted group-hover:text-loops-primary transition-colors">
+                                                    <ExternalLink className="w-5 h-5" />
+                                                </Button>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
+                                        <Package className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                        <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">Your {getTerm('listingName')} is silent.</h3>
+                                        <p className="text-loops-muted mt-2">You haven't posted any listings in the {getTerm('communityName')} yet.</p>
+                                    </div>
+                                )}
+                            </div>
+                        ) : activeTab === 'buying' ? (
+                            <div className="space-y-6">
+                                <div className="flex items-end justify-between">
+                                    <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
+                                        Purchase Tracking
+                                    </h2>
                                 </div>
-                            ) : (
                                 <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
-                                    <Sparkles className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Pulse yet.</h3>
-                                    <p className="text-loops-muted mt-2">Ratings from the campus community will appear here.</p>
+                                    <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">{getTerm('buyerName')} History</h3>
+                                    <p className="text-loops-muted mt-2">When you message sellers or buy items, they will appear here for tracking.</p>
+                                    <Link href="/browse" className="inline-block mt-4">
+                                        <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>
+                                    </Link>
                                 </div>
-                            )}
-                        </div>
-                    )}
+                            </div>
+                        ) : (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">Student Feedback</h2>
+                                    <div className="flex items-center gap-2 text-loops-primary">
+                                        <Star className="w-5 h-5 fill-current" />
+                                        <span className="text-xl font-bold">{Number(profile?.rating || 0).toFixed(1)}</span>
+                                    </div>
+                                </div>
+
+                                {reviews.length > 0 ? (
+                                    <div className="grid gap-6">
+                                        {reviews.map((review) => (
+                                            <div key={review.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
+                                                            {review.reviewer?.avatar_url ? (
+                                                                <img src={review.reviewer.avatar_url} alt="" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <User className="w-5 h-5 text-loops-muted" />
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-bold text-sm text-loops-main">{review.reviewer?.full_name || 'Anonymous Student'}</div>
+                                                            <div className="text-[10px] text-loops-muted uppercase font-bold tracking-widest">{new Date(review.created_at).toLocaleDateString()}</div>
+                                                        </div>
+                                                    </div>
+                                                    <Rating value={review.rating} size="sm" />
+                                                </div>
+                                                <p className="text-sm text-loops-muted leading-relaxed italic">"{review.comment}"</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
+                                        <Sparkles className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                        <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Pulse yet.</h3>
+                                        <p className="text-loops-muted mt-2">Ratings from the campus community will appear here.</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
-        </div>
             </main>
         </div>
     );
