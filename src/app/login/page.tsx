@@ -22,6 +22,7 @@ export default function LoginPage() {
     const [otpSent, setOtpSent] = useState(false);
     const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(true); // Default to true for better UX
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const supabase = createClient();
@@ -161,6 +162,11 @@ export default function LoginPage() {
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
+                    options: {
+                        // If remember me is checked, use persistent session (default)
+                        // If not checked, session will expire when browser closes
+                        persistSession: rememberMe,
+                    },
                 });
 
                 if (error) throw error;
@@ -333,6 +339,24 @@ export default function LoginPage() {
                                     </button>
                                 </div>
                             </div>
+
+                            {view === 'login' && (
+                                <div className="flex items-center gap-3 pt-2">
+                                    <input
+                                        id="rememberMe"
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        className="w-4 h-4 rounded border-loops-border text-loops-primary focus:ring-2 focus:ring-loops-primary/20 transition-all cursor-pointer"
+                                    />
+                                    <label
+                                        htmlFor="rememberMe"
+                                        className="text-sm text-loops-muted font-medium cursor-pointer select-none hover:text-loops-main transition-colors"
+                                    >
+                                        Keep me signed in
+                                    </label>
+                                </div>
+                            )}
 
                             {message && (
                                 <motion.div
