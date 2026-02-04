@@ -87,28 +87,46 @@ export default function AdminDashboard() {
         checkAdmin();
     }, [supabase, router]);
 
-    const handleApplicationAction = async (id: string, action: 'approved' | 'rejected') => {
-        setProcessingId(id);
+    const handleApplicationAction = async (app: any, action: 'approved' | 'rejected') => {
+        setProcessingId(app.id);
         try {
-            const { error } = await supabase
+            // 1. Update application status
+            const { error: appError } = await supabase
                 .from('seller_applications')
                 .update({
                     status: action,
                     reviewed_at: new Date().toISOString(),
                     reviewed_by: (await supabase.auth.getUser()).data.user?.id
                 })
-                .eq('id', id);
+                .eq('id', app.id);
 
-            if (error) throw error;
+            if (appError) throw appError;
+
+            // 2. If approved and has user_id, automatically verify the user
+            if (action === 'approved' && app.user_id) {
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({
+                        is_plug: true,
+                        reputation: 100 // Founder bonus
+                    })
+                    .eq('id', app.user_id);
+
+                if (profileError) {
+                    toast.error("App approved but failed to auto-verify profile. Do it manually.");
+                } else {
+                    toast.success("User verified as Plug! 🔌");
+                }
+            }
 
             toast.success(`Application ${action}`);
 
             // Update local state
-            setApplications(prev => prev.filter(app => app.id !== id));
+            setApplications(prev => prev.filter(a => a.id !== app.id));
             setStats(prev => ({ ...prev, pendingApps: prev.pendingApps - 1 }));
 
-        } catch (err) {
-            toast.error("Failed to update status");
+        } catch (err: any) {
+            toast.error(err.message || "Failed to update status");
         } finally {
             setProcessingId(null);
         }

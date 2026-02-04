@@ -12,7 +12,8 @@ create table if not exists seller_applications (
   motivation text not null,
   status text default 'pending' check (status in ('pending', 'approved', 'rejected')),
   reviewed_by uuid references auth.users(id),
-  reviewed_at timestamp with time zone
+  reviewed_at timestamp with time zone,
+  user_id uuid references auth.users(id)
 );
 
 -- Enable RLS
