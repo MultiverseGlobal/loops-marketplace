@@ -3,7 +3,7 @@
 
 import { Navbar } from "../../../components/layout/navbar";
 import { Button } from "../../../components/ui/button";
-import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle } from "lucide-react";
+import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -488,7 +488,7 @@ export default function ListingDetailPage() {
                                         className="inline-flex items-center gap-2 text-loops-primary font-bold text-[10px] uppercase tracking-widest hover:underline"
                                     >
                                         View {listing.type === 'product' ? 'Services Hub' : 'Product Marketplace'}
-                                        <Icons.ArrowRight className="w-3 h-3" />
+                                        <ArrowRight className="w-3 h-3" />
                                     </Link>
                                 </div>
                             </>
