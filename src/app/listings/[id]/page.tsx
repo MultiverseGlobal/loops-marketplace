@@ -518,50 +518,6 @@ export default function ListingDetailPage() {
         </div>
     );
 }
-                        <div className="flex justify-center pt-4">
-                            <Button
-                                onClick={handleReport}
-                                variant="ghost"
-                                className="text-[10px] text-red-400 hover:text-red-500 hover:bg-red-50 font-bold uppercase tracking-widest flex items-center gap-2 opacity-50 hover:opacity-100 transition-all"
-                            >
-                                <AlertTriangle className="w-3 h-3" />
-                                Report Suspicious Pulse
-                            </Button>
-                        </div>
-
-                        <div className="space-y-4 pt-8 border-t border-loops-border">
-                            <AccordionItem
-                                title="Description"
-                                isOpen={activeAccordion === "details"}
-                                onClick={() => setActiveAccordion(activeAccordion === "details" ? null : "details")}
-                            >
-                                <p className="text-loops-muted leading-relaxed font-light italic text-lg px-2">
-                                    "{listing.description}"
-                                </p>
-                            </AccordionItem>
-                            <AccordionItem
-                                title="Campus Safety"
-                                isOpen={activeAccordion === "safety"}
-                                onClick={() => setActiveAccordion(activeAccordion === "safety" ? null : "safety")}
-                            >
-                                <ul className="space-y-4 text-sm text-loops-muted px-2">
-                                    <li className="flex items-start gap-3">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-loops-primary mt-1.5" />
-                                        <span>Trade in public university spaces only.</span>
-                                    </li>
-                                    <li className="flex items-start gap-3">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-loops-primary mt-1.5" />
-                                        <span>Verify item condition before finalize.</span>
-                                    </li>
-                                </ul>
-                            </AccordionItem>
-                        </div>
-                    </div >
-                </div >
-            </main >
-        </div >
-    );
-}
 
 function AccordionItem({ title, isOpen, onClick, children }: { title: string, isOpen: boolean, onClick: () => void, children: React.ReactNode }) {
     return (
