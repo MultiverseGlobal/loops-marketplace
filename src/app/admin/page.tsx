@@ -14,8 +14,7 @@ export default function AdminDashboard() {
         totalListings: 0,
         products: 0,
         services: 0,
-        products: 0,
-        services: 0,
+
         reports: 0,
         pendingApps: 0
     });
@@ -76,7 +75,7 @@ export default function AdminDashboard() {
                 totalListings: listings.count || 0,
                 products: products.count || 0,
                 services: servicesCount.count || 0,
-                services: servicesCount.count || 0,
+
                 reports: reports.count || 0,
                 pendingApps: appsCount || 0
             });
