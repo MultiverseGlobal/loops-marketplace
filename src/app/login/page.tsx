@@ -162,11 +162,6 @@ export default function LoginPage() {
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
-                    options: {
-                        // If remember me is checked, use persistent session (default)
-                        // If not checked, session will expire when browser closes
-                        persistSession: rememberMe,
-                    },
                 });
 
                 if (error) throw error;
