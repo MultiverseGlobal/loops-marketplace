@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Users, Package, Zap, Activity, ShieldAlert, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/context/toast-context";
+import { cn } from "@/lib/utils";
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({
