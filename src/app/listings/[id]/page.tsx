@@ -515,8 +515,9 @@ export default function ListingDetailPage() {
                         </div>
                     </div>
                 </div>
-            </main>
         </div>
+            </main >
+        </div >
     );
 }
 
