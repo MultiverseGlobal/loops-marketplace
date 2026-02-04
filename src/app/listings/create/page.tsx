@@ -30,6 +30,9 @@ export default function CreateListingPage() {
     const [category, setCategory] = useState("");
     const [images, setImages] = useState<string[]>([]);
     const [pickupLocation, setPickupLocation] = useState("");
+    const [condition, setCondition] = useState("");
+    const [availability, setAvailability] = useState("");
+    const [meetupLocations, setMeetupLocations] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
@@ -38,6 +41,14 @@ export default function CreateListingPage() {
 
     const handleNext = () => setStep(step + 1);
     const handleBack = () => setStep(step - 1);
+
+    const toggleMeetupLocation = (loc: string) => {
+        if (meetupLocations.includes(loc)) {
+            setMeetupLocations(meetupLocations.filter(l => l !== loc));
+        } else {
+            setMeetupLocations([...meetupLocations, loc]);
+        }
+    };
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -74,7 +85,10 @@ export default function CreateListingPage() {
                     type,
                     category,
                     images, // Save the array of image URLs
-                    pickup_location: pickupLocation,
+                    pickup_location: pickupLocation, // Legacy fallback
+                    condition: type === 'product' ? condition : null,
+                    availability: type === 'service' ? availability : null,
+                    meetup_locations: meetupLocations,
                     status: 'active'
                 });
 
@@ -93,6 +107,15 @@ export default function CreateListingPage() {
             setLoading(false);
         }
     };
+
+    const PRESET_LOCATIONS = [
+        "Main Library",
+        "Student Center",
+        "Sports Complex",
+        "Cafeteria",
+        "Faculty Building",
+        "Main Gate"
+    ];
 
     return (
         <div className="min-h-screen bg-loops-bg text-loops-main relative overflow-hidden">
@@ -133,24 +156,17 @@ export default function CreateListingPage() {
                         >
                             <ListingTypeCard
                                 icon={Package}
-                                title="Product"
+                                title="Sell a Product"
                                 description="Books, electronics, dorm gear, clothes."
                                 active={type === 'product'}
                                 onClick={() => { setType('product'); handleNext(); }}
                             />
                             <ListingTypeCard
                                 icon={Zap}
-                                title="Service"
+                                title="Offer a Service"
                                 description="Tutoring, moving help, photography, design."
                                 active={type === 'service'}
                                 onClick={() => { setType('service'); handleNext(); }}
-                            />
-                            <ListingTypeCard
-                                icon={MessageSquare}
-                                title="Request"
-                                description="Need something specific? Let the Loop find it."
-                                active={type === 'request'}
-                                onClick={() => { setType('request'); handleNext(); }}
                             />
                         </motion.div>
                     )}
@@ -164,22 +180,18 @@ export default function CreateListingPage() {
                             className="space-y-8"
                         >
                             <div className="space-y-6">
-                                <FormGroup label="Listing Title">
+                                <FormGroup label={type === 'service' ? "Service Title" : "Product Name"}>
                                     <input
                                         type="text"
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
-                                        placeholder={type === 'request' ? "I'm looking for..." : "What are you offering?"}
+                                        placeholder={type === 'service' ? "e.g. Calculus Tutoring" : "e.g. iPhone 12 Pro Max"}
                                         className="w-full h-16 bg-loops-subtle border border-loops-border rounded-2xl px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium text-loops-main shadow-sm"
                                     />
                                 </FormGroup>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <FormGroup label={
-                                        type === 'request' ? `Max Budget (${CURRENCY})` :
-                                            type === 'service' ? `Service Fee (${CURRENCY})` :
-                                                `Price (${CURRENCY})`
-                                    }>
+                                    <FormGroup label={type === 'service' ? `Hourly/Session Rate (${CURRENCY})` : `Price (${CURRENCY})`}>
                                         <div className="relative">
                                             <div className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-loops-primary">{CURRENCY}</div>
                                             <input
@@ -191,49 +203,107 @@ export default function CreateListingPage() {
                                             />
                                         </div>
                                     </FormGroup>
-                                    <FormGroup label={type === 'service' ? "Location (Remote/Hostel)" : "Pickup Location (Hostel/Dept)"}>
-                                        <div className="relative">
-                                            <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-loops-primary font-bold" />
-                                            <input
-                                                type="text"
-                                                value={pickupLocation}
-                                                onChange={(e) => setPickupLocation(e.target.value)}
-                                                placeholder="e.g. Block A, Hall 2"
-                                                className="w-full h-16 bg-loops-subtle border border-loops-border rounded-2xl pl-12 pr-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium text-loops-main shadow-sm"
-                                            />
-                                        </div>
-                                    </FormGroup>
+
+                                    {type === 'product' && (
+                                        <FormGroup label="Condition">
+                                            <select
+                                                value={condition}
+                                                onChange={(e) => setCondition(e.target.value)}
+                                                className="w-full h-16 bg-loops-subtle border border-loops-border rounded-2xl px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium text-loops-main shadow-sm appearance-none"
+                                            >
+                                                <option value="">Select Condition...</option>
+                                                <option value="New">Brand New</option>
+                                                <option value="Like New">Like New (Open Box)</option>
+                                                <option value="Used">Used (Good)</option>
+                                                <option value="Heavily Used">Heavily Used (Functional)</option>
+                                            </select>
+                                        </FormGroup>
+                                    )}
+
+                                    {type === 'service' && (
+                                        <FormGroup label="Category">
+                                            <select
+                                                value={category}
+                                                onChange={(e) => setCategory(e.target.value)}
+                                                className="w-full h-16 bg-loops-subtle border border-loops-border rounded-2xl px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium text-loops-main shadow-sm appearance-none"
+                                            >
+                                                <option value="">Select Category...</option>
+                                                <option value="tutoring">Tutoring & Academics</option>
+                                                <option value="design">Design & Creative</option>
+                                                <option value="tech">Tech Support</option>
+                                                <option value="beauty">Beauty & Grooming</option>
+                                                <option value="errands">Errands & Moving</option>
+                                            </select>
+                                        </FormGroup>
+                                    )}
+                                </div>
+
+                                {type === 'product' && (
                                     <FormGroup label="Category">
                                         <select
                                             value={category}
                                             onChange={(e) => setCategory(e.target.value)}
                                             className="w-full h-16 bg-loops-subtle border border-loops-border rounded-2xl px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium text-loops-main shadow-sm appearance-none"
                                         >
-                                            <option value="">Select...</option>
-                                            <option value="books">Books</option>
-                                            <option value="electronics">Electronics</option>
-                                            <option value="tutoring">Tutoring</option>
-                                            <option value="fashion">Fashion</option>
-                                            <option value="others">Others</option>
+                                            <option value="">Select Category...</option>
+                                            <option value="books">Books & Textbooks</option>
+                                            <option value="electronics">Electronics & Gadgets</option>
+                                            <option value="fashion">Fashion & Accessories</option>
+                                            <option value="home">Dorm & Home</option>
+                                            <option value="food">Food & Snacks</option>
+                                            <option value="others">Other Stuff</option>
                                         </select>
                                     </FormGroup>
-                                </div>
+                                )}
+
+                                {type === 'service' && (
+                                    <FormGroup label="Availability & Schedule">
+                                        <textarea
+                                            rows={2}
+                                            value={availability}
+                                            onChange={(e) => setAvailability(e.target.value)}
+                                            placeholder="e.g. Mon-Wed after 4pm, Weekends all day."
+                                            className="w-full p-6 bg-loops-subtle border border-loops-border rounded-2xl focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all resize-none shadow-sm font-medium text-loops-main text-sm"
+                                        />
+                                    </FormGroup>
+                                )}
+
+                                <FormGroup label={type === 'service' ? "Preferred Session Locations" : "Preferred Meetup Locations"}>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {PRESET_LOCATIONS.map(loc => (
+                                            <button
+                                                key={loc}
+                                                onClick={() => toggleMeetupLocation(loc)}
+                                                className={cn(
+                                                    "p-4 rounded-xl text-left text-xs font-bold transition-all border",
+                                                    meetupLocations.includes(loc)
+                                                        ? "bg-loops-primary text-white border-loops-primary shadow-lg shadow-loops-primary/20"
+                                                        : "bg-loops-subtle text-loops-muted border-transparent hover:bg-loops-subtle/80"
+                                                )}
+                                            >
+                                                {loc}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="mt-2 text-[10px] text-loops-muted italic flex items-center gap-2">
+                                        <ShieldCheck className="w-3 h-3 text-loops-primary" />
+                                        <span>Always meet in public campus zones.</span>
+                                    </div>
+                                </FormGroup>
 
                                 <FormGroup label="Details & Description">
                                     <textarea
                                         rows={5}
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
-                                        placeholder="Add details like condition, location, or specifics..."
+                                        placeholder={type === 'service' ? "Describe your experience, teaching style, and what you offer..." : "Describe condition, flaws, and reason for selling..."}
                                         className="w-full p-6 bg-loops-subtle border border-loops-border rounded-2xl focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all resize-none shadow-sm font-medium text-loops-main text-sm"
                                     />
                                 </FormGroup>
 
-                                {type !== 'request' && (
-                                    <FormGroup label="Photos">
-                                        <ImageUpload onUpload={setImages} />
-                                    </FormGroup>
-                                )}
+                                <FormGroup label="Photos">
+                                    <ImageUpload onUpload={setImages} />
+                                </FormGroup>
                             </div>
 
                             <div className="flex gap-4 pt-4 border-t border-loops-border">

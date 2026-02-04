@@ -1,158 +1,116 @@
 'use client';
 
-import { AdminGuard } from "@/components/admin/admin-guard";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import {
-    LayoutDashboard,
-    School,
-    Users,
-    Package,
-    TrendingUp,
-    ArrowRight,
-    Search,
-    Plus,
-    CheckCircle2,
-    Clock
-} from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-
 import { useState, useEffect } from "react";
+import { Navbar } from "@/components/layout/navbar";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { Users, Package, Zap, Activity, ShieldAlert, CheckCircle, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/context/toast-context";
 
 export default function AdminDashboard() {
-    const [counts, setCounts] = useState({ students: 0, listings: 0, campuses: 0 });
+    const [stats, setStats] = useState({
+        totalUsers: 0,
+        totalListings: 0,
+        products: 0,
+        services: 0,
+        reports: 0
+    });
+    const [loading, setLoading] = useState(true);
     const supabase = createClient();
+    const router = useRouter();
+    const toast = useToast();
 
     useEffect(() => {
-        const fetchStats = async () => {
-            const { count: studentCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-            const { count: listingCount } = await supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active');
-            const { count: campusCount } = await supabase.from('campuses').select('*', { count: 'exact', head: true });
+        const checkAdmin = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                router.push('/login');
+                return;
+            }
 
-            setCounts({
-                students: studentCount || 0,
-                listings: listingCount || 0,
-                campuses: campusCount || 0
-            });
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', user.id)
+                .single();
+
+            if (!profile?.is_admin) {
+                toast.error("Unauthorized Access");
+                router.push('/');
+                return;
+            }
+
+            fetchStats();
         };
-        fetchStats();
-    }, [supabase]);
+
+        const fetchStats = async () => {
+            // Parallel requests for stats
+            const [users, listings, products, services, reports] = await Promise.all([
+                supabase.from('profiles').select('*', { count: 'exact', head: true }),
+                supabase.from('listings').select('*', { count: 'exact', head: true }),
+                supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'product'),
+                supabase.from('listings').select('*', { count: 'exact', head: true }).eq('service', 'product'), // Typo fix: eq('type', 'service')
+                supabase.from('reports').select('*', { count: 'exact', head: true })
+            ]);
+
+            // Fix typo in services query above:
+            const servicesCount = await supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'service');
+
+            setStats({
+                totalUsers: users.count || 0,
+                totalListings: listings.count || 0,
+                products: products.count || 0,
+                services: servicesCount.count || 0,
+                reports: reports.count || 0
+            });
+            setLoading(false);
+        };
+
+        checkAdmin();
+    }, [supabase, router]);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-loops-bg">Loading Loop Command...</div>;
 
     return (
-        <AdminGuard>
-            <div className="min-h-screen bg-loops-bg">
-                <Navbar />
+        <div className="min-h-screen bg-loops-bg text-loops-main">
+            <Navbar />
+            <main className="pt-32 pb-20 max-w-7xl mx-auto px-6">
+                <div className="mb-12">
+                    <p className="text-xs font-bold text-loops-accent uppercase tracking-widest mb-2">Restricted Access</p>
+                    <h1 className="text-4xl md:text-5xl font-bold font-display tracking-tight text-loops-main">Loop Command Center</h1>
+                </div>
 
-                <main className="pt-32 pb-20 px-4 sm:px-6 max-w-7xl mx-auto">
-                    <div className="space-y-12">
-                        {/* Header */}
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div className="space-y-2">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/10 text-loops-primary text-[10px] font-bold uppercase tracking-widest border border-loops-primary/20">
-                                    <LayoutDashboard className="w-3.5 h-3.5" /> High Command
-                                </div>
-                                <h1 className="text-4xl md:text-5xl font-bold font-display tracking-tight text-loops-main italic">
-                                    Loops Dashboard.
-                                </h1>
-                                <p className="text-loops-muted font-medium max-w-md">
-                                    Manage growth, oversee nodes, and prioritize infrastructure deployment.
-                                </p>
-                            </div>
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <StatCard icon={Users} label="Total Users" value={stats.totalUsers} color="text-loops-primary" />
+                    <StatCard icon={Package} label="Products Listed" value={stats.products} color="text-blue-500" />
+                    <StatCard icon={Zap} label="Services Offered" value={stats.services} color="text-amber-500" />
+                    <StatCard icon={ShieldAlert} label="Active Reports" value={stats.reports} color="text-red-500" />
+                </div>
 
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                            <StatCard
-                                title="Total Students"
-                                value={counts.students >= 1000 ? `${(counts.students / 1000).toFixed(1)}k` : counts.students}
-                                change={`${counts.students > 0 ? '+100%' : '0%'} total`}
-                                icon={Users}
-                                color="loops-primary"
-                            />
-                            <StatCard
-                                title="Active Listings"
-                                value={counts.listings}
-                                change="Live data"
-                                icon={Package}
-                                color="loops-accent"
-                            />
-                            <StatCard
-                                title="Active Campuses"
-                                value={counts.campuses}
-                                change="Stable"
-                                icon={School}
-                                color="loops-secondary"
-                            />
-                            <StatCard title="Node Load" value="Optimal" change="All healthy" icon={TrendingUp} color="loops-success" />
-                        </div>
-
-                        {/* Management Hub */}
-                        <div className="grid md:grid-cols-2 gap-8">
-                            <Link href="/admin/requests" className="group">
-                                <div className="p-8 rounded-[2.5rem] bg-white border border-loops-border shadow-sm hover:shadow-2xl hover:shadow-loops-primary/5 transition-all space-y-6 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
-                                        <School className="w-24 h-24" />
-                                    </div>
-                                    <div className="w-12 h-12 rounded-2xl bg-loops-primary/10 flex items-center justify-center text-loops-primary">
-                                        <Clock className="w-6 h-6" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="text-2xl font-bold text-loops-main">University Requests</h3>
-                                        <p className="text-loops-muted text-sm leading-relaxed max-w-xs">
-                                            Review nominations from students wanting Loops on their campus. Approve nodes to launch.
-                                        </p>
-                                    </div>
-                                    <div className="inline-flex items-center gap-2 text-xs font-bold text-loops-primary uppercase tracking-widest group-hover:translate-x-1 transition-transform">
-                                        See Queue <ArrowRight className="w-4 h-4" />
-                                    </div>
-                                </div>
-                            </Link>
-
-                            <Link href="/admin/campuses" className="group">
-                                <div className="p-8 rounded-[2.5rem] bg-white border border-loops-border shadow-sm hover:shadow-2xl hover:shadow-loops-accent/5 transition-all space-y-6 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
-                                        <CheckCircle2 className="w-24 h-24" />
-                                    </div>
-                                    <div className="w-12 h-12 rounded-2xl bg-loops-accent/10 flex items-center justify-center text-loops-accent">
-                                        <Plus className="w-6 h-6" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="text-2xl font-bold text-loops-main">Manage Active Nodes</h3>
-                                        <p className="text-loops-muted text-sm leading-relaxed max-w-xs">
-                                            Configure branding, terms, and verification settings for current campuses.
-                                        </p>
-                                    </div>
-                                    <div className="inline-flex items-center gap-2 text-xs font-bold text-loops-accent uppercase tracking-widest group-hover:translate-x-1 transition-transform">
-                                        Edit Nodes <ArrowRight className="w-4 h-4" />
-                                    </div>
-                                </div>
-                            </Link>
+                <div className="space-y-8">
+                    <div className="bg-loops-subtle border border-loops-border rounded-3xl p-8">
+                        <h2 className="text-xl font-bold mb-4 font-display">Recent Activity Log</h2>
+                        <div className="text-center py-12 text-loops-muted text-sm italic">
+                            Real-time firehose implementation coming soon.
                         </div>
                     </div>
-                </main>
-
-                <Footer />
-            </div>
-        </AdminGuard>
+                </div>
+            </main>
+        </div>
     );
 }
 
-function StatCard({ title, value, change, icon: Icon, color }: any) {
+function StatCard({ icon: Icon, label, value, color }: { icon: any, label: string, value: number, color: string }) {
     return (
-        <div className="p-6 rounded-[2rem] bg-white border border-loops-border shadow-sm">
-            <div className={`w-10 h-10 rounded-xl bg-${color}/10 flex items-center justify-center text-${color} mb-4`}>
-                <Icon className="w-5 h-5" />
+        <div className="p-6 bg-white border border-loops-border rounded-2xl shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-center gap-4 mb-2">
+                <div className={`p-2 rounded-lg bg-opacity-10 ${color.replace('text-', 'bg-')}`}>
+                    <Icon className={`w-6 h-6 ${color}`} />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest text-loops-muted">{label}</span>
             </div>
-            <div className="space-y-1">
-                <div className="text-2xl font-bold font-display tracking-tight text-loops-main">{value}</div>
-                <div className="text-[10px] uppercase font-bold text-loops-muted tracking-widest">{title}</div>
-            </div>
-            <div className="mt-4 pt-4 border-t border-loops-border flex items-center justify-between">
-                <span className="text-[10px] font-bold text-loops-success">{change}</span>
-                <TrendingUp className="w-3.5 h-3.5 text-loops-success" />
-            </div>
+            <div className="text-4xl font-bold font-display tracking-tighter text-loops-main">{value}</div>
         </div>
     );
 }

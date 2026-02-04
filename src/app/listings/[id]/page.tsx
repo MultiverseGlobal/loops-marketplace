@@ -88,6 +88,46 @@ export default function ListingDetailPage() {
     if (loading) return null;
     if (!listing) return <div className="min-h-screen bg-loops-bg text-loops-main p-10 flex items-center justify-center font-bold uppercase tracking-widest text-xs">Listing not found.</div>;
 
+    const handleWhatsApp = async () => {
+        setIsInteracting(true);
+        if (!currentUser) {
+            router.push('/login');
+            return;
+        }
+
+        // 1. Create a "Paper Trail" in Loops
+        const { data: existing } = await supabase
+            .from('messages')
+            .select('id')
+            .eq('listing_id', id)
+            .eq('sender_id', currentUser.id)
+            .limit(1);
+
+        if (!existing || existing.length === 0) {
+            await supabase
+                .from('messages')
+                .insert({
+                    listing_id: id,
+                    sender_id: currentUser.id,
+                    receiver_id: listing.seller_id,
+                    content: ` Started a WhatsApp conversation about "${listing.title}".`
+                });
+        }
+
+        // 2. Redirect to WhatsApp
+        if (listing.profiles?.whatsapp_number) {
+            const message = encodeURIComponent(`Hi ${listing.profiles.full_name}, I saw your listing "${listing.title}" on Loops. Is it still available?`);
+            window.open(`https://wa.me/${listing.profiles.whatsapp_number}?text=${message}`, '_blank');
+        } else {
+            toast.error("This seller hasn't connected WhatsApp yet. Use Loops chat.");
+            // Fallback to internal chat logic
+            handleInteraction();
+            return;
+        }
+
+        setIsInteracting(false);
+    };
+
     const handleInteraction = async () => {
         setIsInteracting(true);
         if (!currentUser) {
@@ -285,6 +325,38 @@ export default function ListingDetailPage() {
                         <div className="h-px bg-loops-border" />
 
                         <div className="space-y-6">
+                            {/* NEW: Metadata Grid */}
+                            <div className="grid grid-cols-2 gap-4">
+                                {listing.type === 'product' && listing.condition && (
+                                    <div className="p-4 rounded-2xl bg-loops-subtle border border-loops-border space-y-1">
+                                        <div className="text-[10px] font-bold uppercase tracking-widest text-loops-muted">Condition</div>
+                                        <div className="font-medium text-loops-main">{listing.condition}</div>
+                                    </div>
+                                )}
+                                {listing.type === 'service' && listing.availability && (
+                                    <div className="col-span-2 p-4 rounded-2xl bg-loops-subtle border border-loops-border space-y-1">
+                                        <div className="text-[10px] font-bold uppercase tracking-widest text-loops-muted">Availability</div>
+                                        <div className="font-medium text-loops-main">{listing.availability}</div>
+                                    </div>
+                                )}
+                                {listing.meetup_locations && listing.meetup_locations.length > 0 && (
+                                    <div className="col-span-2 p-4 rounded-2xl bg-loops-subtle border border-loops-border space-y-2">
+                                        <div className="text-[10px] font-bold uppercase tracking-widest text-loops-muted flex items-center gap-2">
+                                            <MapPin className="w-3 h-3" />
+                                            Preferred Meetup Spots
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {listing.meetup_locations.map((loc: string) => (
+                                                <span key={loc} className="px-3 py-1 bg-white border border-loops-border rounded-lg text-xs font-bold text-loops-muted">
+                                                    {loc}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+
                             <div className="p-6 rounded-2xl bg-loops-subtle border border-loops-border flex items-center justify-between shadow-sm">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-xl bg-loops-primary/5 flex items-center justify-center text-loops-primary font-bold border border-loops-primary/20 shadow-sm">
@@ -375,25 +447,29 @@ export default function ListingDetailPage() {
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    {/* Primary Call to Action: WhatsApp */}
                                     <Button
-                                        onClick={handleInteraction}
+                                        onClick={handleWhatsApp}
                                         disabled={isInteracting}
-                                        className="h-14 sm:h-16 text-base sm:text-xl font-bold bg-white border border-loops-border hover:bg-loops-subtle text-loops-main shadow-sm transition-all"
+                                        className="h-14 sm:h-16 text-base sm:text-xl font-bold bg-[#25D366] hover:bg-[#25D366]/90 text-white shadow-xl shadow-[#25D366]/20 transition-all font-display sm:col-span-2"
                                     >
-                                        <MessageSquare className="w-5 h-5 mr-2 sm:mr-3 text-loops-primary flex-shrink-0" />
-                                        <span className="truncate">{isInteracting ? "..." : `Chat with ${getTerm('sellerName')}`}</span>
+                                        <MessageSquare className="w-5 h-5 mr-2 sm:mr-3 flex-shrink-0" />
+                                        Chat on WhatsApp
                                     </Button>
+
+                                    {/* Secondary: Internal Chat (Hidden/Secondary if WA exists, or backup) */}
                                     <Button
                                         onClick={handleInteraction}
                                         disabled={isInteracting}
-                                        className="h-14 sm:h-16 text-base sm:text-xl font-bold bg-loops-primary hover:bg-loops-primary/90 text-white shadow-xl shadow-loops-primary/20 transition-all font-display"
+                                        variant="outline"
+                                        className="h-12 sm:col-span-2 text-loops-muted text-xs font-bold uppercase tracking-widest border-loops-border/50 hover:bg-loops-subtle"
                                     >
-                                        <Sparkles className="w-5 h-5 mr-2 sm:mr-3 text-loops-accent flex-shrink-0" />
-                                        {isInteracting ? "..." : "Make Offer"}
+                                        Use Loops Internal Chat instead
                                     </Button>
                                 </div>
-                                <p className="text-center text-[10px] uppercase tracking-widest font-bold text-loops-muted bg-loops-subtle py-2 rounded-lg italic">
-                                    Interaction unlocks 1:1 messaging directly in the Loop.
+                                <p className="text-center text-[10px] uppercase tracking-widest font-bold text-loops-muted bg-loops-subtle py-2 rounded-lg italic flex items-center justify-center gap-2">
+                                    <ShieldCheck className="w-3 h-3 text-loops-primary" />
+                                    Safety First: Always meet in public places.
                                 </p>
                             </>
                         )}
@@ -440,6 +516,50 @@ export default function ListingDetailPage() {
                 </div>
             </main>
         </div>
+    );
+}
+                        <div className="flex justify-center pt-4">
+                            <Button
+                                onClick={handleReport}
+                                variant="ghost"
+                                className="text-[10px] text-red-400 hover:text-red-500 hover:bg-red-50 font-bold uppercase tracking-widest flex items-center gap-2 opacity-50 hover:opacity-100 transition-all"
+                            >
+                                <AlertTriangle className="w-3 h-3" />
+                                Report Suspicious Pulse
+                            </Button>
+                        </div>
+
+                        <div className="space-y-4 pt-8 border-t border-loops-border">
+                            <AccordionItem
+                                title="Description"
+                                isOpen={activeAccordion === "details"}
+                                onClick={() => setActiveAccordion(activeAccordion === "details" ? null : "details")}
+                            >
+                                <p className="text-loops-muted leading-relaxed font-light italic text-lg px-2">
+                                    "{listing.description}"
+                                </p>
+                            </AccordionItem>
+                            <AccordionItem
+                                title="Campus Safety"
+                                isOpen={activeAccordion === "safety"}
+                                onClick={() => setActiveAccordion(activeAccordion === "safety" ? null : "safety")}
+                            >
+                                <ul className="space-y-4 text-sm text-loops-muted px-2">
+                                    <li className="flex items-start gap-3">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-loops-primary mt-1.5" />
+                                        <span>Trade in public university spaces only.</span>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-loops-primary mt-1.5" />
+                                        <span>Verify item condition before finalize.</span>
+                                    </li>
+                                </ul>
+                            </AccordionItem>
+                        </div>
+                    </div >
+                </div >
+            </main >
+        </div >
     );
 }
 
