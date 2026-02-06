@@ -46,15 +46,48 @@ export default function Home() {
                 loops: loopCount || 500
             });
 
-            // Fetch trending listings with author names
+            // Fetch trending listings with author names and review stats
             const { data } = await supabase
                 .from('listings')
-                .select('*, profiles(full_name)')
+                .select(`
+                    *,
+                    profiles(full_name),
+                    reviews(rating),
+                    transactions(status)
+                `)
                 .eq('status', 'active')
-                .limit(4)
-                .order('created_at', { ascending: false });
+                .limit(20); // Fetch more to calculate trending score
 
-            if (data) setListings(data);
+            if (data) {
+                // Calculate trending score for each listing
+                const scoredListings = data.map(listing => {
+                    const reviews = listing.reviews || [];
+                    const transactions = listing.transactions || [];
+
+                    // Calculate metrics
+                    const avgRating = reviews.length > 0
+                        ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length
+                        : 0;
+                    const reviewCount = reviews.length;
+                    const completedPurchases = transactions.filter((t: any) => t.status === 'completed').length;
+
+                    // Trending score formula: (avg_rating * 20) + (review_count * 10) + (purchases * 15)
+                    // This weights purchases heavily, followed by ratings and review counts
+                    const trendingScore = (avgRating * 20) + (reviewCount * 10) + (completedPurchases * 15);
+
+                    return {
+                        ...listing,
+                        trendingScore
+                    };
+                });
+
+                // Sort by trending score and take top 4
+                const trendingListings = scoredListings
+                    .sort((a, b) => b.trendingScore - a.trendingScore)
+                    .slice(0, 4);
+
+                setListings(trendingListings);
+            }
         };
         fetchData();
     }, [supabase]);
