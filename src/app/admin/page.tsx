@@ -301,7 +301,7 @@ export default function AdminDashboard() {
                                             <div className="flex items-center gap-3 pt-2">
                                                 <Button
                                                     size="sm"
-                                                    onClick={() => handleApplicationAction(app.id, 'approved')}
+                                                    onClick={() => handleApplicationAction(app, 'approved')}
                                                     disabled={processingId === app.id}
                                                     className="bg-green-500 hover:bg-green-600 text-white font-bold"
                                                 >
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
-                                                    onClick={() => handleApplicationAction(app.id, 'rejected')}
+                                                    onClick={() => handleApplicationAction(app, 'rejected')}
                                                     disabled={processingId === app.id}
                                                     className="text-red-500 hover:bg-red-50 border-red-200"
                                                 >
