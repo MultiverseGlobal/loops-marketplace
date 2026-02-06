@@ -246,6 +246,35 @@ export default function MarketplacePage() {
                     )}
                 </div>
 
+                {/* Seller CTA Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="mt-16 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-loops-primary/5 to-loops-energetic/5 border border-loops-primary/10 relative overflow-hidden group"
+                >
+                    <div className="absolute top-0 right-0 w-48 h-48 bg-loops-primary/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-loops-primary/20 transition-all" />
+                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="space-y-3 text-center md:text-left">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-loops-border text-loops-primary text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                <Icons.Zap className="w-3 h-3" />
+                                Join as Seller
+                            </div>
+                            <h3 className="font-display text-2xl md:text-3xl font-bold text-loops-main">Got something to sell or offer?</h3>
+                            <p className="text-loops-muted text-sm md:text-base max-w-lg leading-relaxed">
+                                Join as a <span className="font-bold text-loops-primary">Verified Plug</span> and get priority placement, a trust badge, and access to thousands of students.
+                            </p>
+                        </div>
+                        <Link href="/founding-plugs">
+                            <Button className="h-14 px-8 bg-loops-primary text-white font-bold shadow-xl shadow-loops-primary/20 hover:scale-105 transition-all whitespace-nowrap group">
+                                Apply Now
+                                <Icons.ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Button>
+                        </Link>
+                    </div>
+                </motion.div>
+
+
                 {/* Cross-Visibility Link */}
                 <div className="mt-20 pt-10 border-t border-loops-border text-center">
                     <p className="text-loops-muted text-xs font-bold uppercase tracking-widest mb-4 opacity-50">
