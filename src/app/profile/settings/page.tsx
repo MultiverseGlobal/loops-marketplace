@@ -11,6 +11,7 @@ import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
 import { useRouter } from "next/navigation";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
     const [profile, setProfile] = useState<any>(null);
