@@ -122,15 +122,6 @@ export default function LoginPage() {
 
         try {
             if (view === 'signup') {
-                // Validate Veritas email domain
-                if (!email.endsWith('@veritas.edu.ng')) {
-                    setMessage({
-                        type: 'error',
-                        text: 'Only Veritas University students can sign up at this time. Use your @veritas.edu.ng email.'
-                    });
-                    setLoading(false);
-                    return;
-                }
 
                 // Signup flow
                 const { data, error } = await supabase.auth.signUp({
