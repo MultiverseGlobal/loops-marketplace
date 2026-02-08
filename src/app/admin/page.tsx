@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Users, Package, Zap, Activity, ShieldAlert, CheckCircle, XCircle } from "lucide-react";
+import { Users, Package, Zap, Activity, ShieldAlert, CheckCircle, XCircle, TrendingUp, BarChart3, PieChart, DollarSign, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/context/toast-context";
 import { cn } from "@/lib/utils";
@@ -15,10 +15,10 @@ export default function AdminDashboard() {
         totalListings: 0,
         products: 0,
         services: 0,
-
         reports: 0,
         pendingApps: 0
     });
+    const [analytics, setAnalytics] = useState<any>(null);
     const [applications, setApplications] = useState<any[]>([]);
     const [userSearch, setUserSearch] = useState("");
     const [foundUser, setFoundUser] = useState<any>(null);
@@ -82,6 +82,18 @@ export default function AdminDashboard() {
                 pendingApps: appsCount || 0
             });
             setApplications(pendingApplications || []);
+
+            // Fetch detailed analytics
+            try {
+                const analyticsRes = await fetch('/api/admin/analytics');
+                if (analyticsRes.ok) {
+                    const analyticsData = await analyticsRes.json();
+                    setAnalytics(analyticsData);
+                }
+            } catch (err) {
+                console.error("Failed to fetch analytics:", err);
+            }
+
             setLoading(false);
         };
 
@@ -248,10 +260,108 @@ export default function AdminDashboard() {
                     <StatCard icon={Users} label="Total Users" value={stats.totalUsers} color="text-loops-primary" />
                     <StatCard icon={Package} label="Products Listed" value={stats.products} color="text-blue-500" />
                     <StatCard icon={Zap} label="Services Offered" value={stats.services} color="text-amber-500" />
-
                     <StatCard icon={ShieldAlert} label="Active Reports" value={stats.reports} color="text-red-500" />
                     <StatCard icon={Activity} label="Pending Plugs" value={stats.pendingApps} color="text-loops-energetic" />
                 </div>
+
+                {/* Marketplace Pulse Section */}
+                {analytics && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                        {/* GMV & Overview Card */}
+                        <div className="lg:col-span-2 p-8 rounded-3xl bg-white border border-loops-border shadow-xl space-y-8">
+                            <div className="flex items-center justify-between border-b border-loops-border pb-6">
+                                <div className="flex items-center gap-3 text-loops-primary">
+                                    <TrendingUp className="w-6 h-6" />
+                                    <h2 className="text-xl font-bold font-display">Marketplace Pulse</h2>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[10px] uppercase font-bold tracking-widest text-loops-muted mb-1">Listed GMV (Inventory Value)</p>
+                                    <div className="text-3xl font-display font-bold text-loops-primary italic">
+                                        ₦{analytics.overview?.listedGMV?.toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                                <div className="p-4 rounded-2xl bg-loops-subtle border border-loops-border">
+                                    <div className="flex items-center gap-2 text-loops-muted mb-2">
+                                        <Zap className="w-4 h-4" />
+                                        <span className="text-[10px] uppercase font-bold tracking-widest">Plugs</span>
+                                    </div>
+                                    <p className="text-2xl font-bold font-display italic">{analytics.overview?.verifiedPlugs}</p>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-loops-subtle border border-loops-border">
+                                    <div className="flex items-center gap-2 text-loops-muted mb-2">
+                                        <Package className="w-4 h-4" />
+                                        <span className="text-[10px] uppercase font-bold tracking-widest">Products</span>
+                                    </div>
+                                    <p className="text-2xl font-bold font-display italic">{analytics.overview?.products}</p>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-loops-subtle border border-loops-border">
+                                    <div className="flex items-center gap-2 text-loops-muted mb-2">
+                                        <Award className="w-4 h-4" />
+                                        <span className="text-[10px] uppercase font-bold tracking-widest">Services</span>
+                                    </div>
+                                    <p className="text-2xl font-bold font-display italic">{analytics.overview?.services}</p>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-loops-subtle border border-loops-border">
+                                    <div className="flex items-center gap-2 text-loops-muted mb-2">
+                                        <BarChart3 className="w-4 h-4" />
+                                        <span className="text-[10px] uppercase font-bold tracking-widest">Adoption</span>
+                                    </div>
+                                    <p className="text-2xl font-bold font-display italic">
+                                        {analytics.overview?.totalUsers > 0
+                                            ? Math.round((analytics.overview?.verifiedPlugs / analytics.overview?.totalUsers) * 100)
+                                            : 0}%
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-loops-muted">
+                                    <PieChart className="w-4 h-4" />
+                                    <h3 className="text-xs uppercase font-bold tracking-widest">Category Distribution</h3>
+                                </div>
+                                <div className="flex flex-wrap gap-4">
+                                    {Object.entries(analytics.categoryDistribution || {}).map(([cat, count]: [string, any]) => (
+                                        <div key={cat} className="flex items-center gap-3 bg-loops-subtle px-4 py-2 rounded-xl border border-loops-border">
+                                            <span className="text-sm font-bold">{cat}</span>
+                                            <span className="px-2 py-0.5 bg-loops-primary/10 text-loops-primary rounded-lg text-[10px] font-bold">{count}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Top Sellers Leaderboard */}
+                        <div className="p-8 rounded-3xl bg-white border border-loops-border shadow-xl space-y-6">
+                            <div className="flex items-center gap-3 text-loops-energetic border-b border-loops-border pb-6">
+                                <Award className="w-6 h-6" />
+                                <h2 className="text-xl font-bold font-display">Top Plugs</h2>
+                            </div>
+
+                            <div className="space-y-4">
+                                {analytics.topSellers?.map((seller: any, idx: number) => (
+                                    <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-loops-subtle border border-loops-border group hover:border-loops-primary transition-all">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-white border border-loops-border flex items-center justify-center text-xs font-bold font-display italic overflow-hidden">
+                                                {seller.avatar ? <img src={seller.avatar} className="w-full h-full object-cover" /> : seller.name[0]}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-sm">{seller.name}</p>
+                                                <p className="text-[10px] uppercase font-bold text-loops-muted">Leading Seller</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-lg font-display font-bold text-loops-primary italic">{seller.count}</p>
+                                            <p className="text-[9px] uppercase font-bold text-loops-muted">Listings</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
 
 
