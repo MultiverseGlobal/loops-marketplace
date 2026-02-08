@@ -288,6 +288,30 @@ export default function ListingDetailPage() {
         }
     };
 
+    const handleFollow = async () => {
+        if (!currentUser) {
+            router.push('/login');
+            return;
+        }
+
+        setFollowLoading(true);
+        try {
+            if (isFollowing) {
+                await unfollowUser(listing.seller_id);
+                setIsFollowing(false);
+                toast.success("Unfollowed seller.");
+            } else {
+                await followUser(listing.seller_id);
+                setIsFollowing(true);
+                toast.success("Following seller!");
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Failed to update follow status.");
+        } finally {
+            setFollowLoading(false);
+        }
+    };
+
     const isOwner = currentUser?.id === listing.seller_id;
 
     return (
