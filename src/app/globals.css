@@ -35,7 +35,7 @@ body {
   }
 
   .selection-btn {
-    @apply p-4 rounded-xl border-2 transition-all font-bold text-sm border-loops-border text-loops-muted hover:border-loops-primary/30;
+    @apply p-4 rounded-xl border-2 transition-all font-bold text-sm border-loops-border text-loops-muted hover:border-[#10b981]/30;
   }
 
   .selection-btn.active {
