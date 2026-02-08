@@ -3,6 +3,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { User, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
     id: string;
