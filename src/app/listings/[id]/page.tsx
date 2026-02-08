@@ -7,7 +7,7 @@ import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkl
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { cn } from "../../../lib/utils";
+import { cn, formatWhatsAppNumber } from "../../../lib/utils";
 import { createClient } from "../../../lib/supabase/client";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -122,7 +122,7 @@ export default function ListingDetailPage() {
         // 2. Redirect to WhatsApp
         if (listing.profiles?.whatsapp_number) {
             const message = encodeURIComponent(`Hi ${listing.profiles.full_name}! 👋\n\nI saw your listing "${listing.title}" on Loops for ${CURRENCY}${listing.price}.\n\nIs it still available? I'd like to discuss the next steps! ♾️🔌`);
-            window.open(`https://wa.me/${listing.profiles.whatsapp_number}?text=${message}`, '_blank');
+            window.open(`https://wa.me/${formatWhatsAppNumber(listing.profiles.whatsapp_number)}?text=${message}`, '_blank');
         } else {
             toast.error("This seller hasn't connected WhatsApp yet. Use Loops chat.");
             // Fallback to internal chat logic
