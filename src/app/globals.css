@@ -27,11 +27,11 @@ body {
 
 @layer components {
   .form-input {
-    @apply w-full h-14 rounded-xl bg-loops-subtle border border-loops-border px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium;
+    @apply w-full h-14 rounded-xl bg-loops-subtle border border-loops-border px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-[#10b981]/10 transition-all font-medium;
   }
 
   .form-textarea {
-    @apply w-full p-4 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all resize-none font-medium;
+    @apply w-full p-4 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-[#10b981]/10 transition-all resize-none font-medium;
   }
 
   .selection-btn {
@@ -39,7 +39,7 @@ body {
   }
 
   .selection-btn.active {
-    @apply border-loops-primary bg-loops-primary/5 text-loops-primary;
+    @apply border-loops-primary bg-[#10b981]/5 text-loops-primary;
   }
 }
 
