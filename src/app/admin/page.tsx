@@ -28,6 +28,9 @@ export default function AdminDashboard() {
     const supabase = createClient();
     const router = useRouter();
     const toast = useToast();
+    const [passkey, setPasskey] = useState("");
+    const [isPasskeyVerified, setIsPasskeyVerified] = useState(false);
+    const ADMIN_ACCESS_CODE = "LOOPS404"; // Default passkey
 
     useEffect(() => {
         const checkAdmin = async () => {
@@ -245,6 +248,36 @@ export default function AdminDashboard() {
             setProcessingId(null);
         }
     };
+
+    if (!isPasskeyVerified) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-loops-bg px-6">
+                <div className="max-w-md w-full p-8 rounded-3xl bg-white border border-loops-border shadow-2xl text-center space-y-6">
+                    <div className="w-16 h-16 bg-loops-primary/10 rounded-2xl flex items-center justify-center mx-auto">
+                        <ShieldAlert className="w-8 h-8 text-loops-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold font-display italic">Restricted Access</h1>
+                        <p className="text-sm text-loops-muted mt-2">Enter the Loop Command access code to proceed.</p>
+                    </div>
+                    <input
+                        type="password"
+                        value={passkey}
+                        onChange={(e) => {
+                            setPasskey(e.target.value);
+                            if (e.target.value.toUpperCase() === ADMIN_ACCESS_CODE) {
+                                setIsPasskeyVerified(true);
+                                toast.success("Access Granted. Welcome, Founder.");
+                            }
+                        }}
+                        placeholder="••••••••"
+                        className="w-full h-12 text-center text-xl font-mono tracking-widest bg-loops-subtle border border-loops-border rounded-xl focus:ring-2 focus:ring-loops-primary outline-none"
+                    />
+                    <p className="text-[10px] text-loops-muted uppercase font-bold tracking-widest">Authorized Personnel Only</p>
+                </div>
+            </div>
+        );
+    }
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-loops-bg">Loading Loop Command...</div>;
 

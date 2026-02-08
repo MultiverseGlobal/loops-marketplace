@@ -178,6 +178,12 @@ export default function OnboardingPage() {
             }
 
             toast.success(`Profile Activated. Welcome to the ${getTerm('communityName')}!`);
+
+            // Trigger PWA Install Prompt on success
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('show-pwa-install'));
+            }
+
             router.push('/browse');
         } catch (error: any) {
             toast.error(error.message || "Failed to complete onboarding. Check console.");

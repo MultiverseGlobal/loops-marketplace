@@ -23,7 +23,10 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<any>(null);
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'selling' | 'buying'>('selling');
+    const [activeTab, setActiveTab] = useState<'selling' | 'buying' | 'saved' | 'offers'>('selling');
+    const [wishlistItems, setWishlistItems] = useState<any[]>([]);
+    const [myOffers, setMyOffers] = useState<any[]>([]);
+    const [receivedOffers, setReceivedOffers] = useState<any[]>([]);
     const searchParams = useSearchParams();
     const targetUserId = searchParams.get('u');
     const supabase = createClient();
@@ -57,15 +60,38 @@ export default function ProfilePage() {
                     supabase.from('reviews')
                         .select('*, reviewer:profiles(full_name, avatar_url)')
                         .eq('reviewee_id', userIdToFetch)
+                        .order('created_at', { ascending: false }),
+                    supabase.from('wishlist_items')
+                        .select('*, listing:listings(*, profiles(full_name, store_name, store_banner_color))')
+                        .eq('user_id', userIdToFetch),
+                    supabase.from('offers')
+                        .select('*, listing:listings(title, price, images, type)')
+                        .eq('buyer_id', userIdToFetch)
+                        .order('created_at', { ascending: false }),
+                    supabase.from('offers')
+                        .select('*, listing:listings(title, price, images, seller_id), buyer:profiles(full_name, avatar_url)')
+                        .eq('listing(seller_id)', userIdToFetch) // This needs careful join or separate logic
                         .order('created_at', { ascending: false })
                 ]);
 
                 if (profileRes.data) setProfile(profileRes.data);
                 if (listingsRes.data) setListings(listingsRes.data);
                 if (reviewsRes.data) setReviews(reviewsRes.data);
+                if (followRes.data) {
+                    setFollowersCount(followRes.followers);
+                    setFollowingCount(followRes.following);
+                }
+                if (wishlistRes.data) setWishlistItems(wishlistRes.data.map((w: any) => w.listing));
+                if (myOffersRes.data) setMyOffers(myOffersRes.data);
 
-                setFollowersCount(followRes.followers);
-                setFollowingCount(followRes.following);
+                // Fetching received offers requires a bit more logic because of the join structure
+                const { data: recOffers } = await supabase
+                    .from('offers')
+                    .select('*, listing:listings!inner(title, price, seller_id), buyer:profiles(full_name, avatar_url)')
+                    .eq('listing.seller_id', userIdToFetch)
+                    .order('created_at', { ascending: false });
+
+                if (recOffers) setReceivedOffers(recOffers);
 
                 // If viewing someone else, check if we follow them
                 if (targetUserId && authUser && targetUserId !== authUser.id) {
@@ -409,6 +435,28 @@ export default function ProfilePage() {
                                     Buying ({getTerm('buyerName')})
                                 </button>
                                 <button
+                                    onClick={() => setActiveTab('saved')}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        activeTab === 'saved'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    Saved ({wishlistItems.length})
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('offers')}
+                                    className={cn(
+                                        "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
+                                        activeTab === 'offers'
+                                            ? "bg-white text-loops-primary shadow-sm ring-1 ring-loops-border"
+                                            : "text-loops-muted hover:text-loops-main"
+                                    )}
+                                >
+                                    Offers ({receivedOffers.length + myOffers.length})
+                                </button>
+                                <button
                                     onClick={() => setActiveTab('reviews' as any)}
                                     className={cn(
                                         "px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all",
@@ -448,121 +496,265 @@ export default function ProfilePage() {
                         )}
 
                         {/* Tab Content */}
-                        {activeTab === 'selling' ? (
-                            // ... Existing Selling Content ...
-                            <div className="space-y-6">
-                                <div className="flex items-end justify-between">
-                                    <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
-                                        {(!targetUserId || targetUserId === user?.id) ? `Your Active ${getTerm('listingName')}` : `${profile?.full_name}'s ${getTerm('listingName')}`}
-                                    </h2>
-                                    {(!targetUserId || targetUserId === user?.id) && (
-                                        <Link href="/listings/create">
-                                            <Button variant="link" className="text-loops-primary p-0 h-auto font-bold uppercase tracking-widest text-xs h-10">Post Something New</Button>
-                                        </Link>
-                                    )}
-                                </div>
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                {activeTab === 'selling' ? (
+                                    <div className="space-y-6">
+                                        <div className="flex items-end justify-between">
+                                            <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
+                                                {(!targetUserId || targetUserId === user?.id) ? `Your Active ${getTerm('listingName')}` : `${profile?.full_name}'s ${getTerm('listingName')}`}
+                                            </h2>
+                                            {(!targetUserId || targetUserId === user?.id) && (
+                                                <Link href="/listings/create">
+                                                    <Button variant="link" className="text-loops-primary p-0 h-auto font-bold uppercase tracking-widest text-xs h-10">Post Something New</Button>
+                                                </Link>
+                                            )}
+                                        </div>
 
-                                {listings.length > 0 ? (
-                                    <div className="grid gap-4">
-                                        {listings.map((listing) => (
-                                            <Link
-                                                key={listing.id}
-                                                href={`/listings/${listing.id}`}
-                                                className="group p-6 rounded-2xl bg-loops-subtle border border-loops-border hover:bg-white hover:border-loops-primary/30 transition-all flex items-center gap-6 shadow-sm hover:shadow-lg hover:shadow-loops-primary/5"
-                                            >
-                                                <div className="w-16 h-16 rounded-xl bg-white border border-loops-border overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">
-                                                    {listing.type === 'product' ? <Package className="w-8 h-8 text-loops-primary opacity-20" /> : <Zap className="w-8 h-8 text-loops-primary opacity-20" />}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-loops-primary/5 text-loops-primary uppercase tracking-widest">
-                                                            {listing.type}
-                                                        </span>
-                                                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-tighter italic">
-                                                            Status: {listing.status}
-                                                        </span>
-                                                    </div>
-                                                    <h3 className="font-bold text-xl truncate group-hover:text-loops-primary transition-colors text-loops-main tracking-tight">
-                                                        {listing.title}
-                                                    </h3>
-                                                    <div className="text-loops-success font-bold text-lg">{CURRENCY}{listing.price}</div>
-                                                </div>
-                                                <Button variant="ghost" size="icon" className="text-loops-muted group-hover:text-loops-primary transition-colors">
-                                                    <ExternalLink className="w-5 h-5" />
-                                                </Button>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
-                                        <Package className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                        <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">Your {getTerm('listingName')} is silent.</h3>
-                                        <p className="text-loops-muted mt-2">You haven't posted any listings in the {getTerm('communityName')} yet.</p>
-                                    </div>
-                                )}
-                            </div>
-                        ) : activeTab === 'buying' ? (
-                            <div className="space-y-6">
-                                <div className="flex items-end justify-between">
-                                    <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
-                                        Purchase Tracking
-                                    </h2>
-                                </div>
-                                <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
-                                    <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">{getTerm('buyerName')} History</h3>
-                                    <p className="text-loops-muted mt-2">When you message sellers or buy items, they will appear here for tracking.</p>
-                                    <Link href="/browse" className="inline-block mt-4">
-                                        <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>
-                                    </Link>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">Student Feedback</h2>
-                                    <div className="flex items-center gap-2 text-loops-primary">
-                                        <Star className="w-5 h-5 fill-current" />
-                                        <span className="text-xl font-bold">{Number(profile?.rating || 0).toFixed(1)}</span>
-                                    </div>
-                                </div>
-
-                                {reviews.length > 0 ? (
-                                    <div className="grid gap-6">
-                                        {reviews.map((review) => (
-                                            <div key={review.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
-                                                <div className="flex justify-between items-start">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-full bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
-                                                            {review.reviewer?.avatar_url ? (
-                                                                <img src={review.reviewer.avatar_url} alt="" className="w-full h-full object-cover" />
-                                                            ) : (
-                                                                <User className="w-5 h-5 text-loops-muted" />
-                                                            )}
+                                        {listings.length > 0 ? (
+                                            <div className="grid gap-4">
+                                                {listings.map((listing) => (
+                                                    <Link
+                                                        key={listing.id}
+                                                        href={`/listings/${listing.id}`}
+                                                        className="group p-6 rounded-2xl bg-loops-subtle border border-loops-border hover:bg-white hover:border-loops-primary/30 transition-all flex items-center gap-6 shadow-sm hover:shadow-lg hover:shadow-loops-primary/5"
+                                                    >
+                                                        <div className="w-16 h-16 rounded-xl bg-white border border-loops-border overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">
+                                                            {listing.type === 'product' ? <Package className="w-8 h-8 text-loops-primary opacity-20" /> : <Zap className="w-8 h-8 text-loops-primary opacity-20" />}
                                                         </div>
-                                                        <div>
-                                                            <div className="font-bold text-sm text-loops-main">{review.reviewer?.full_name || 'Anonymous Student'}</div>
-                                                            <div className="text-[10px] text-loops-muted uppercase font-bold tracking-widest">{new Date(review.created_at).toLocaleDateString()}</div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-loops-primary/5 text-loops-primary uppercase tracking-widest">
+                                                                    {listing.type}
+                                                                </span>
+                                                                <span className="text-[10px] font-bold text-loops-muted uppercase tracking-tighter italic">
+                                                                    Status: {listing.status}
+                                                                </span>
+                                                            </div>
+                                                            <h3 className="font-bold text-xl truncate group-hover:text-loops-primary transition-colors text-loops-main tracking-tight">
+                                                                {listing.title}
+                                                            </h3>
+                                                            <div className="text-loops-success font-bold text-lg">{CURRENCY}{listing.price}</div>
                                                         </div>
-                                                    </div>
-                                                    <Rating value={review.rating} size="sm" />
-                                                </div>
-                                                <p className="text-sm text-loops-muted leading-relaxed italic">"{review.comment}"</p>
+                                                        <Button variant="ghost" size="icon" className="text-loops-muted group-hover:text-loops-primary transition-colors">
+                                                            <ExternalLink className="w-5 h-5" />
+                                                        </Button>
+                                                    </Link>
+                                                ))}
                                             </div>
-                                        ))}
+                                        ) : (
+                                            <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
+                                                <Package className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                                <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">Your {getTerm('listingName')} is silent.</h3>
+                                                <p className="text-loops-muted mt-2">You haven't posted any listings in the {getTerm('communityName')} yet.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : activeTab === 'buying' ? (
+                                    <div className="space-y-6">
+                                        <div className="flex items-end justify-between">
+                                            <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
+                                                Purchase Tracking
+                                            </h2>
+                                        </div>
+                                        <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
+                                            <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                            <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">{getTerm('buyerName')} History</h3>
+                                            <p className="text-loops-muted mt-2">When you message sellers or buy items, they will appear here for tracking.</p>
+                                            <Link href="/browse" className="inline-block mt-4">
+                                                <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ) : activeTab === 'saved' ? (
+                                    <div className="space-y-6">
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">Saved for Later</h2>
+                                        </div>
+
+                                        {wishlistItems.length > 0 ? (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                {wishlistItems.map((listing) => (
+                                                    <div key={listing.id} className="relative group">
+                                                        <Link href={`/listings/${listing.id}`}>
+                                                            <div className="aspect-[4/3] rounded-3xl overflow-hidden bg-loops-subtle border border-loops-border mb-3 relative group-hover:shadow-xl group-hover:shadow-loops-primary/10 transition-all">
+                                                                <Image
+                                                                    src={listing.images?.[0] || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000'}
+                                                                    alt={listing.title}
+                                                                    fill
+                                                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                                />
+                                                                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-loops-border">
+                                                                    {listing.category}
+                                                                </div>
+                                                            </div>
+                                                            <div className="px-2">
+                                                                <h4 className="font-bold text-lg group-hover:text-loops-primary transition-colors">{listing.title}</h4>
+                                                                <div className="text-loops-primary font-black text-xl">{CURRENCY}{listing.price}</div>
+                                                            </div>
+                                                        </Link>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
+                                                <Heart className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                                <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">Nothing saved yet.</h3>
+                                                <p className="text-loops-muted mt-2">Tap the heart on any item to save it here for later.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : activeTab === 'offers' ? (
+                                    <div className="space-y-12">
+                                        {/* Received Offers (As Seller) */}
+                                        {(profile?.is_plug || listings.length > 0) && (
+                                            <div className="space-y-6">
+                                                <div className="flex items-center gap-2 text-loops-primary">
+                                                    <Sparkles className="w-5 h-5" />
+                                                    <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">Incoming Bargains</h2>
+                                                </div>
+                                                {receivedOffers.length > 0 ? (
+                                                    <div className="grid gap-4">
+                                                        {receivedOffers.map((offer) => (
+                                                            <div key={offer.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="w-12 h-12 rounded-2xl bg-loops-primary/5 flex items-center justify-center overflow-hidden border border-loops-primary/10">
+                                                                        {offer.buyer?.avatar_url ? <img src={offer.buyer.avatar_url} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-loops-primary" />}
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="font-bold text-loops-main">{offer.buyer?.full_name} wants "{offer.listing?.title}"</div>
+                                                                        <div className="flex items-center gap-3">
+                                                                            <div className="text-loops-success font-black text-xl">{CURRENCY}{offer.amount}</div>
+                                                                            <div className="text-[10px] text-loops-muted line-through">L: {CURRENCY}{offer.listing?.price}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        className="h-10 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest"
+                                                                        onClick={async () => {
+                                                                            const { error } = await supabase.from('offers').update({ status: 'rejected' }).eq('id', offer.id);
+                                                                            if (!error) toast.success("Offer declined.");
+                                                                        }}
+                                                                    >
+                                                                        Decline
+                                                                    </Button>
+                                                                    <Button
+                                                                        className="h-10 px-4 rounded-xl bg-loops-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-loops-primary/10"
+                                                                        onClick={async () => {
+                                                                            const { error } = await supabase.from('offers').update({ status: 'accepted' }).eq('id', offer.id);
+                                                                            if (!error) toast.success("Offer accepted! Chat with the buyer to finalize.");
+                                                                        }}
+                                                                    >
+                                                                        Accept
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-12 rounded-3xl border border-dashed border-loops-border text-center">
+                                                        <p className="text-loops-muted italic text-sm">No incoming offers yet. Your prices are already competitive!</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Outgoing Offers (As Buyer) */}
+                                        <div className="space-y-6">
+                                            <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">Your Bargain Attempts</h2>
+                                            {myOffers.length > 0 ? (
+                                                <div className="grid gap-4">
+                                                    {myOffers.map((offer) => (
+                                                        <div key={offer.id} className="p-6 rounded-3xl bg-loops-subtle/50 border border-loops-border flex items-center justify-between gap-6">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="w-16 h-16 rounded-2xl bg-white border border-loops-border flex items-center justify-center overflow-hidden">
+                                                                    <Package className="w-8 h-8 text-loops-muted/20" />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-bold text-loops-main">{offer.listing?.title}</div>
+                                                                    <div className="text-loops-primary font-black text-lg">{CURRENCY}{offer.amount}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div className={cn(
+                                                                "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
+                                                                offer.status === 'pending' ? "bg-amber-100 text-amber-600" :
+                                                                    offer.status === 'accepted' ? "bg-loops-success/10 text-loops-success" :
+                                                                        "bg-red-100 text-red-600"
+                                                            )}>
+                                                                {offer.status}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="p-12 rounded-3xl border border-dashed border-loops-border text-center">
+                                                    <p className="text-loops-muted italic text-sm">You haven't made any offers yet. Don't be shy, campus trade is built on bargaining!</p>
+                                                    <Link href="/browse" className="inline-block mt-4 text-loops-primary font-bold text-xs uppercase tracking-widest hover:underline">Start Browsing</Link>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
-                                    <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
-                                        <Sparkles className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                        <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Feedback yet.</h3>
-                                        <p className="text-loops-muted mt-2">Ratings from the campus community will appear here.</p>
+                                    <div className="space-y-8">
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">Student Feedback</h2>
+                                            <div className="flex items-center gap-2 text-loops-primary">
+                                                <Star className="w-5 h-5 fill-current" />
+                                                <span className="text-xl font-bold">{Number(profile?.rating || 0).toFixed(1)}</span>
+                                            </div>
+                                        </div>
+
+                                        {reviews.length > 0 ? (
+                                            <div className="grid gap-6">
+                                                {reviews.map((review) => (
+                                                    <div key={review.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
+                                                        <div className="flex justify-between items-start">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-10 h-10 rounded-full bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
+                                                                    {review.reviewer?.avatar_url ? (
+                                                                        <img src={review.reviewer.avatar_url} alt="" className="w-full h-full object-cover" />
+                                                                    ) : (
+                                                                        <User className="w-5 h-5 text-loops-muted" />
+                                                                    )}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-bold text-sm text-loops-main">{review.reviewer?.full_name || 'Anonymous Student'}</div>
+                                                                    <div className="text-[10px] text-loops-muted uppercase font-bold tracking-widest">{new Date(review.created_at).toLocaleDateString()}</div>
+                                                                </div>
+                                                            </div>
+                                                            <Rating value={review.rating} size="sm" />
+                                                        </div>
+                                                        <p className="text-sm text-loops-muted leading-relaxed italic">"{review.comment}"</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
+                                                <Sparkles className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                                <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Feedback yet.</h3>
+                                                <p className="text-loops-muted mt-2">Ratings from the campus community will appear here.</p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
-                            </div>
-                        )}
+                            </motion.div>
+                        </AnimatePresence>
                     </div>
                 </div>
             </main>
         </div>
+}
+                    </div >
+                </div >
+            </main >
+        </div >
     );
 }

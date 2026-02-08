@@ -26,6 +26,10 @@ export default function ListingDetailPage() {
     const [activeAccordion, setActiveAccordion] = useState<string | null>("details");
     const [isInteracting, setIsInteracting] = useState(false);
     const [currentUser, setCurrentUser] = useState<any>(null);
+    const [offerModalOpen, setOfferModalOpen] = useState(false);
+    const [offerAmount, setOfferAmount] = useState("");
+    const [offerMessage, setOfferMessage] = useState("");
+    const [isSubmittingOffer, setIsSubmittingOffer] = useState(false);
 
     const supabase = createClient();
     const router = useRouter();
@@ -248,26 +252,39 @@ export default function ListingDetailPage() {
         }
     };
 
-    const handleFollow = async () => {
+    const handleMakeOffer = async () => {
         if (!currentUser) {
             router.push('/login');
             return;
         }
-        setFollowLoading(true);
+
+        if (!offerAmount || Number(offerAmount) <= 0) {
+            toast.error("Please enter a valid amount.");
+            return;
+        }
+
+        setIsSubmittingOffer(true);
         try {
-            if (isFollowing) {
-                await unfollowUser(listing.seller_id);
-                setIsFollowing(false);
-                toast.success(`Unfollowed ${listing.profiles?.full_name}`);
-            } else {
-                await followUser(listing.seller_id);
-                setIsFollowing(true);
-                toast.success(`Following ${listing.profiles?.full_name}!`);
-            }
-        } catch (err) {
-            toast.error("Failed to update follow status.");
+            const { error } = await supabase
+                .from('offers')
+                .insert({
+                    listing_id: id,
+                    buyer_id: currentUser.id,
+                    amount: Number(offerAmount),
+                    message: offerMessage,
+                    status: 'pending'
+                });
+
+            if (error) throw error;
+
+            toast.success("Offer sent! The seller will be notified. 🤝");
+            setOfferModalOpen(false);
+            setOfferAmount("");
+            setOfferMessage("");
+        } catch (err: any) {
+            toast.error(err.message || "Failed to send offer.");
         } finally {
-            setFollowLoading(false);
+            setIsSubmittingOffer(false);
         }
     };
 
@@ -446,30 +463,43 @@ export default function ListingDetailPage() {
                                 </div>
                             </div>
                         ) : (
-                            <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {/* Primary Call to Action: WhatsApp */}
                                     <Button
                                         onClick={handleWhatsApp}
                                         disabled={isInteracting}
                                         className="h-14 sm:h-16 text-base sm:text-xl font-bold bg-[#25D366] hover:bg-[#25D366]/90 text-white shadow-xl shadow-[#25D366]/20 transition-all font-display sm:col-span-2"
                                     >
-                                        <MessageSquare className="w-5 h-5 mr-2 sm:mr-3 flex-shrink-0" />
+                                        <MessageSquare className="w-5 h-5 mr-3 flex-shrink-0" />
                                         {listing.type === 'service' ? 'Interested in Hiring? Chat on WhatsApp' : 'Ready to Buy? Chat on WhatsApp'}
                                     </Button>
 
-                                    {/* Secondary: Internal Chat (Hidden/Secondary if WA exists, or backup) */}
+                                    {/* Social Bargain: Make Offer */}
+                                    <Button
+                                        onClick={() => setOfferModalOpen(true)}
+                                        disabled={isInteracting}
+                                        variant="outline"
+                                        className="h-14 sm:h-16 text-base sm:text-xl font-bold border-loops-primary text-loops-primary hover:bg-loops-primary/5 shadow-xl shadow-loops-primary/5 transition-all font-display sm:col-span-2 group"
+                                    >
+                                        <Zap className="w-5 h-5 mr-3 text-loops-primary group-hover:animate-pulse" />
+                                        Make an Offer (Bargain)
+                                    </Button>
+
+                                    {/* Secondary: Loops Internal Chat */}
                                     <Button
                                         onClick={handleInteraction}
                                         disabled={isInteracting}
                                         variant="outline"
-                                        className="h-12 sm:col-span-2 text-loops-muted text-xs font-bold uppercase tracking-widest border-loops-border/50 hover:bg-loops-subtle"
+                                        className="h-12 sm:col-span-2 text-loops-muted text-[10px] font-bold uppercase tracking-[0.2em] border-loops-border/50 hover:bg-loops-subtle transition-all"
                                     >
                                         Use Loops Internal Chat instead
                                     </Button>
                                 </div>
+
                                 <p className="text-center text-[10px] uppercase tracking-widest font-bold text-loops-muted bg-loops-subtle py-2 rounded-lg italic flex items-center justify-center gap-2">
                                     <ShieldCheck className="w-3 h-3 text-loops-primary" />
+                                    Verified Campus Transaction
                                 </p>
 
                                 {/* Cross-Visibility Card */}
@@ -491,7 +521,7 @@ export default function ListingDetailPage() {
                                         <ArrowRight className="w-3 h-3" />
                                     </Link>
                                 </div>
-                            </>
+                            </div>
                         )}
 
                         <div className="flex justify-center pt-4">
@@ -534,8 +564,83 @@ export default function ListingDetailPage() {
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
+            </main >
+
+            {/* Make Offer Modal */}
+            <AnimatePresence>
+                {
+                    offerModalOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-loops-main/40 backdrop-blur-md"
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, y: 20 }}
+                                animate={{ scale: 1, y: 0 }}
+                                exit={{ scale: 0.9, y: 20 }}
+                                className="bg-white rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl border border-loops-border space-y-8"
+                            >
+                                <div className="text-center space-y-2">
+                                    <div className="w-16 h-16 bg-loops-primary/10 rounded-2xl flex items-center justify-center mx-auto text-loops-primary mb-2">
+                                        <Zap className="w-8 h-8" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold font-display italic">Bargain with respect.</h3>
+                                    <p className="text-loops-muted text-sm italic">Propose a fair price for "{listing.title}"</p>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Your Price Proposal</label>
+                                        <div className="relative">
+                                            <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-loops-primary">{CURRENCY}</span>
+                                            <input
+                                                type="number"
+                                                value={offerAmount}
+                                                onChange={(e) => setOfferAmount(e.target.value)}
+                                                placeholder={listing.price}
+                                                className="w-full pl-12 pr-6 py-5 bg-loops-subtle rounded-2xl border border-loops-border focus:border-loops-primary focus:outline-none text-2xl font-black tracking-tighter"
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-loops-muted italic pl-1">Listed price: {CURRENCY}{listing.price}</p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Message for Seller (Optional)</label>
+                                        <textarea
+                                            value={offerMessage}
+                                            onChange={(e) => setOfferMessage(e.target.value)}
+                                            placeholder="e.g. Can we meet at the library today?"
+                                            rows={3}
+                                            className="w-full p-6 rounded-2xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none transition-all resize-none text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <Button
+                                        variant="ghost"
+                                        className="flex-1 h-14 rounded-2xl text-loops-muted font-bold uppercase tracking-widest text-xs"
+                                        onClick={() => setOfferModalOpen(false)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        disabled={isSubmittingOffer}
+                                        className="flex-2 h-14 rounded-2xl bg-loops-primary text-white font-bold uppercase tracking-widest text-xs shadow-xl shadow-loops-primary/20 group"
+                                        onClick={handleMakeOffer}
+                                    >
+                                        {isSubmittingOffer ? "Sending..." : "Send Offer"}
+                                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    </Button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )
+                }
+            </AnimatePresence >
+        </div >
     );
 }
 

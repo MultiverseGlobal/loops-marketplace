@@ -54,6 +54,7 @@ import { ModalProvider } from "../context/modal-context";
 import { BottomNav } from "../components/layout/bottom-nav";
 import { Analytics } from "@vercel/analytics/next";
 import { PWALogic } from "../components/pwa-logic";
+import { CartProvider } from "../context/cart-context";
 
 export default function RootLayout({
     children,
@@ -70,8 +71,10 @@ export default function RootLayout({
                 <CampusProvider>
                     <ToastProvider>
                         <ModalProvider>
-                            <PageTransition>{children}</PageTransition>
-                            <BottomNav />
+                            <CartProvider>
+                                <PageTransition>{children}</PageTransition>
+                                <BottomNav />
+                            </CartProvider>
                             <Analytics />
                         </ModalProvider>
                     </ToastProvider>

@@ -2,8 +2,13 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { User, ShieldCheck } from "lucide-react";
+import { User, ShieldCheck, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/context/toast-context";
+import { useCart } from "@/context/cart-context";
+import { Plus, ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
     id: string;
@@ -12,10 +17,75 @@ interface ProductCardProps {
     image: string;
     category: string;
     delay?: number;
-    author?: string;
+    author?: any;
 }
 
-export function ProductCard({ id, title, price, image, category, delay = 0, author = "Campus Hub" }: ProductCardProps) {
+export function ProductCard({ id, title, price, image, category, delay = 0, author }: ProductCardProps) {
+    const [isWishlisted, setIsWishlisted] = useState(false);
+    const [wishlistLoading, setWishlistLoading] = useState(false);
+    const { addToCart, refreshWishlist } = useCart();
+    const supabase = createClient();
+    const toast = useToast();
+
+    useEffect(() => {
+        const checkWishlistStatus = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data } = await supabase
+                    .from('wishlist_items')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .eq('listing_id', id)
+                    .single();
+
+                if (data) setIsWishlisted(true);
+            }
+        };
+        checkWishlistStatus();
+    }, [id, supabase]);
+
+    const toggleWishlist = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            toast.error("Please login to save items.");
+            return;
+        }
+
+        setWishlistLoading(true);
+        if (isWishlisted) {
+            const { error } = await supabase
+                .from('wishlist_items')
+                .delete()
+                .eq('user_id', user.id)
+                .eq('listing_id', id);
+
+            if (!error) {
+                setIsWishlisted(false);
+                toast.success("Removed from wishlist");
+            }
+        } else {
+            const { error } = await supabase
+                .from('wishlist_items')
+                .insert({ user_id: user.id, listing_id: id });
+
+            if (!error) {
+                setIsWishlisted(true);
+                toast.success("Added to wishlist 💖");
+                refreshWishlist();
+            }
+        }
+        setWishlistLoading(false);
+    };
+
+    const handleAddToCart = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        await addToCart({ id, title, price, images: [image], profiles: author });
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -35,6 +105,29 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
                         <span className="text-[8px] md:text-[10px] font-bold px-2 py-0.5 rounded-lg bg-white/95 text-loops-main backdrop-blur-md uppercase tracking-widest shadow-sm border border-loops-border/50">
                             {category}
                         </span>
+                    </div>
+                    <button
+                        onClick={toggleWishlist}
+                        disabled={wishlistLoading}
+                        className={cn(
+                            "absolute top-2 right-2 md:top-4 md:right-4 p-2 rounded-xl backdrop-blur-md transition-all duration-300 z-10",
+                            isWishlisted
+                                ? "bg-white text-red-500 shadow-lg scale-110"
+                                : "bg-white/70 text-loops-muted hover:bg-white hover:text-red-500"
+                        )}
+                    >
+                        <Heart className={cn("w-4 h-4 md:w-5 h-5", isWishlisted && "fill-current")} />
+                    </button>
+
+                    {/* Add to Cart Overlay */}
+                    <div className="absolute inset-0 bg-loops-main/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto">
+                        <Button
+                            onClick={handleAddToCart}
+                            className="bg-white text-loops-main hover:bg-loops-primary hover:text-white rounded-2xl p-4 font-bold h-auto shadow-2xl transition-all translate-y-4 group-hover:translate-y-0 duration-500 border-0"
+                        >
+                            <ShoppingCart className="w-5 h-5 mr-3" />
+                            Add to Cart
+                        </Button>
                     </div>
                 </div>
                 <div className="mt-3 space-y-1 px-1">

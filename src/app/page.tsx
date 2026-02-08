@@ -102,6 +102,15 @@ export default function Home() {
             if (plugs) setFoundingPlugs(plugs);
         };
         fetchData();
+
+        // Trigger PWA Install Prompt after a short delay for returning users
+        const timer = setTimeout(() => {
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('show-pwa-install'));
+            }
+        }, 5000); // 5 seconds grace period
+
+        return () => clearTimeout(timer);
     }, [supabase]);
 
     return (

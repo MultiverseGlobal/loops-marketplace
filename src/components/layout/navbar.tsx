@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download } from "lucide-react";
+import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useCampus } from "@/context/campus-context";
+import { useCart } from "@/context/cart-context";
+import { CartDrawer } from "./cart-drawer";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (
@@ -21,6 +23,7 @@ function NavLink({ href, children }: { href: string, children: React.ReactNode }
 export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
+    const [isCartOpen, setIsCartOpen] = useState(false);
     const supabase = createClient();
     const router = useRouter();
     const { campus, getTerm } = useCampus();
@@ -55,6 +58,9 @@ export function Navbar() {
     const triggerPWAInstall = () => {
         window.dispatchEvent(new CustomEvent('show-pwa-install'));
     };
+
+    const { cartItems, wishlistCount } = useCart();
+    const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
         <nav className="fixed top-0 w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl">
@@ -128,6 +134,35 @@ export function Navbar() {
                             >
                                 <Smartphone className="w-5 h-5" />
                             </Button>
+
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsCartOpen(true)}
+                                className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
+                                title="Your Cart"
+                            >
+                                <ShoppingCart className="w-5 h-5" />
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </Button>
+
+                            <Link href="/profile">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
+                                    title="Saved Items"
+                                >
+                                    <Heart className="w-5 h-5" />
+                                    {wishlistCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white" />
+                                    )}
+                                </Button>
+                            </Link>
                         </>
                     ) : (
                         <div className="flex items-center gap-2">
@@ -145,6 +180,8 @@ export function Navbar() {
                     )}
                 </div>
             </div>
+
+            <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
         </nav>
     );
 }
