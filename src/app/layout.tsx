@@ -53,34 +53,20 @@ import { ToastProvider } from "../context/toast-context";
 import { ModalProvider } from "../context/modal-context";
 import { BottomNav } from "../components/layout/bottom-nav";
 import { Analytics } from "@vercel/analytics/next";
-import { useEffect } from "react";
+import { PWALogic } from "../components/pwa-logic";
 
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    useEffect(() => {
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(
-                    (registration) => {
-                        console.log('SW registered: ', registration);
-                    },
-                    (registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    }
-                );
-            });
-        }
-    }, []);
-
     return (
         <html lang="en" suppressHydrationWarning>
             <body
                 suppressHydrationWarning
                 className={cn(inter.variable, outfit.variable, "font-sans antialiased bg-loops-bg text-loops-main selection:bg-loops-secondary/30")}
             >
+                <PWALogic />
                 <CampusProvider>
                     <ToastProvider>
                         <ModalProvider>
