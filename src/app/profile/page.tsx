@@ -751,10 +751,5 @@ export default function ProfilePage() {
                 </div>
             </main>
         </div>
-}
-                    </div >
-                </div >
-            </main >
-        </div >
     );
 }
