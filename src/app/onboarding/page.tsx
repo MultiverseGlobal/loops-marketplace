@@ -666,7 +666,7 @@ export default function OnboardingPage() {
                                 </p>
                             </div>
 
-                            <InstallPrompt />
+
 
                             {primaryRole === 'plug' && (
                                 <div className={cn("p-6 rounded-2xl border max-w-sm mx-auto space-y-2 text-white", storeBannerColor)}>
