@@ -12,8 +12,8 @@ export const metadata: Metadata = {
         template: "%s | Loops"
     },
     icons: {
-        icon: "/favicon-l.svg",
-        apple: "/favicon-l.svg",
+        icon: "/logo.png",
+        apple: "/logo.png",
     },
     description: "The economic nervous system of Nigerian student life. Buy, sell, and trade safely within your verified university network.",
     keywords: ["campus marketplace", "nigerian university", "student trade", "loops", "university marketplace"],
