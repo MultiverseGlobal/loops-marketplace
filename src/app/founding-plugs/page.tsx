@@ -342,174 +342,173 @@ export default function FoundingPlugsCarousel() {
                 </div>
             )
         },
-        },
-{
-    id: 'brand-visuals',
-        content: (
-            <div className="flex flex-col items-center justify-center space-y-12 h-full px-6 max-w-xl mx-auto w-full">
-                <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-bold font-display italic uppercase tracking-tighter">Visual Identity</h2>
-                    <p className="text-loops-muted">Upload your brand logo or a sharp headshot. This is what students see first.</p>
-                </div>
-
-                <div className="space-y-6 w-full">
-                    <div className="flex flex-col items-center space-y-4">
-                        <div className="w-32 h-32 rounded-3xl bg-white border-2 border-dashed border-loops-border flex items-center justify-center overflow-hidden relative group hover:border-loops-primary/50 transition-colors">
-                            {formData.storeLogoUrl ? (
-                                <Image
-                                    src={formData.storeLogoUrl}
-                                    alt="Logo Preview"
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <div className="text-center p-4">
-                                    <div className="p-3 bg-loops-subtle rounded-2xl inline-block mb-2">
-                                        <Globe className="w-6 h-6 text-loops-muted" />
-                                    </div>
-                                    <div className="text-[8px] font-bold uppercase tracking-widest text-loops-muted">Paste Image URL</div>
-                                </div>
-                            )}
-                        </div>
-
-                        <input
-                            type="url"
-                            value={formData.storeLogoUrl}
-                            onChange={(e) => handleFormChange('storeLogoUrl', e.target.value)}
-                            placeholder="https://image-url.com/logo.jpg"
-                            className="w-full p-4 text-xs font-bold bg-white border border-loops-border rounded-2xl focus:border-loops-primary outline-none transition-all text-center"
-                        />
-                        <p className="text-[10px] text-loops-muted text-center max-w-xs">
-                            <span className="text-loops-primary font-bold">Pro Tip:</span> High-contrast, clean logos work best for the mobile experience.
-                        </p>
+        {
+            id: 'brand-visuals',
+            content: (
+                <div className="flex flex-col items-center justify-center space-y-12 h-full px-6 max-w-xl mx-auto w-full">
+                    <div className="text-center space-y-2">
+                        <h2 className="text-3xl font-bold font-display italic uppercase tracking-tighter">Visual Identity</h2>
+                        <p className="text-loops-muted">Upload your brand logo or a sharp headshot. This is what students see first.</p>
                     </div>
-                </div>
 
-                <div className="flex gap-4 w-full">
-                    <Button variant="ghost" onClick={prevSlide} className="flex-1 h-14 rounded-2xl font-bold uppercase tracking-widest text-xs">Back</Button>
-                    <Button
-                        onClick={nextSlide}
-                        className="flex-2 h-14 px-8 rounded-2xl bg-loops-primary text-white font-bold uppercase tracking-widest text-xs"
-                    >
-                        Review Final Brand
-                    </Button>
-                </div>
-            </div>
-        )
-},
-{
-    id: 'success',
-        content: (
-            <div className="flex flex-col items-center justify-center text-center space-y-12 h-full px-6">
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                    className="w-24 h-24 bg-loops-success/10 rounded-full flex items-center justify-center text-loops-success border border-loops-success/20"
-                >
-                    <CheckCircle className="w-12 h-12" />
-                </motion.div>
-
-                <div className="space-y-4">
-                    <h2 className="font-display text-4xl font-bold italic uppercase tracking-tighter">You're in the Loop.</h2>
-                    <p className="text-loops-muted max-w-sm mx-auto leading-relaxed">
-                        Your "Founding Plug" application is being reviewed. Keep an eye on your WhatsApp for an exclusive onboarding link.
-                    </p>
-                </div>
-
-                {formData.storeName && (
-                    <div className={cn("p-8 rounded-[2rem] text-white w-full max-w-xs shadow-2xl relative overflow-hidden", formData.storeBannerColor)}>
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                            <InfinityLogo className="w-16 h-16" />
-                        </div>
-                        <div className="relative z-10 flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 overflow-hidden flex items-center justify-center">
+                    <div className="space-y-6 w-full">
+                        <div className="flex flex-col items-center space-y-4">
+                            <div className="w-32 h-32 rounded-3xl bg-white border-2 border-dashed border-loops-border flex items-center justify-center overflow-hidden relative group hover:border-loops-primary/50 transition-colors">
                                 {formData.storeLogoUrl ? (
-                                    <Image src={formData.storeLogoUrl} alt="Logo" width={48} height={48} className="object-cover h-full w-full" />
+                                    <Image
+                                        src={formData.storeLogoUrl}
+                                        alt="Logo Preview"
+                                        fill
+                                        className="object-cover"
+                                    />
                                 ) : (
-                                    <User className="w-6 h-6" />
+                                    <div className="text-center p-4">
+                                        <div className="p-3 bg-loops-subtle rounded-2xl inline-block mb-2">
+                                            <Globe className="w-6 h-6 text-loops-muted" />
+                                        </div>
+                                        <div className="text-[8px] font-bold uppercase tracking-widest text-loops-muted">Paste Image URL</div>
+                                    </div>
                                 )}
                             </div>
-                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80">Reserved Store</div>
-                        </div>
-                        <div className="text-2xl font-black italic relative z-10">{formData.storeName}</div>
-                        <div className="mt-4 flex items-center gap-2 relative z-10">
-                            <ShieldCheck className="w-4 h-4" />
-                            <span className="text-[10px] font-bold uppercase">Founding 50 Candidate</span>
+
+                            <input
+                                type="url"
+                                value={formData.storeLogoUrl}
+                                onChange={(e) => handleFormChange('storeLogoUrl', e.target.value)}
+                                placeholder="https://image-url.com/logo.jpg"
+                                className="w-full p-4 text-xs font-bold bg-white border border-loops-border rounded-2xl focus:border-loops-primary outline-none transition-all text-center"
+                            />
+                            <p className="text-[10px] text-loops-muted text-center max-w-xs">
+                                <span className="text-loops-primary font-bold">Pro Tip:</span> High-contrast, clean logos work best for the mobile experience.
+                            </p>
                         </div>
                     </div>
-                )}
 
-                <Link href="/">
-                    <Button variant="ghost" className="h-14 font-bold uppercase tracking-widest text-xs text-loops-muted">
-                        Return to Homepage
-                    </Button>
-                </Link>
-            </div>
-        )
-}
+                    <div className="flex gap-4 w-full">
+                        <Button variant="ghost" onClick={prevSlide} className="flex-1 h-14 rounded-2xl font-bold uppercase tracking-widest text-xs">Back</Button>
+                        <Button
+                            onClick={nextSlide}
+                            className="flex-2 h-14 px-8 rounded-2xl bg-loops-primary text-white font-bold uppercase tracking-widest text-xs"
+                        >
+                            Review Final Brand
+                        </Button>
+                    </div>
+                </div>
+            )
+        },
+        {
+            id: 'success',
+            content: (
+                <div className="flex flex-col items-center justify-center text-center space-y-12 h-full px-6">
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: [1, 1.1, 1], opacity: 1 }}
+                        className="w-24 h-24 bg-loops-success/10 rounded-full flex items-center justify-center text-loops-success border border-loops-success/20"
+                    >
+                        <CheckCircle className="w-12 h-12" />
+                    </motion.div>
+
+                    <div className="space-y-4">
+                        <h2 className="font-display text-4xl font-bold italic uppercase tracking-tighter">You're in the Loop.</h2>
+                        <p className="text-loops-muted max-w-sm mx-auto leading-relaxed">
+                            Your "Founding Plug" application is being reviewed. Keep an eye on your WhatsApp for an exclusive onboarding link.
+                        </p>
+                    </div>
+
+                    {formData.storeName && (
+                        <div className={cn("p-8 rounded-[2rem] text-white w-full max-w-xs shadow-2xl relative overflow-hidden", formData.storeBannerColor)}>
+                            <div className="absolute top-0 right-0 p-4 opacity-10">
+                                <InfinityLogo className="w-16 h-16" />
+                            </div>
+                            <div className="relative z-10 flex items-center gap-4 mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 overflow-hidden flex items-center justify-center">
+                                    {formData.storeLogoUrl ? (
+                                        <Image src={formData.storeLogoUrl} alt="Logo" width={48} height={48} className="object-cover h-full w-full" />
+                                    ) : (
+                                        <User className="w-6 h-6" />
+                                    )}
+                                </div>
+                                <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80">Reserved Store</div>
+                            </div>
+                            <div className="text-2xl font-black italic relative z-10">{formData.storeName}</div>
+                            <div className="mt-4 flex items-center gap-2 relative z-10">
+                                <ShieldCheck className="w-4 h-4" />
+                                <span className="text-[10px] font-bold uppercase">Founding 50 Candidate</span>
+                            </div>
+                        </div>
+                    )}
+
+                    <Link href="/">
+                        <Button variant="ghost" className="h-14 font-bold uppercase tracking-widest text-xs text-loops-muted">
+                            Return to Homepage
+                        </Button>
+                    </Link>
+                </div>
+            )
+        }
     ];
 
-const variants = {
-    enter: (direction: number) => ({
-        x: direction > 0 ? 1000 : -1000,
-        opacity: 0
-    }),
-    center: {
-        zIndex: 1,
-        x: 0,
-        opacity: 1
-    },
-    exit: (direction: number) => ({
-        zIndex: 0,
-        x: direction < 0 ? 1000 : -1000,
-        opacity: 0
-    })
-};
+    const variants = {
+        enter: (direction: number) => ({
+            x: direction > 0 ? 1000 : -1000,
+            opacity: 0
+        }),
+        center: {
+            zIndex: 1,
+            x: 0,
+            opacity: 1
+        },
+        exit: (direction: number) => ({
+            zIndex: 0,
+            x: direction < 0 ? 1000 : -1000,
+            opacity: 0
+        })
+    };
 
-return (
-    <div className="fixed inset-0 bg-loops-bg text-loops-main overflow-hidden">
-        <Navbar />
+    return (
+        <div className="fixed inset-0 bg-loops-bg text-loops-main overflow-hidden">
+            <Navbar />
 
-        <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 mt-20">
-            <div className="flex gap-2">
-                {slides.map((_, i) => (
-                    <div
-                        key={i}
-                        className={cn(
-                            "h-1 rounded-full transition-all duration-500",
-                            i === currentSlide ? "w-8 bg-loops-primary" : (i < currentSlide ? "w-4 bg-loops-primary/30" : "w-4 bg-loops-border")
-                        )}
-                    />
-                ))}
+            <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 mt-20">
+                <div className="flex gap-2">
+                    {slides.map((_, i) => (
+                        <div
+                            key={i}
+                            className={cn(
+                                "h-1 rounded-full transition-all duration-500",
+                                i === currentSlide ? "w-8 bg-loops-primary" : (i < currentSlide ? "w-4 bg-loops-primary/30" : "w-4 bg-loops-border")
+                            )}
+                        />
+                    ))}
+                </div>
+                {currentSlide < slides.length - 1 && (
+                    <button onClick={() => window.location.href = '/'} className="text-[10px] font-bold uppercase tracking-widest text-loops-muted hover:text-loops-primary transition-colors">
+                        Skip Onboarding
+                    </button>
+                )}
             </div>
-            {currentSlide < slides.length - 1 && (
-                <button onClick={() => window.location.href = '/'} className="text-[10px] font-bold uppercase tracking-widest text-loops-muted hover:text-loops-primary transition-colors">
-                    Skip Onboarding
-                </button>
-            )}
-        </div>
 
-        <main className="relative h-full w-full">
-            <AnimatePresence initial={false} custom={direction}>
-                <motion.div
-                    key={currentSlide}
-                    custom={direction}
-                    variants={variants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 }
-                    }}
-                    className="absolute inset-0"
-                >
-                    {slides[currentSlide].content}
-                </motion.div>
-            </AnimatePresence>
-        </main>
-    </div>
-);
+            <main className="relative h-full w-full">
+                <AnimatePresence initial={false} custom={direction}>
+                    <motion.div
+                        key={currentSlide}
+                        custom={direction}
+                        variants={variants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                            x: { type: "spring", stiffness: 300, damping: 30 },
+                            opacity: { duration: 0.2 }
+                        }}
+                        className="absolute inset-0"
+                    >
+                        {slides[currentSlide].content}
+                    </motion.div>
+                </AnimatePresence>
+            </main>
+        </div>
+    );
 }
 
 function BenefitCard({ icon: Icon, title, desc }: { icon: any, title: string, desc: string }) {

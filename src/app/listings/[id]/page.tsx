@@ -245,7 +245,7 @@ export default function ListingDetailPage() {
                 });
 
             if (!error) {
-                toast.success("Pulse reported. Safety moderators will review it.");
+                toast.success("Listing reported. Safety moderators will review it.");
             } else {
                 toast.error("Failed to submit report.");
             }
@@ -415,7 +415,7 @@ export default function ListingDetailPage() {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Rating value={listing.profiles?.rating || 0} size="sm" />
-                                            <div className="text-[10px] text-loops-muted uppercase tracking-widest font-bold">Pulse: {listing.profiles?.reputation || 0}</div>
+                                            <div className="text-[10px] text-loops-muted uppercase tracking-widest font-bold">Karma: {listing.profiles?.reputation || 0}</div>
                                         </div>
                                     </div>
                                 </div>

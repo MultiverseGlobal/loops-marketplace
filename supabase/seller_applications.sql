@@ -11,6 +11,7 @@ create table if not exists seller_applications (
   currently_selling text,
   motivation text not null,
   status text default 'pending' check (status in ('pending', 'approved', 'rejected')),
+  rejection_reason text,
   reviewed_by uuid references auth.users(id),
   reviewed_at timestamp with time zone,
   user_id uuid references auth.users(id)

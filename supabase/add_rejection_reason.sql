@@ -1,6 +1,5 @@
--- Add rejection_reason column to seller_applications
-ALTER TABLE seller_applications 
-ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
+-- Add rejection_reason column to seller_applications table
+alter table public.seller_applications 
+add column if not exists rejection_reason text;
 
--- Update RLS to ensure users can see their own rejection reasons
--- (Assuming existing policy allows users to see their own applications)
+comment on column public.seller_applications.rejection_reason is 'Reason provided by admin when rejecting an application.';
