@@ -146,6 +146,28 @@ export default function AdminDashboard() {
                     toast.error("App approved but failed to auto-verify profile. Do it manually.");
                 } else {
                     toast.success("User verified as Plug! 🔌");
+
+                    // 3. Send welcome email automatically
+                    try {
+                        const welcomeResponse = await fetch('/api/send-welcome', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                user_id: app.user_id,
+                                email: app.campus_email,
+                                name: app.full_name
+                            })
+                        });
+
+                        if (welcomeResponse.ok) {
+                            toast.success("📧 Welcome email sent!");
+                        } else {
+                            console.error("Failed to send welcome email");
+                        }
+                    } catch (emailError) {
+                        console.error("Email error:", emailError);
+                        // Don't block the approval if email fails
+                    }
                 }
             }
 
