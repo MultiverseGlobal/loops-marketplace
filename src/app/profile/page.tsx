@@ -400,7 +400,7 @@ export default function ProfilePage() {
                             {user?.id === profile?.id && (profile?.is_plug || profile?.primary_role === 'plug') && (
                                 <div className="pt-6 border-t border-loops-border">
                                     <a
-                                        href={`https://wa.me/${formatWhatsAppNumber(profile?.whatsapp_number)}?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Listings%20and%20list%20new%20items.`}
+                                        href={`https://wa.me/13157376569?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Listings%20and%20list%20new%20items.`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="block"
