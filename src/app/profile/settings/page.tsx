@@ -29,6 +29,7 @@ export default function SettingsPage() {
     const [description, setDescription] = useState("");
     const [motivation, setMotivation] = useState("");
     const [itemCount, setItemCount] = useState("");
+    const [studentIdUrl, setStudentIdUrl] = useState("");
     const [submittingApp, setSubmittingApp] = useState(false);
     const supabase = createClient();
     const router = useRouter();
@@ -101,6 +102,12 @@ export default function SettingsPage() {
 
         if (!user) return;
 
+        if (!studentIdUrl) {
+            toast.error("Please upload your Student ID card for verification.");
+            setSubmittingApp(false);
+            return;
+        }
+
         try {
             const { error } = await supabase
                 .from('seller_applications')
@@ -113,7 +120,8 @@ export default function SettingsPage() {
                     offering_description: description,
                     estimated_item_count: itemCount,
                     motivation: motivation,
-                    status: 'pending'
+                    status: 'pending',
+                    student_id_url: studentIdUrl
                 });
 
             if (error) throw error;
