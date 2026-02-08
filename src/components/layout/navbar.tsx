@@ -63,7 +63,7 @@ export function Navbar() {
     const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
-        <nav className="fixed top-0 w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl">
+        <nav className="hidden md:block fixed top-0 w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
                 <div className="flex items-center gap-12">
                     <Link href="/" className="flex items-center gap-3 group">

@@ -163,7 +163,7 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
 
-            <main className="pt-20 sm:pt-24 pb-16 sm:pb-20 max-w-7xl mx-auto px-0 sm:px-6 relative">
+            <main className="pt-4 md:pt-20 sm:pt-24 pb-16 sm:pb-20 max-w-7xl mx-auto px-0 sm:px-6 relative">
                 {/* Brand Banner / Store Header */}
                 {profile?.store_name && (
                     <div className={cn("w-full h-40 sm:h-64 mb-12 sm:rounded-[2.5rem] relative overflow-hidden group shadow-2xl", profile.store_banner_color || "bg-loops-primary")}>

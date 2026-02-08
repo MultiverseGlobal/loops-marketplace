@@ -32,7 +32,8 @@ export default function FoundingPlugsCarousel() {
         storeBannerColor: "bg-loops-primary",
         storeCategory: "",
         storeLogoUrl: "",
-        brandingTier: 'founding' as 'basic' | 'founding' | 'premium'
+        brandingTier: 'founding' as 'basic' | 'founding' | 'premium',
+        estimatedItemCount: ""
     });
 
     const supabase = createClient();
@@ -63,6 +64,7 @@ export default function FoundingPlugsCarousel() {
                     campus_email: formData.email,
                     offering_type: formData.offeringType,
                     offering_description: formData.description,
+                    estimated_item_count: formData.estimatedItemCount || "Not Specified",
                     status: 'pending',
                     store_name: formData.storeName,
                     store_banner_color: formData.storeBannerColor,
@@ -87,14 +89,14 @@ export default function FoundingPlugsCarousel() {
         {
             id: 'vision',
             content: (
-                <div className="flex flex-col items-center justify-center text-center space-y-12 h-full px-6">
+                <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-12 min-h-full px-6 py-10">
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         className="relative"
                     >
                         <div className="absolute inset-0 blur-3xl bg-loops-primary/20 animate-pulse" />
-                        <InfinityLogo className="w-48 h-48 relative z-10" />
+                        <InfinityLogo className="w-32 h-32 sm:w-48 sm:h-48 relative z-10" />
                     </motion.div>
 
                     <div className="space-y-4">
@@ -102,7 +104,7 @@ export default function FoundingPlugsCarousel() {
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="font-display text-5xl sm:text-7xl font-bold tracking-tighter"
+                            className="font-display text-4xl sm:text-7xl font-bold tracking-tighter"
                         >
                             The <span className="italic text-loops-primary">Founding</span> Loop.
                         </motion.h1>
@@ -110,7 +112,7 @@ export default function FoundingPlugsCarousel() {
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.3 }}
-                            className="text-lg text-loops-muted max-w-lg mx-auto leading-relaxed"
+                            className="text-base sm:text-lg text-loops-muted max-w-lg mx-auto leading-relaxed"
                         >
                             Veritas University is about to change. We're looking for the first 50 students to shape the future of campus commerce.
                         </motion.p>
@@ -118,7 +120,7 @@ export default function FoundingPlugsCarousel() {
 
                     <Button
                         onClick={nextSlide}
-                        className="h-16 px-12 rounded-full bg-loops-primary text-white text-lg font-bold shadow-2xl shadow-loops-primary/20 group uppercase tracking-widest"
+                        className="h-14 sm:h-16 px-8 sm:px-12 rounded-full bg-loops-primary text-white text-base sm:text-lg font-bold shadow-2xl shadow-loops-primary/20 group uppercase tracking-widest"
                     >
                         Start Your Journey
                         <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
@@ -129,20 +131,20 @@ export default function FoundingPlugsCarousel() {
         {
             id: 'benefits',
             content: (
-                <div className="flex flex-col items-center justify-center space-y-12 h-full px-6 max-w-4xl mx-auto">
+                <div className="flex flex-col items-center justify-center space-y-8 sm:space-y-12 min-h-full px-6 py-10 max-w-4xl mx-auto">
                     <div className="text-center space-y-2">
-                        <h2 className="text-3xl font-bold font-display italic uppercase tracking-tighter">Ultimate VIP Access</h2>
-                        <p className="text-loops-muted">Founding Plugs get benefits that will NEVER be offered again.</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold font-display italic uppercase tracking-tighter">Ultimate VIP Access</h2>
+                        <p className="text-sm sm:text-base text-loops-muted">Founding Plugs get benefits that will NEVER be offered again.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
                         <BenefitCard icon={Award} title="Verified Founding Badge" desc="Permanent status on your profile" />
                         <BenefitCard icon={TrendingUp} title="Priority Listing" desc="First page visibility for 3 months" />
                         <BenefitCard icon={Globe} title="Founding 50 Showcase" desc="Featured on the landing page" />
                         <BenefitCard icon={ShieldCheck} title="Zero Fees" desc="No commissions on your first 100 sales" />
                     </div>
 
-                    <div className="flex gap-4 w-full sm:w-auto">
+                    <div className="flex gap-4 w-full sm:w-auto pt-4 sm:pt-0">
                         <Button variant="ghost" onClick={prevSlide} className="flex-1 h-14 rounded-2xl font-bold uppercase tracking-widest text-xs">Back</Button>
                         <Button onClick={nextSlide} className="flex-2 h-14 px-8 rounded-2xl bg-loops-primary text-white font-bold uppercase tracking-widest text-xs">Continue</Button>
                     </div>
@@ -152,13 +154,13 @@ export default function FoundingPlugsCarousel() {
         {
             id: 'intent',
             content: (
-                <div className="flex flex-col items-center justify-center space-y-12 h-full px-6 max-w-4xl mx-auto">
+                <div className="flex flex-col items-center justify-center space-y-8 sm:space-y-12 min-h-full px-6 py-10 max-w-4xl mx-auto">
                     <div className="text-center space-y-2">
-                        <h2 className="text-3xl font-bold font-display italic uppercase tracking-tighter">Choose Your Path</h2>
-                        <p className="text-loops-muted">How do you want to start your campus legacy?</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold font-display italic uppercase tracking-tighter">Choose Your Path</h2>
+                        <p className="text-sm sm:text-base text-loops-muted">How do you want to start your campus legacy?</p>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 gap-6 w-full">
+                    <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 w-full">
                         <IntentCard
                             active={formData.intent === 'build'}
                             onClick={() => { handleFormChange('intent', 'build'); nextSlide(); }}
@@ -180,13 +182,13 @@ export default function FoundingPlugsCarousel() {
         {
             id: 'identity',
             content: (
-                <div className="flex flex-col items-center justify-center space-y-12 h-full px-6 max-w-xl mx-auto w-full">
+                <div className="flex flex-col items-center justify-center space-y-8 sm:space-y-12 min-h-full px-6 py-10 max-w-xl mx-auto w-full">
                     <div className="text-center space-y-2">
-                        <h2 className="text-3xl font-bold font-display italic uppercase tracking-tighter">Who are you?</h2>
-                        <p className="text-loops-muted">Verification is the core of the Loop trust.</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold font-display italic uppercase tracking-tighter">Who are you?</h2>
+                        <p className="text-sm sm:text-base text-loops-muted">Verification is the core of the Loop trust.</p>
                     </div>
 
-                    <div className="space-y-6 w-full">
+                    <div className="space-y-4 sm:space-y-6 w-full">
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-2">Full Name</label>
                             <input
@@ -194,7 +196,7 @@ export default function FoundingPlugsCarousel() {
                                 value={formData.name}
                                 onChange={(e) => handleFormChange('name', e.target.value)}
                                 placeholder="John Doe"
-                                className="w-full p-6 text-xl font-bold bg-white border border-loops-border rounded-3xl focus:border-loops-primary outline-none transition-all"
+                                className="w-full p-4 sm:p-6 text-lg sm:text-xl font-bold bg-white border border-loops-border rounded-2xl sm:rounded-3xl focus:border-loops-primary outline-none transition-all"
                             />
                         </div>
                         <div className="space-y-2">
@@ -204,7 +206,7 @@ export default function FoundingPlugsCarousel() {
                                 value={formData.whatsapp}
                                 onChange={(e) => handleFormChange('whatsapp', e.target.value)}
                                 placeholder="+234..."
-                                className="w-full p-6 text-xl font-bold bg-white border border-loops-border rounded-3xl focus:border-loops-primary outline-none transition-all"
+                                className="w-full p-4 sm:p-6 text-lg sm:text-xl font-bold bg-white border border-loops-border rounded-2xl sm:rounded-3xl focus:border-loops-primary outline-none transition-all"
                             />
                         </div>
                         <div className="space-y-2">
@@ -214,7 +216,7 @@ export default function FoundingPlugsCarousel() {
                                 value={formData.email}
                                 onChange={(e) => handleFormChange('email', e.target.value)}
                                 placeholder="student@university.edu"
-                                className="w-full p-6 text-xl font-bold bg-white border border-loops-border rounded-3xl focus:border-loops-primary outline-none transition-all"
+                                className="w-full p-4 sm:p-6 text-lg sm:text-xl font-bold bg-white border border-loops-border rounded-2xl sm:rounded-3xl focus:border-loops-primary outline-none transition-all"
                             />
                         </div>
                     </div>
@@ -235,34 +237,48 @@ export default function FoundingPlugsCarousel() {
         {
             id: 'category',
             content: (
-                <div className="flex flex-col items-center justify-center space-y-12 h-full px-6 max-w-xl mx-auto w-full">
+                <div className="flex flex-col items-center justify-center space-y-8 sm:space-y-12 min-h-full px-6 py-10 max-w-xl mx-auto w-full">
                     <div className="text-center space-y-2">
-                        <h2 className="text-3xl font-bold font-display italic uppercase tracking-tighter">Your Business</h2>
-                        <p className="text-loops-muted">What will you be offering to the community?</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold font-display italic uppercase tracking-tighter">Your Business</h2>
+                        <p className="text-sm sm:text-base text-loops-muted">What will you be offering to the community?</p>
                     </div>
 
-                    <div className="space-y-8 w-full">
+                    <div className="space-y-6 sm:space-y-8 w-full">
                         <div className="grid grid-cols-2 gap-4">
                             <button
                                 onClick={() => handleFormChange('offeringType', 'product')}
                                 className={cn(
-                                    "p-8 rounded-3xl border-2 transition-all flex flex-col items-center gap-4",
+                                    "p-6 sm:p-8 rounded-3xl border-2 transition-all flex flex-col items-center gap-4",
                                     formData.offeringType === 'product' ? "border-loops-primary bg-loops-primary/5" : "border-loops-border hover:border-loops-primary/30"
                                 )}
                             >
-                                <Package className={cn("w-10 h-10", formData.offeringType === 'product' ? "text-loops-primary" : "text-loops-muted")} />
-                                <span className="font-bold text-sm uppercase tracking-widest">Products</span>
+                                <Package className={cn("w-8 h-8 sm:w-10 sm:h-10", formData.offeringType === 'product' ? "text-loops-primary" : "text-loops-muted")} />
+                                <span className="font-bold text-xs sm:text-sm uppercase tracking-widest">Products</span>
                             </button>
                             <button
                                 onClick={() => handleFormChange('offeringType', 'service')}
                                 className={cn(
-                                    "p-8 rounded-3xl border-2 transition-all flex flex-col items-center gap-4",
+                                    "p-6 sm:p-8 rounded-3xl border-2 transition-all flex flex-col items-center gap-4",
                                     formData.offeringType === 'service' ? "border-loops-primary bg-loops-primary/5" : "border-loops-border hover:border-loops-primary/30"
                                 )}
                             >
-                                <Zap className={cn("w-10 h-10", formData.offeringType === 'service' ? "text-loops-primary" : "text-loops-muted")} />
-                                <span className="font-bold text-sm uppercase tracking-widest">Services</span>
+                                <Zap className={cn("w-8 h-8 sm:w-10 sm:h-10", formData.offeringType === 'service' ? "text-loops-primary" : "text-loops-muted")} />
+                                <span className="font-bold text-xs sm:text-sm uppercase tracking-widest">Services</span>
                             </button>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-2">Est. Inventory</label>
+                            <select
+                                value={formData.estimatedItemCount}
+                                onChange={(e) => handleFormChange('estimatedItemCount', e.target.value)}
+                                className="w-full p-4 text-sm font-bold bg-white border border-loops-border rounded-xl sm:rounded-2xl focus:border-loops-primary outline-none transition-all appearance-none"
+                            >
+                                <option value="">Select Inventory Size</option>
+                                <option value="1-5 Items">1-5 Items (Just Starting)</option>
+                                <option value="5-20 Items">5-20 Items (Growing)</option>
+                                <option value="20+ Items">20+ Items (Established)</option>
+                            </select>
                         </div>
 
                         <div className="space-y-2">
@@ -272,7 +288,7 @@ export default function FoundingPlugsCarousel() {
                                 onChange={(e) => handleFormChange('description', e.target.value)}
                                 placeholder="e.g. I sell high-quality campus fashion components..."
                                 rows={3}
-                                className="w-full p-6 text-base font-bold bg-white border border-loops-border rounded-3xl focus:border-loops-primary outline-none transition-all resize-none"
+                                className="w-full p-4 sm:p-6 text-sm sm:text-base font-bold bg-white border border-loops-border rounded-2xl sm:rounded-3xl focus:border-loops-primary outline-none transition-all resize-none"
                             />
                         </div>
                     </div>
@@ -280,7 +296,7 @@ export default function FoundingPlugsCarousel() {
                     <div className="flex gap-4 w-full">
                         <Button variant="ghost" onClick={prevSlide} className="flex-1 h-14 rounded-2xl font-bold uppercase tracking-widest text-xs">Back</Button>
                         <Button
-                            disabled={!formData.offeringType || !formData.description}
+                            disabled={!formData.offeringType || !formData.description || !formData.estimatedItemCount}
                             onClick={formData.intent === 'build' ? nextSlide : handleSubmit}
                             className="flex-2 h-14 px-8 rounded-2xl bg-loops-primary text-white font-bold uppercase tracking-widest text-xs"
                         >
@@ -293,13 +309,13 @@ export default function FoundingPlugsCarousel() {
         {
             id: 'brand',
             content: (
-                <div className="flex flex-col items-center justify-center space-y-12 h-full px-6 max-w-xl mx-auto w-full">
+                <div className="flex flex-col items-center justify-center space-y-8 sm:space-y-12 min-h-full px-6 py-10 max-w-xl mx-auto w-full">
                     <div className="text-center space-y-2">
-                        <h2 className="text-3xl font-bold font-display italic uppercase tracking-tighter">Brand Your Vision</h2>
-                        <p className="text-loops-muted">Reserve your unique store identity.</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold font-display italic uppercase tracking-tighter">Brand Your Vision</h2>
+                        <p className="text-sm sm:text-base text-loops-muted">Reserve your unique store identity.</p>
                     </div>
 
-                    <div className="space-y-6 w-full">
+                    <div className="space-y-4 sm:space-y-6 w-full">
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-2">Storefront Name</label>
                             <input
@@ -307,7 +323,7 @@ export default function FoundingPlugsCarousel() {
                                 value={formData.storeName}
                                 onChange={(e) => handleFormChange('storeName', e.target.value)}
                                 placeholder="Veritas Fashion Lab"
-                                className="w-full p-6 text-xl font-bold bg-white border border-loops-border rounded-3xl focus:border-loops-primary outline-none transition-all"
+                                className="w-full p-4 sm:p-6 text-lg sm:text-xl font-bold bg-white border border-loops-border rounded-2xl sm:rounded-3xl focus:border-loops-primary outline-none transition-all"
                             />
                         </div>
 
@@ -345,15 +361,15 @@ export default function FoundingPlugsCarousel() {
         {
             id: 'brand-visuals',
             content: (
-                <div className="flex flex-col items-center justify-center space-y-12 h-full px-6 max-w-xl mx-auto w-full">
+                <div className="flex flex-col items-center justify-center space-y-8 sm:space-y-12 min-h-full px-6 py-10 max-w-xl mx-auto w-full">
                     <div className="text-center space-y-2">
-                        <h2 className="text-3xl font-bold font-display italic uppercase tracking-tighter">Visual Identity</h2>
-                        <p className="text-loops-muted">Upload your brand logo or a sharp headshot. This is what students see first.</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold font-display italic uppercase tracking-tighter">Visual Identity</h2>
+                        <p className="text-sm sm:text-base text-loops-muted">Upload your brand logo or a sharp headshot. This is what students see first.</p>
                     </div>
 
                     <div className="space-y-6 w-full">
                         <div className="flex flex-col items-center space-y-4">
-                            <div className="w-32 h-32 rounded-3xl bg-white border-2 border-dashed border-loops-border flex items-center justify-center overflow-hidden relative group hover:border-loops-primary/50 transition-colors">
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-white border-2 border-dashed border-loops-border flex items-center justify-center overflow-hidden relative group hover:border-loops-primary/50 transition-colors">
                                 {formData.storeLogoUrl ? (
                                     <Image
                                         src={formData.storeLogoUrl}
@@ -364,7 +380,7 @@ export default function FoundingPlugsCarousel() {
                                 ) : (
                                     <div className="text-center p-4">
                                         <div className="p-3 bg-loops-subtle rounded-2xl inline-block mb-2">
-                                            <Globe className="w-6 h-6 text-loops-muted" />
+                                            <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-loops-muted" />
                                         </div>
                                         <div className="text-[8px] font-bold uppercase tracking-widest text-loops-muted">Paste Image URL</div>
                                     </div>
@@ -376,7 +392,7 @@ export default function FoundingPlugsCarousel() {
                                 value={formData.storeLogoUrl}
                                 onChange={(e) => handleFormChange('storeLogoUrl', e.target.value)}
                                 placeholder="https://image-url.com/logo.jpg"
-                                className="w-full p-4 text-xs font-bold bg-white border border-loops-border rounded-2xl focus:border-loops-primary outline-none transition-all text-center"
+                                className="w-full p-4 text-xs font-bold bg-white border border-loops-border rounded-xl focus:border-loops-primary outline-none transition-all text-center"
                             />
                             <p className="text-[10px] text-loops-muted text-center max-w-xs">
                                 <span className="text-loops-primary font-bold">Pro Tip:</span> High-contrast, clean logos work best for the mobile experience.
@@ -399,24 +415,24 @@ export default function FoundingPlugsCarousel() {
         {
             id: 'success',
             content: (
-                <div className="flex flex-col items-center justify-center text-center space-y-12 h-full px-6">
+                <div className="flex flex-col items-center justify-center text-center space-y-8 sm:space-y-12 min-h-full px-6 py-10">
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                        className="w-24 h-24 bg-loops-success/10 rounded-full flex items-center justify-center text-loops-success border border-loops-success/20"
+                        className="w-20 h-20 sm:w-24 sm:h-24 bg-loops-success/10 rounded-full flex items-center justify-center text-loops-success border border-loops-success/20"
                     >
-                        <CheckCircle className="w-12 h-12" />
+                        <CheckCircle className="w-10 h-10 sm:w-12 sm:h-12" />
                     </motion.div>
 
                     <div className="space-y-4">
-                        <h2 className="font-display text-4xl font-bold italic uppercase tracking-tighter">You're in the Loop.</h2>
-                        <p className="text-loops-muted max-w-sm mx-auto leading-relaxed">
+                        <h2 className="font-display text-3xl sm:text-4xl font-bold italic uppercase tracking-tighter">You're in the Loop.</h2>
+                        <p className="text-sm sm:text-base text-loops-muted max-w-sm mx-auto leading-relaxed">
                             Your "Founding Plug" application is being reviewed. Keep an eye on your WhatsApp for an exclusive onboarding link.
                         </p>
                     </div>
 
                     {formData.storeName && (
-                        <div className={cn("p-8 rounded-[2rem] text-white w-full max-w-xs shadow-2xl relative overflow-hidden", formData.storeBannerColor)}>
+                        <div className={cn("p-6 sm:p-8 rounded-[2rem] text-white w-full max-w-xs shadow-2xl relative overflow-hidden", formData.storeBannerColor)}>
                             <div className="absolute top-0 right-0 p-4 opacity-10">
                                 <InfinityLogo className="w-16 h-16" />
                             </div>
@@ -466,10 +482,8 @@ export default function FoundingPlugsCarousel() {
     };
 
     return (
-        <div className="fixed inset-0 bg-loops-bg text-loops-main overflow-hidden">
-            <Navbar />
-
-            <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 mt-20">
+        <div className="fixed inset-0 bg-loops-bg text-loops-main overflow-y-auto overflow-x-hidden">
+            <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50">
                 <div className="flex gap-2">
                     {slides.map((_, i) => (
                         <div
@@ -483,12 +497,12 @@ export default function FoundingPlugsCarousel() {
                 </div>
                 {currentSlide < slides.length - 1 && (
                     <button onClick={() => window.location.href = '/'} className="text-[10px] font-bold uppercase tracking-widest text-loops-muted hover:text-loops-primary transition-colors">
-                        Skip Onboarding
+                        Skip
                     </button>
                 )}
             </div>
 
-            <main className="relative h-full w-full">
+            <main className="relative min-h-full w-full flex flex-col justify-center py-20">
                 <AnimatePresence initial={false} custom={direction}>
                     <motion.div
                         key={currentSlide}
@@ -501,9 +515,11 @@ export default function FoundingPlugsCarousel() {
                             x: { type: "spring", stiffness: 300, damping: 30 },
                             opacity: { duration: 0.2 }
                         }}
-                        className="absolute inset-0"
+                        className="absolute inset-0 w-full h-full"
                     >
-                        {slides[currentSlide].content}
+                        <div className="h-full overflow-y-auto overflow-x-hidden custom-scrollbar">
+                            {slides[currentSlide].content}
+                        </div>
                     </motion.div>
                 </AnimatePresence>
             </main>

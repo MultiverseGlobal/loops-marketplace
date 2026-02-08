@@ -48,7 +48,7 @@ export default function ServicesPage() {
             <Navbar />
 
             {/* App Header */}
-            <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-loops-border pt-20 pb-4 px-4 sm:px-6">
+            <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-loops-border pt-4 md:pt-20 pb-4 px-4 sm:px-6">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-1">
                         <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tighter text-loops-main">

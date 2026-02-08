@@ -127,13 +127,13 @@ export default function MarketplacePage() {
             <Navbar />
 
             {hasUser && (
-                <div className="pt-20">
+                <div className="pt-4 md:pt-20">
                     <VerificationBanner email={userEmail} isVerified={isVerified} />
                 </div>
             )}
 
             {/* App Header */}
-            <header className="bg-white/80 backdrop-blur-xl border-b border-loops-border pt-20 md:pt-32 pb-4 md:pb-8 px-4 sm:px-6 relative z-10">
+            <header className="bg-white/80 backdrop-blur-xl border-b border-loops-border pt-4 md:pt-32 pb-4 md:pb-8 px-4 sm:px-6 relative z-10">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8">
                     <div className="space-y-1 sm:space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/10 text-loops-primary text-[9px] md:text-[10px] font-bold uppercase tracking-widest border border-loops-primary/20">
