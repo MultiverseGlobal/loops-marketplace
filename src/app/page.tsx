@@ -15,7 +15,7 @@ import { useCampus } from "../context/campus-context";
 import { motion } from "framer-motion";
 import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../lib/constants";
 import { cn } from "../lib/utils"; // Relative import fix
-import { InstallPrompt } from "@/components/ui/install-prompt";
+// Redundant import removed as it's now global via PWALogic in layout.tsx
 
 // FORCE REDEPLOY: Build resolution fix
 export default function Home() {
@@ -414,7 +414,6 @@ export default function Home() {
                 </div>
             </section>
             <Footer />
-            <InstallPrompt />
         </div>
     );
 }

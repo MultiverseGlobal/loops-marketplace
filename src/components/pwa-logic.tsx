@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { InstallPrompt } from './ui/install-prompt';
 
 export function PWALogic() {
     useEffect(() => {
@@ -18,5 +19,5 @@ export function PWALogic() {
         }
     }, []);
 
-    return null;
+    return <InstallPrompt />;
 }

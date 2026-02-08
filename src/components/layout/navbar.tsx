@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard } from "lucide-react";
+import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
@@ -50,6 +50,10 @@ export function Navbar() {
     const handleSignOut = async () => {
         await supabase.auth.signOut();
         router.push("/");
+    };
+
+    const triggerPWAInstall = () => {
+        window.dispatchEvent(new CustomEvent('show-pwa-install'));
     };
 
     return (
@@ -113,6 +117,16 @@ export function Navbar() {
                                 className="w-11 h-11 rounded-2xl text-loops-muted hover:text-loops-accent hover:bg-loops-accent/5 transition-all"
                             >
                                 <LogOut className="w-4 h-4" />
+                            </Button>
+
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={triggerPWAInstall}
+                                className="w-11 h-11 rounded-2xl text-loops-primary bg-loops-primary/5 hover:bg-loops-primary/10 transition-all sm:hidden"
+                                title="Download App"
+                            >
+                                <Smartphone className="w-5 h-5" />
                             </Button>
                         </>
                     ) : (

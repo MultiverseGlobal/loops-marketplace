@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { motion } from "framer-motion";
-import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Zap, MessageSquare, Phone, Sparkles, Award } from "lucide-react";
+import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Zap, MessageSquare, Phone, Sparkles, Award, Smartphone, Download } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -235,6 +235,25 @@ export default function ProfilePage() {
                                     <div className="text-2xl font-bold font-display text-loops-success tracking-tighter">{followingCount}</div>
                                     <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Following</div>
                                 </div>
+
+                                {(!targetUserId || targetUserId === user?.id) && (
+                                    <button
+                                        onClick={() => window.dispatchEvent(new CustomEvent('show-pwa-install'))}
+                                        className="w-full p-6 rounded-3xl bg-loops-primary text-white space-y-3 relative overflow-hidden group hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-loops-primary/20 text-left"
+                                    >
+                                        <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-white/20 rounded-full blur-2xl group-hover:bg-white/30 transition-colors" />
+                                        <div className="relative z-10 flex items-center justify-between">
+                                            <div className="p-2 bg-white/20 rounded-xl">
+                                                <Smartphone className="w-5 h-5 text-white" />
+                                            </div>
+                                            <Download className="w-4 h-4 text-white/60 group-hover:translate-y-1 transition-transform" />
+                                        </div>
+                                        <div className="relative z-10">
+                                            <div className="text-sm font-bold">Download Loops App</div>
+                                            <div className="text-[10px] text-white/80 font-medium leading-tight mt-1 uppercase tracking-widest">Add to your home screen for the fastest experience</div>
+                                        </div>
+                                    </button>
+                                )}
                             </div>
 
                             {/* Service Passport (New Feature) */}

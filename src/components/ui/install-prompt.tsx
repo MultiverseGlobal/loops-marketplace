@@ -25,14 +25,24 @@ export function InstallPrompt() {
             setTimeout(() => setIsVisible(true), 3000);
         };
 
+        const handleShowPrompt = () => {
+            if (deferredPrompt || isIOS) {
+                setIsVisible(true);
+            }
+        };
+
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.addEventListener('show-pwa-install', handleShowPrompt);
 
         // Check if already installed
         if (window.matchMedia('(display-mode: standalone)').matches) {
             setIsVisible(false);
         }
 
-        return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            window.removeEventListener('show-pwa-install', handleShowPrompt);
+        };
     }, []);
 
     const handleInstall = async () => {
