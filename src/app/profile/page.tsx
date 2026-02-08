@@ -53,7 +53,7 @@ export default function ProfilePage() {
 
             if (userIdToFetch) {
                 // Fetch Profile, Listings, and Reviews
-                const [profileRes, listingsRes, followRes, reviewsRes] = await Promise.all([
+                const [profileRes, listingsRes, followRes, reviewsRes, wishlistRes, myOffersRes] = await Promise.all([
                     supabase.from('profiles').select('*, campuses(*)').eq('id', userIdToFetch).single(),
                     supabase.from('listings').select('*').eq('seller_id', userIdToFetch).order('created_at', { ascending: false }),
                     getFollowCounts(userIdToFetch),
@@ -68,19 +68,16 @@ export default function ProfilePage() {
                         .select('*, listing:listings(title, price, images, type)')
                         .eq('buyer_id', userIdToFetch)
                         .order('created_at', { ascending: false }),
-                    supabase.from('offers')
-                        .select('*, listing:listings(title, price, images, seller_id), buyer:profiles(full_name, avatar_url)')
-                        .eq('listing(seller_id)', userIdToFetch) // This needs careful join or separate logic
-                        .order('created_at', { ascending: false })
                 ]);
 
                 if (profileRes.data) setProfile(profileRes.data);
                 if (listingsRes.data) setListings(listingsRes.data);
                 if (reviewsRes.data) setReviews(reviewsRes.data);
-                if (followRes.data) {
-                    setFollowersCount(followRes.followers);
-                    setFollowingCount(followRes.following);
-                }
+
+                // followRes is { followers: number, following: number } returned directly from getFollowCounts
+                setFollowersCount(followRes.followers);
+                setFollowingCount(followRes.following);
+
                 if (wishlistRes.data) setWishlistItems(wishlistRes.data.map((w: any) => w.listing));
                 if (myOffersRes.data) setMyOffers(myOffersRes.data);
 
