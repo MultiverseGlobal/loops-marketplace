@@ -24,6 +24,7 @@ export default function AdminDashboard() {
     const [foundUser, setFoundUser] = useState<any>(null);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [verificationResults, setVerificationResults] = useState<Record<string, any>>({});
     const supabase = createClient();
     const router = useRouter();
     const toast = useToast();
@@ -86,6 +87,35 @@ export default function AdminDashboard() {
 
         checkAdmin();
     }, [supabase, router]);
+
+    const handleVerifyID = async (app: any) => {
+        try {
+            const response = await fetch('/api/verify-id', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ application_id: app.id }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setVerificationResults(prev => ({
+                    ...prev,
+                    [app.id]: result
+                }));
+
+                if (result.verified && result.confidence > 0.8) {
+                    toast.success(`Auto-verified with ${Math.round(result.confidence * 100)}% confidence!`);
+                } else {
+                    toast.error(`Low confidence (${Math.round(result.confidence * 100)}%). Manual review recommended.`);
+                }
+            } else {
+                toast.error(result.error || 'Verification failed');
+            }
+        } catch (error: any) {
+            toast.error('Failed to verify ID: ' + error.message);
+        }
+    };
 
     const handleApplicationAction = async (app: any, action: 'approved' | 'rejected') => {
         setProcessingId(app.id);
@@ -297,6 +327,74 @@ export default function AdminDashboard() {
                                                     </span>
                                                 </div>
                                             </div>
+
+                                            {/* ID Card Preview & Verification */}
+                                            {app.student_id_url && (
+                                                <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                                    <div className="flex items-start gap-4">
+                                                        <img
+                                                            src={app.student_id_url}
+                                                            alt="Student ID"
+                                                            className="w-48 h-32 object-cover rounded-lg border-2 border-white shadow-sm cursor-pointer hover:scale-105 transition-transform"
+                                                            onClick={() => window.open(app.student_id_url, '_blank')}
+                                                        />
+                                                        <div className="flex-1 space-y-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Student ID Uploaded</span>
+                                                                {!verificationResults[app.id] && (
+                                                                    <Button
+                                                                        onClick={() => handleVerifyID(app)}
+                                                                        size="sm"
+                                                                        className="h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+                                                                    >
+                                                                        🤖 Auto-Verify
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+
+                                                            {verificationResults[app.id] && (
+                                                                <div className={cn(
+                                                                    "p-3 rounded-lg border-2",
+                                                                    verificationResults[app.id].verified
+                                                                        ? "bg-green-50 border-green-200"
+                                                                        : "bg-amber-50 border-amber-200"
+                                                                )}>
+                                                                    <div className="flex items-center justify-between mb-2">
+                                                                        <span className={cn(
+                                                                            "text-sm font-bold",
+                                                                            verificationResults[app.id].verified ? "text-green-700" : "text-amber-700"
+                                                                        )}>
+                                                                            {verificationResults[app.id].verified ? "✅ Verified" : "⚠️ Low Confidence"}
+                                                                        </span>
+                                                                        <span className="text-xs font-mono text-gray-600">
+                                                                            {Math.round(verificationResults[app.id].confidence * 100)}% confidence
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="text-xs space-y-1">
+                                                                        <div className="flex justify-between">
+                                                                            <span className="text-gray-600">Extracted Name:</span>
+                                                                            <span className="font-bold">{verificationResults[app.id].extracted.name || 'N/A'}</span>
+                                                                        </div>
+                                                                        <div className="flex justify-between">
+                                                                            <span className="text-gray-600">Application Name:</span>
+                                                                            <span className="font-bold">{app.full_name}</span>
+                                                                        </div>
+                                                                        <div className="flex justify-between">
+                                                                            <span className="text-gray-600">Match Score:</span>
+                                                                            <span className={cn(
+                                                                                "font-bold",
+                                                                                verificationResults[app.id].match.name_match ? "text-green-600" : "text-red-600"
+                                                                            )}>
+                                                                                {Math.round(verificationResults[app.id].match.similarity_score * 100)}%
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             <div className="flex items-center gap-3 pt-2">
                                                 <Button
