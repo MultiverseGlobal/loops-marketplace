@@ -32,7 +32,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-loops-main/40 backdrop-blur-sm z-[60]"
+                        className="fixed inset-0 bg-loops-main/60 backdrop-blur-md z-[60]"
                     />
 
                     {/* Drawer */}
@@ -40,19 +40,19 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] flex flex-col"
+                        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                        className="fixed right-0 top-0 h-full w-full max-w-md bg-white/95 backdrop-blur-2xl shadow-[-20px_0_50px_-10px_rgba(0,0,0,0.3)] z-[70] flex flex-col"
                     >
                         {/* Header */}
-                        <div className="p-6 border-b border-loops-border flex items-center justify-between bg-loops-subtle/50">
+                        <div className="p-6 border-b border-loops-border flex items-center justify-between bg-white/50">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-loops-primary/10 rounded-xl text-loops-primary">
+                                <div className="p-2 bg-loops-primary text-white rounded-xl shadow-lg shadow-loops-primary/20">
                                     <ShoppingCart className="w-5 h-5" />
                                 </div>
-                                <h2 className="text-xl font-bold font-display tracking-tight">Your Loop Cart</h2>
+                                <h2 className="text-xl font-bold font-display tracking-tight uppercase tracking-[0.05em]">Your Cart</h2>
                             </div>
-                            <button onClick={onClose} className="p-2 hover:bg-loops-border rounded-full transition-colors">
-                                <X className="w-5 h-5 text-loops-muted" />
+                            <button onClick={onClose} className="p-2 hover:bg-loops-subtle rounded-full transition-colors group">
+                                <X className="w-5 h-5 text-loops-muted group-hover:text-loops-primary transition-colors" />
                             </button>
                         </div>
 

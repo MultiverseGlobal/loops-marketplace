@@ -52,7 +52,7 @@ export default function ServicesPage() {
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-1">
                         <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tighter text-loops-main">
-                            Services.
+                            Services Hub.
                         </h1>
                         <p className="text-loops-muted text-sm font-medium">
                             Student plugs at {campus?.name || 'your campus'}.

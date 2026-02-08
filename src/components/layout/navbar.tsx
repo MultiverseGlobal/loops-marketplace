@@ -76,8 +76,8 @@ export function Navbar() {
                     </Link>
 
                     <nav className="hidden lg:flex items-center gap-2">
-                        <NavLink href="/browse">Marketplace</NavLink>
-                        <NavLink href="/services">Services</NavLink>
+                        <NavLink href="/browse?view=product">{getTerm('marketplaceName') || 'Marketplace'}</NavLink>
+                        <NavLink href="/browse?view=service">Services</NavLink>
                         <NavLink href="/requests">Requests</NavLink>
                         {user && <NavLink href="/messages">Messages</NavLink>}
                     </nav>

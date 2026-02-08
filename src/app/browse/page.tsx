@@ -271,9 +271,9 @@ export default function MarketplacePage() {
                     ) : (
                         <div className="text-center py-24 bg-loops-subtle border border-loops-border rounded-3xl">
                             <div className="text-loops-muted font-bold uppercase tracking-widest text-xs mb-2 italic">The {getTerm('communityName')} is quiet.</div>
-                            <p className="text-loops-muted mb-8">Be the first to post something from your {campus?.name || 'campus'}!</p>
+                            <p className="text-loops-muted mb-8">Be the first to {getTerm('listingAction')?.toLowerCase().includes('post') ? getTerm('listingAction') : `post a ${getTerm('listingName')}`} from your {campus?.name || 'campus'}!</p>
                             <Link href="/listings/create">
-                                <Button className="bg-loops-primary text-white shadow-xl shadow-loops-primary/20">{getTerm('listingAction')}</Button>
+                                <Button className="bg-loops-primary text-white shadow-xl shadow-loops-primary/20 rounded-xl px-10">{getTerm('listingAction')}</Button>
                             </Link>
                         </div>
                     )}
