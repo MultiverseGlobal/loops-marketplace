@@ -33,7 +33,7 @@ export const metadata: Metadata = {
         index: true,
         follow: true
     },
-    themeColor: '#10b981',
+    themeColor: '#3b82f6', // Universal Blue
     viewport: {
         width: 'device-width',
         initialScale: 1,
