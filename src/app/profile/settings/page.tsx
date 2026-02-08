@@ -248,6 +248,14 @@ export default function SettingsPage() {
                                         <div>
                                             <h3 className="font-bold">Upgrade to Verified Plug</h3>
                                             <p className="text-sm text-loops-muted">Sell products or offer services with priority search and a trust badge.</p>
+
+                                            {pendingApp?.status === 'rejected' && pendingApp?.rejection_reason && (
+                                                <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-100">
+                                                    <p className="text-[10px] uppercase font-bold tracking-widest text-red-500 mb-1">Feedback from Admin</p>
+                                                    <p className="text-sm text-red-600 italic font-medium">"{pendingApp.rejection_reason}"</p>
+                                                    <p className="text-[10px] text-red-400 mt-2">Please update your details and resubmit.</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 

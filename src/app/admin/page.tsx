@@ -129,7 +129,7 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleApplicationAction = async (app: any, action: 'approved' | 'rejected') => {
+    const handleApplicationAction = async (app: any, action: 'approved' | 'rejected', reason?: string) => {
         setProcessingId(app.id);
         try {
             // 1. Update application status
@@ -137,6 +137,7 @@ export default function AdminDashboard() {
                 .from('seller_applications')
                 .update({
                     status: action,
+                    rejection_reason: reason || null,
                     reviewed_at: new Date().toISOString(),
                     reviewed_by: (await supabase.auth.getUser()).data.user?.id
                 })
@@ -541,7 +542,10 @@ export default function AdminDashboard() {
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
-                                                    onClick={() => handleApplicationAction(app, 'rejected')}
+                                                    onClick={() => {
+                                                        const reason = window.prompt("Reason for rejection? (e.g. ID blurry, needs more description)");
+                                                        if (reason !== null) handleApplicationAction(app, 'rejected', reason);
+                                                    }}
                                                     disabled={processingId === app.id}
                                                     className="text-red-500 hover:bg-red-50 border-red-200"
                                                 >

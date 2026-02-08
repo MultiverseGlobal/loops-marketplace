@@ -1,6 +1,13 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => {
+    const key = process.env.RESEND_API_KEY;
+    if (!key) {
+        // Provide a dummy key for build time if missing
+        return new Resend("re_placeholder_for_build");
+    }
+    return new Resend(key);
+};
 
 export async function sendWelcomeEmail(
     name: string,
@@ -8,6 +15,7 @@ export async function sendWelcomeEmail(
     userId: string
 ) {
     try {
+        const resend = getResend();
         const { data, error } = await resend.emails.send({
             from: 'Loops <onboarding@resend.dev>', // Change to your verified domain later
             to: [email],
