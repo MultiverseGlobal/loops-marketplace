@@ -48,7 +48,7 @@ function levenshteinDistance(str1: string, str2: string): number {
 
 export async function POST(request: NextRequest) {
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
 
         // Check authentication
         const { data: { user }, error: authError } = await supabase.auth.getUser();
