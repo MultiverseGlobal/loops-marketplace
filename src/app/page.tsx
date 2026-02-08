@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createClient } from "../lib/supabase/client";
 import { useCampus } from "../context/campus-context";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../lib/constants";
 import { cn } from "../lib/utils"; // Relative import fix
 // Redundant import removed as it's now global via PWALogic in layout.tsx
