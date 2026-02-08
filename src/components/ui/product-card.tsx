@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/context/toast-context";
 import { useCart } from "@/context/cart-context";
 import { Plus, ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ProductCardProps {
     id: string;
