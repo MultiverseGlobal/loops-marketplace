@@ -265,7 +265,7 @@ export default function AdminDashboard() {
                     <StatCard icon={Activity} label="Pending Plugs" value={stats.pendingApps} color="text-loops-energetic" />
                 </div>
 
-                {/* Marketplace Pulse Section */}
+                {/* Marketplace Velocity Section */}
                 {analytics && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                         {/* GMV & Overview Card */}
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
                             <div className="flex items-center justify-between border-b border-loops-border pb-6">
                                 <div className="flex items-center gap-3 text-loops-primary">
                                     <TrendingUp className="w-6 h-6" />
-                                    <h2 className="text-xl font-bold font-display">Marketplace Pulse</h2>
+                                    <h2 className="text-xl font-bold font-display">Loop Velocity</h2>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[10px] uppercase font-bold tracking-widest text-loops-muted mb-1">Listed GMV (Inventory Value)</p>

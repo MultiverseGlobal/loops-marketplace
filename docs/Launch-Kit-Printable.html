@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loops Launch Kit - Veritas University</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@1,700;1,900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --loops-primary: #3B82F6;
+            --loops-main: #0F172A;
+            --loops-muted: #64748B;
+            --loops-bg: #F8FAFC;
+            --loops-accent: #8B5CF6;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: white;
+            color: var(--loops-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+                width: 100%;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #F1F5F9;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-box {
+            width: 32px;
+            height: 32px;
+            background: var(--loops-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .title-display {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-style: italic;
+            font-weight: 900;
+            letter-spacing: -2px;
+            line-height: 1;
+            margin: 20px 0;
+        }
+
+        .subtitle {
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-weight: 700;
+            font-size: 10px;
+            color: var(--loops-primary);
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 20px;
+            border-left: 4px solid var(--loops-primary);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+
+        .template-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .template-card::before {
+            content: "COPY ASSET";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 9px;
+            font-weight: 800;
+            color: var(--loops-muted);
+            opacity: 0.3;
+        }
+
+        .template-content {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            color: #334155;
+            white-space: pre-wrap;
+            border-left: 2px solid #CBD5E1;
+            padding-left: 20px;
+            margin-left: 5px;
+        }
+
+        .badge {
+            display: inline-flex;
+            padding: 4px 10px;
+            background: #EEF2FF;
+            color: #4338CA;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .footer-note {
+            margin-top: 60px;
+            font-size: 12px;
+            color: var(--loops-muted);
+            text-align: center;
+            border-top: 1px solid #F1F5F9;
+            padding-top: 20px;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: var(--loops-primary);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .grid {
+            display: grid;
+            grid-cols-2;
+            gap: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">
+        <span>⎙</span> Save as PDF
+    </button>
+
+    <!-- Page 1: Playbook -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">♾️</div>
+                Loops
+            </div>
+            <div style="text-align: right">
+                <div class="subtitle">Veritas Launch</div>
+                <div style="font-size: 10px; font-weight: 700; color: var(--loops-muted)">GTM PLAYBOOK v1.0</div>
+            </div>
+        </div>
+
+        <div class="subtitle">Strategic Overview</div>
+        <h1 class="title-display">Unleash the<br>Campus Economy.</h1>
+        <p style="font-size: 18px; color: var(--loops-muted); max-width: 500px; margin-bottom: 40px;">
+            The ultimate guide for the Head of Marketing to dominate campus commerce and secure the Founding 50.
+        </p>
+
+        <h2>Phase 1: Recruitment Goal</h2>
+        <div class="template-card">
+            <div class="badge">MISSION CRITICAL</div>
+            <p><strong>Goal:</strong> Secure 50 verified student merchants (Founding Plugs) before public launch.</p>
+            <p><strong>Winning Formula:</strong> Amazon-style buying for students + Shopify-style storefronts for
+                merchants.</p>
+        </div>
+
+        <h2>Core Value Proposition</h2>
+        <ul style="padding-left: 20px; color: #475569">
+            <li><strong>Visibility:</strong> No more getting lost in 500-message WhatsApp groups.</li>
+            <li><strong>Trust:</strong> Verified student-only network with built-in reputation.</li>
+            <li><strong>Velocity:</strong> 1-click WhatsApp checkout with item context.</li>
+        </ul>
+
+        <div class="footer-note">
+            Confidential Strategy Document • Loops Marketplace ♾️
+        </div>
+    </div>
+
+    <!-- Page 2: DM & WhatsApp Templates -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">♾️</div>
+                Loops
+            </div>
+            <div class="subtitle">Asset Library / 01</div>
+        </div>
+
+        <h1 class="title-display">Reach Out.</h1>
+        <p class="subtitle">Outreach & DM Templates</p>
+
+        <h2>1. The "Shopify Effect" Pitch</h2>
+        <div class="template-card">
+            <div class="badge">DIRECT MESSAGE</div>
+            <div class="template-content">
+                "Hey [Name]! 👋 I'm building a new exclusive marketplace for [Campus Name] called Loops. It's built to
+                give students an Amazon-style buying experience with a Shopify-style storefront for our best student
+                merchants.
+
+                We're selecting 50 'Founding Plugs' to launch with us. Meaning you get a permanent Verified Merchant
+                badge, priority search ranking, and your own custom digital storefront when we open to the whole school
+                next month.
+
+                I think your [business/products] would clear out fast in the Loop. Want to be one of the founders?
+
+                Apply here: loops-stores.vercel.app/onboarding"
+            </div>
+        </div>
+
+        <h2>2. Approval Welcome Kit</h2>
+        <div class="template-card">
+            <div class="badge">WHATSAPP BLAST</div>
+            <div class="template-content">
+                "Welcome to the Loop, [Name]! ♾️
+
+                You've been approved as a Founding Plug. We're hyped to have you on board as one of our premier campus
+                merchants.
+
+                Next Steps to Launch your Store:
+                1. Go to loops-stores.vercel.app/onboarding and sign up.
+                2. Select 'Campus Plug' to set up your Storefront Name and Brand Color.
+                3. Create your first listing (use good photos to boost sales!).
+                4. Reply 'DONE' here and I'll activate your Verified Merchant Badge.
+
+                Let's build the campus economy! 🚀"
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: Specific Niche DMs -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">♾️</div>
+                Loops
+            </div>
+            <div class="subtitle">Asset Library / 02</div>
+        </div>
+
+        <h1 class="title-display">Hyper-Target.</h1>
+        <p class="subtitle">Niche Personalized Scripts</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="template-card">
+                <div class="badge">FASHION VENDORS</div>
+                <div class="template-content" style="font-size: 11px;">
+                    "Hey [Name]! Love those vintage tees you posted. I’m building Loops — an Amazon-style experience for
+                    campus with custom storefronts for merchants.
+
+                    Think your brand would clear out fast. We're giving the first 50 merchants a permanent Verified
+                    Badge. Want in?
+
+                    Apply: loops-stores.vercel.app/onboarding"
+                </div>
+            </div>
+            <div class="template-card">
+                <div class="badge">FOOD & SNACKS</div>
+                <div class="template-content" style="font-size: 11px;">
+                    "Hi [Name]! 👋 Those chops look reliable lol. We’re launching Loops — an app to help students order
+                    from vendors like you without the WhatsApp stress.
+
+                    We need the best food vendors as Founding Plugs. You get verified status for life.
+
+                    Apply: loops-stores.vercel.app/onboarding"
+                </div>
+            </div>
+        </div>
+
+        <h2>Social Shoutout (Story Tip)</h2>
+        <div class="template-card" style="background: #1E293B; color: white; border: none;">
+            <p style="font-size: 13px; opacity: 0.8;">Post this on your status with the logo:</p>
+            <p style="font-family: 'Playfair Display'; font-size: 24px; font-style: italic;">
+                "Veritas, the Loop is unlocking. 🔓♾️ All your campus favorites in one place."
+            </p>
+        </div>
+
+        <div class="footer-note">
+            Loops Merchant Success Kit • 2026 Edition
+        </div>
+    </div>
+
+    <!-- Page 4: Recruitment Guide -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">♾️</div>
+                Loops
+            </div>
+            <div class="subtitle">Operational Guide / 03</div>
+        </div>
+
+        <h1 class="title-display">Execute.</h1>
+        <p class="subtitle">The Recruitment Guide</p>
+
+        <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+            <div class="template-card">
+                <div class="badge">STEP 1: IDENTIFY</div>
+                <p style="font-size: 11px;">Search Instagram for <strong>#VeritasVendor</strong> or campus WhatsApp
+                    groups. Look for students who already have a "side hustle".</p>
+            </div>
+            <div class="template-card" style="background: white; border-style: dashed;">
+                <div class="badge" style="background: #F0FDF4; color: #15803d;">STEP 2: OUTREACH</div>
+                <p style="font-size: 11px;">Use the templates on Page 2. Personalize the first line. Highlight the
+                    <strong>Exclusivity</strong> (Only 50 spots).</p>
+            </div>
+        </div>
+
+        <h2>Launch Day Ritual</h2>
+        <div class="template-card">
+            <ul style="font-size: 13px; color: #334155; padding-left: 20px;">
+                <li><strong>9:00 AM:</strong> Plugs blast their Loops Storefront to Status.</li>
+                <li><strong>12:00 PM:</strong> Official Launch Video drop on IG.</li>
+                <li><strong>2:00 PM:</strong> Campus "Scavenger Hunt" or QR Code Sticker blast.</li>
+            </ul>
+        </div>
+
+        <div
+            style="margin-top: 40px; padding: 20px; border-radius: 12px; background: #EEF2FF; border: 1px solid #C7D2FE;">
+            <p style="margin: 0; font-size: 12px; font-weight: 700; color: #3730A3; text-align: center;">
+                "Veritas is a Loop. Let's close it." ♾️
+            </p>
+        </div>
+
+        <div class="footer-note">
+            Loops Strategic Operations • ♾️🔌
+        </div>
+    </div>
+</body>
+
+</html>

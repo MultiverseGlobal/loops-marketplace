@@ -5,13 +5,13 @@ Use these templates to recruit your first 50 "Founding Plugs".
 ## 1. Direct Message (DM) to Known Sellers
 **Target**: Students you know who sell shoes, cakes, tech, hair, etc.
 
-> "Hey [Name]! 👋 I'm building a new exclusive marketplace for [Campus Name] called Loops. It's like a verified Amazon/Upwork just for our campus.
+> "Hey [Name]! 👋 I'm building a new exclusive marketplace for [Campus Name] called Loops. It's built to give students an Amazon-style buying experience with a Shopify-style storefront for our best student merchants.
 >
-> We're selecting 50 'Founding Plugs' to launch with us. Meaning you get a verified badge forever, priority search ranking, and zero competition when we open to the whole school next month.
+> We're selecting 50 'Founding Plugs' to launch with us. Meaning you get a permanent Verified Merchant badge, priority search ranking, and your own custom digital storefront when we open to the whole school next month.
 >
-> I think your [business/products] would do really well. Want to be one of the founders?
+> I think your [business/products] would clear out fast in the Loop. Want to be one of the founders?
 >
-> Apply here: [Link to /founding-plugs]"
+> Apply here: [Link to Loops Onboarding]"
 
 ## 2. WhatsApp Status / Story Blast
 **Target**: General awareness to find hidden sellers.
@@ -51,11 +51,12 @@ Use these templates to recruit your first 50 "Founding Plugs".
 
 > "Welcome to the Loop, [Name]! ♾️
 >
-> You've been approved as a **Founding Plug**. We're hyped to have you.
+> You've been approved as a **Founding Plug**. We're hyped to have you on board as one of our premier campus merchants.
 >
-> **Next Steps:**
+> **Next Steps to Launch your Store:**
 > 1. Go to [Link to Loops] and sign up.
-> 2. Create your first listing (make sure to add good photos!).
-> 3. Reply 'DONE' here and I'll manually activate your **Verified Badge**.
+> 2. Select 'Campus Plug' during onboarding to set up your **Storefront Name** and **Brand Color**.
+> 3. Create your first listing (use good photos to boost sales!).
+> 4. Reply 'DONE' here and I'll manually activate your **Verified Merchant Badge**.
 >
-> Let's build this! 🚀"
+> Let's build the campus economy! 🚀"

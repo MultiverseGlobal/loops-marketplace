@@ -15,7 +15,7 @@
 | **Motivation** | Text Area | Gauging commitment and "founder mentality" |
 
 ## Review Process
-1.  **Submission**: User submits form on `/founding-plugs`.
+1.  **Submission**: User submits application via `loops-stores.vercel.app/onboarding`.
 2.  **Status**: Defaults to `pending`.
 3.  **Review**: Admin checks for:
     *   Valid campus email.

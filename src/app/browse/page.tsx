@@ -24,6 +24,8 @@ export default function MarketplacePage() {
     const [hasUser, setHasUser] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [minPrice, setMinPrice] = useState<string>("");
+    const [maxPrice, setMaxPrice] = useState<string>("");
     const [sortBy, setSortBy] = useState<string>("newest");
     const [activeType, setActiveType] = useState<'product' | 'service'>('product');
     const supabase = createClient();
@@ -85,6 +87,14 @@ export default function MarketplacePage() {
                 query = query.eq('category', selectedCategory);
             }
 
+            if (minPrice && !isNaN(parseFloat(minPrice))) {
+                query = query.gte('price', parseFloat(minPrice));
+            }
+
+            if (maxPrice && !isNaN(parseFloat(maxPrice))) {
+                query = query.lte('price', parseFloat(maxPrice));
+            }
+
             const { data } = await query;
 
             if (data) setListings(data);
@@ -93,7 +103,7 @@ export default function MarketplacePage() {
 
         // Debounce effect is handled by SearchBar, but we need to re-fetch when state changes
         fetchListings();
-    }, [supabase, searchQuery, selectedCategory, sortBy, activeType]);
+    }, [supabase, searchQuery, selectedCategory, sortBy, activeType, minPrice, maxPrice]);
 
     // Check if user just verified their email or wants a specific view
     useEffect(() => {
@@ -139,7 +149,7 @@ export default function MarketplacePage() {
                     <div className="flex-1 max-w-xl">
                         <SearchBar
                             onSearch={setSearchQuery}
-                            placeholder={`Search ${getTerm('communityName')}...`}
+                            placeholder={`Search the Loop...`}
                         />
                     </div>
                 </div>
@@ -198,19 +208,42 @@ export default function MarketplacePage() {
                         })}
                     </div>
 
-                    {/* Sorting Dropdown */}
-                    <div className="flex items-center gap-3 ml-auto sm:ml-0">
-                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-60">Sort</span>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="bg-white border border-loops-border rounded-lg px-3 py-1.5 text-xs font-bold text-loops-main focus:outline-none focus:ring-2 focus:ring-loops-primary/10 transition-all cursor-pointer"
-                        >
-                            <option value="newest">Newest</option>
-                            <option value="oldest">Oldest</option>
-                            <option value="price_low">Price ↑</option>
-                            <option value="price_high">Price ↓</option>
-                        </select>
+                    {/* Sorting & Price Filters */}
+                    <div className="flex flex-wrap items-center gap-3 ml-auto sm:ml-0">
+                        <div className="flex items-center gap-2 bg-white border border-loops-border rounded-xl px-3 py-1.5 shadow-sm">
+                            <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-60">{CURRENCY}</span>
+                            <input
+                                type="number"
+                                placeholder="Min"
+                                value={minPrice}
+                                onChange={(e) => setMinPrice(e.target.value)}
+                                className="w-16 bg-transparent text-xs font-bold focus:outline-none"
+                            />
+                            <div className="w-px h-3 bg-loops-border mx-1" />
+                            <input
+                                type="number"
+                                placeholder="Max"
+                                value={maxPrice}
+                                onChange={(e) => setMaxPrice(e.target.value)}
+                                className="w-16 bg-transparent text-xs font-bold focus:outline-none"
+                            />
+                        </div>
+
+                        <div className="h-8 w-px bg-loops-border hidden sm:block" />
+
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-60">Sort</span>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="bg-white border border-loops-border rounded-xl px-3 py-1.5 text-xs font-bold text-loops-main focus:outline-none focus:ring-2 focus:ring-loops-primary/10 transition-all cursor-pointer shadow-sm"
+                            >
+                                <option value="newest">Newest</option>
+                                <option value="oldest">Oldest</option>
+                                <option value="price_low">Price ↑</option>
+                                <option value="price_high">Price ↓</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 

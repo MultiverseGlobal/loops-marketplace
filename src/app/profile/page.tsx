@@ -124,7 +124,7 @@ export default function ProfilePage() {
                 });
 
             if (error) throw error;
-            toast.success("Review submitted! The campus Pulse has been updated.");
+            toast.success("Review submitted! The campus Reputation has been updated.");
             setReviewModalOpen(false);
             setReviewComment("");
         } catch (err: any) {
@@ -140,8 +140,26 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
 
-            <main className="pt-24 sm:pt-32 pb-16 sm:pb-20 max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <main className="pt-20 sm:pt-24 pb-16 sm:pb-20 max-w-7xl mx-auto px-0 sm:px-6 relative">
+                {/* Brand Banner / Store Header */}
+                {profile?.store_name && (
+                    <div className={cn("w-full h-40 sm:h-64 mb-12 sm:rounded-[2.5rem] relative overflow-hidden group shadow-2xl", profile.store_banner_color || "bg-loops-primary")}>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-black/40 via-transparent to-transparent opacity-60" />
+                        <div className="absolute bottom-0 left-0 p-8 sm:p-12 space-y-2">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                                    <Sparkles className="w-5 h-5 text-white" />
+                                </div>
+                                <span className="text-sm font-black text-white uppercase tracking-[0.3em]">Verified Storefront</span>
+                            </div>
+                            <h1 className="text-4xl sm:text-6xl font-display font-bold text-white tracking-tighter italic">{profile.store_name}</h1>
+                        </div>
+                        {/* Abstract shapes for texture */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl" />
+                    </div>
+                )}
+
+                <div className={cn("px-4 sm:px-0 grid grid-cols-1 lg:grid-cols-3 gap-12", !profile?.store_name && "mt-8")}>
 
                     {/* Sidebar / Info */}
                     <div className="space-y-8">
@@ -184,7 +202,7 @@ export default function ProfilePage() {
                                     {profile?.store_name && (
                                         <div className={cn("flex items-center gap-2 px-3 py-1 border border-white/10 rounded-lg w-fit text-white shadow-lg", profile.store_banner_color || "bg-loops-primary")}>
                                             <Sparkles className="w-3.5 h-3.5" />
-                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]">{profile.store_name} Plug</span>
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]">{profile.store_name} Merchant</span>
                                         </div>
                                     )}
                                     <div className="flex items-center gap-2 text-loops-muted font-medium">
@@ -328,14 +346,14 @@ export default function ProfilePage() {
                             {user?.id === profile?.id && (profile?.is_plug || profile?.primary_role === 'plug') && (
                                 <div className="pt-6 border-t border-loops-border">
                                     <a
-                                        href={`https://wa.me/${profile?.whatsapp_number?.replace(/\D/g, '') || '2348123456789'}?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Pulse%20and%20list%20new%20items.`}
+                                        href={`https://wa.me/${profile?.whatsapp_number?.replace(/\D/g, '') || '2348123456789'}?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Listings%20and%20list%20new%20items.`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="block"
                                     >
                                         <Button className="w-full bg-loops-success text-white hover:bg-loops-success/90 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-loops-success/20">
                                             <Phone className="w-4 h-4" />
-                                            Manage Pulse via LoopBot
+                                            Manage Listings via LoopBot
                                         </Button>
                                     </a>
                                     <p className="text-[9px] text-loops-muted text-center mt-3 font-medium uppercase tracking-[0.1em]">AI Assistant Connection Active</p>
@@ -394,7 +412,7 @@ export default function ProfilePage() {
                                             : "text-loops-muted hover:text-loops-main"
                                     )}
                                 >
-                                    {getTerm('sellerName')} Pulse
+                                    {getTerm('sellerName')} Store
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('reviews' as any)}
@@ -517,7 +535,7 @@ export default function ProfilePage() {
                                 ) : (
                                     <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
                                         <Sparkles className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                        <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Pulse yet.</h3>
+                                        <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Feedback yet.</h3>
                                         <p className="text-loops-muted mt-2">Ratings from the campus community will appear here.</p>
                                     </div>
                                 )}

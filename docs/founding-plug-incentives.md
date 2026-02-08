@@ -30,4 +30,4 @@
 *   **Duration**: Indefinite.
 
 ## How to Pitch This
-> "We're building the 'Amazon for Campus'. Being a Founding Plug is like buying Bitcoin in 2010. You get the best status, best placement, and it's free. We only have 50 spots."
+> "We're building the 'Amazon for Campus' with a 'Shopify for Students' twist. Being a Founding Plug is like buying Bitcoin in 2010. You get a high-conversion Amazon-style listing engine and your own custom Shopify-style storefront for free. We only have 50 spots."

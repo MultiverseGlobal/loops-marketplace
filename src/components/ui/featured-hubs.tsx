@@ -49,7 +49,7 @@ export function FeaturedHubs() {
 
                                             <div className="space-y-1">
                                                 <h3 className="text-xl font-bold text-loops-main group-hover:text-loops-primary transition-colors">{hub.label} Loop</h3>
-                                                <p className="text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">Explore Pulse</p>
+                                                <p className="text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">Explore Loop</p>
                                             </div>
                                         </div>
                                     </div>

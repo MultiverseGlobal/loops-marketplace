@@ -37,14 +37,22 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
                     </div>
                 </div>
                 <div className="mt-3 space-y-1 px-1">
-                    <h3 className="text-[13px] md:text-sm font-bold text-loops-main group-hover:text-loops-primary transition-colors truncate tracking-tight">{title}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-[13px] md:text-sm font-bold text-loops-main group-hover:text-loops-primary transition-colors truncate tracking-tight flex-1">{title}</h3>
+                        {(author as any)?.is_plug && (
+                            <div className="flex-shrink-0 px-1.5 py-0.5 rounded-md bg-loops-primary/10 text-loops-primary text-[8px] font-bold uppercase tracking-tighter flex items-center gap-1">
+                                <ShieldCheck className="w-2.5 h-2.5" />
+                                <span>Plug</span>
+                            </div>
+                        )}
+                    </div>
                     <div className="flex items-center justify-between">
                         <p className="text-[12px] md:text-[13px] text-loops-primary font-black tracking-tighter">{price}</p>
                         <div className="flex items-center gap-1.5 opacity-60">
                             <User className="w-2.5 h-2.5 text-loops-muted" />
                             <span className="text-[9px] font-bold text-loops-muted uppercase tracking-wider truncate max-w-[80px]">{(author as any)?.store_name || (author as any)?.full_name || "Campus Hub"}</span>
                         </div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-loops-primary/20 animate-pulse-subtle" />
+                        <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse-subtle", (author as any)?.store_banner_color || "bg-loops-primary")} />
                     </div>
                 </div>
             </Link>

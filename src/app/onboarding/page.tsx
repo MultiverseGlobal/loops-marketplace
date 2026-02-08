@@ -547,7 +547,7 @@ export default function OnboardingPage() {
                             <div className="space-y-4">
                                 <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Plug Setup</div>
                                 <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Select your <span className="text-gradient italic">Vibe</span></h1>
-                                <p className="text-loops-muted text-lg">Detailed stores sell 3x more. Pick a banner color and name your Pulse.</p>
+                                <p className="text-loops-muted text-lg">Detailed stores sell 3x more. Pick a banner color and name your Store.</p>
                             </div>
 
                             <div className="space-y-6">

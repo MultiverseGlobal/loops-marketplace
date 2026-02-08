@@ -190,7 +190,7 @@ export default function ChatPage() {
                     status: 'completed'
                 });
                 setShowReview(true);
-                toast.success("Trade recorded successfully! Pulse complete.");
+                toast.success("Trade recorded successfully! Trade complete.");
             } else {
                 toast.success("Offer accepted. Coordinate for completion.");
             }

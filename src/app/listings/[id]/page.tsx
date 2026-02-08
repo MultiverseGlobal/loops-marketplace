@@ -117,7 +117,7 @@ export default function ListingDetailPage() {
 
         // 2. Redirect to WhatsApp
         if (listing.profiles?.whatsapp_number) {
-            const message = encodeURIComponent(`Hi ${listing.profiles.full_name}, I saw your listing "${listing.title}" on Loops. Is it still available?`);
+            const message = encodeURIComponent(`Hi ${listing.profiles.full_name}! 👋\n\nI saw your listing "${listing.title}" on Loops for ${CURRENCY}${listing.price}.\n\nIs it still available? I'd like to discuss the next steps! ♾️🔌`);
             window.open(`https://wa.me/${listing.profiles.whatsapp_number}?text=${message}`, '_blank');
         } else {
             toast.error("This seller hasn't connected WhatsApp yet. Use Loops chat.");
@@ -194,7 +194,7 @@ export default function ListingDetailPage() {
     const handleDelete = async () => {
         const confirmed = await modal.confirm({
             title: "Delete Listing?",
-            message: "Are you sure? This action is permanent and will remove your Pulse from the campus records.",
+            message: "Are you sure? This action is permanent and will remove your Listing from the campus records.",
             confirmLabel: "Permanent Delete",
             cancelLabel: "Keep Listing",
             type: 'danger'
@@ -501,7 +501,7 @@ export default function ListingDetailPage() {
                                 className="text-[10px] text-red-400 hover:text-red-500 hover:bg-red-50 font-bold uppercase tracking-widest flex items-center gap-2 opacity-50 hover:opacity-100 transition-all"
                             >
                                 <AlertTriangle className="w-3 h-3" />
-                                Report Suspicious Pulse
+                                Report Suspicious Activity
                             </Button>
                         </div>
 

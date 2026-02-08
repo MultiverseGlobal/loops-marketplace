@@ -65,7 +65,7 @@ export function Footer() {
                             <div className="absolute top-0 right-0 w-16 h-16 bg-loops-success/5 rounded-full blur-2xl group-hover:bg-loops-success/10 transition-colors" />
                             <div className="flex items-center gap-3 mb-3 relative z-10">
                                 <div className="w-2 h-2 rounded-full bg-loops-success animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                                <span className="text-sm font-bold text-loops-main truncate">{campus?.name || 'Veritas Pulse'}</span>
+                                <span className="text-sm font-bold text-loops-main truncate">{campus?.name || 'Veritas Loop'}</span>
                             </div>
                             <p className="text-[9px] text-loops-muted uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Verified Active</p>
                         </div>

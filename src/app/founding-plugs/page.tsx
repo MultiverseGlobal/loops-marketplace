@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 
 export default function FoundingPlugsPage() {
+    const [step, setStep] = useState(1);
     const [name, setName] = useState("");
     const [whatsapp, setWhatsapp] = useState("");
     const [email, setEmail] = useState("");
@@ -19,6 +20,12 @@ export default function FoundingPlugsPage() {
     const [itemCount, setItemCount] = useState("");
     const [currentlySelling, setCurrentlySelling] = useState("");
     const [motivation, setMotivation] = useState("");
+
+    // Store Build State
+    const [storeName, setStoreName] = useState("");
+    const [storeBannerColor, setStoreBannerColor] = useState("bg-loops-primary");
+    const [storeCategory, setStoreCategory] = useState("");
+
     const [submitting, setSubmitting] = useState(false);
 
     const supabase = createClient();
@@ -40,27 +47,28 @@ export default function FoundingPlugsPage() {
                     estimated_item_count: itemCount,
                     currently_selling: currentlySelling,
                     motivation: motivation,
-                    status: 'pending'
+                    status: 'pending',
+                    // Store details if provided
+                    store_name: storeName,
+                    store_banner_color: storeBannerColor,
+                    store_category: storeCategory || matchingCategory(offeringType)
                 });
 
             if (error) throw error;
 
-            toast.success("Application submitted! We'll contact you within 48 hours.");
-
-            // Reset form
-            setName("");
-            setWhatsapp("");
-            setEmail("");
-            setOfferingType('');
-            setDescription("");
-            setItemCount("");
-            setCurrentlySelling("");
-            setMotivation("");
+            toast.success("Founding Plug Application Received! ♾️");
+            setStep(3); // Success step
         } catch (error: any) {
             toast.error(error.message || "Failed to submit application. Please try again.");
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const matchingCategory = (type: string) => {
+        if (type === 'product') return 'General Goods';
+        if (type === 'service') return 'Campus Services';
+        return 'General';
     };
 
     return (
@@ -150,134 +158,138 @@ export default function FoundingPlugsPage() {
             {/* Application Form */}
             <section className="py-20 px-4 sm:px-6">
                 <div className="max-w-2xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl sm:text-4xl font-bold font-display mb-4">Apply Now</h2>
-                        <p className="text-loops-muted">Limited to the first 50 sellers. Applications reviewed within 48 hours.</p>
+                    <div className="bg-white rounded-[2.5rem] border border-loops-border shadow-2xl shadow-loops-primary/5 overflow-hidden">
+                        {/* Progress Header */}
+                        <div className="flex bg-loops-subtle border-bottom border-loops-border">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className={cn(
+                                    "flex-1 text-center py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all",
+                                    step === i ? "text-loops-primary bg-white" : "text-loops-muted opacity-50"
+                                )}>
+                                    Step {i}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="p-8 sm:p-12">
+                            {step === 1 && (
+                                <form onSubmit={(e) => { e.preventDefault(); setStep(2); }} className="space-y-6">
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        <FormField label="Full Name" required>
+                                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" required className="form-input" />
+                                        </FormField>
+                                        <FormField label="WhatsApp Number" required>
+                                            <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="+234..." required className="form-input" />
+                                        </FormField>
+                                    </div>
+
+                                    <FormField label="Campus Email (for verification)" required>
+                                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@university.edu" required className="form-input" />
+                                    </FormField>
+
+                                    <FormField label="What do you sell/offer?" required>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <button type="button" onClick={() => setOfferingType('product')} className={cn("selection-btn", offeringType === 'product' && "active")}>Products</button>
+                                            <button type="button" onClick={() => setOfferingType('service')} className={cn("selection-btn", offeringType === 'service' && "active")}>Services</button>
+                                        </div>
+                                    </FormField>
+
+                                    <FormField label="Describe your items/services" required>
+                                        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="form-textarea" required />
+                                    </FormField>
+
+                                    <Button type="submit" className="w-full h-16 text-lg font-bold bg-loops-primary text-white rounded-2xl">
+                                        Continue to Storefront setup
+                                        <ArrowRight className="w-5 h-5 ml-2" />
+                                    </Button>
+                                </form>
+                            )}
+
+                            {step === 2 && (
+                                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                                    <div className="space-y-2">
+                                        <h3 className="text-2xl font-bold font-display">Configure your Storefront Vision</h3>
+                                        <p className="text-sm text-loops-muted">You can build your shop now or finish signing up and do it later.</p>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <FormField label="Storefront Name (Optional)">
+                                            <input
+                                                type="text"
+                                                value={storeName}
+                                                onChange={(e) => setStoreName(e.target.value)}
+                                                placeholder="e.g. Veritas Tech Hub"
+                                                className="form-input"
+                                            />
+                                        </FormField>
+
+                                        <FormField label="Brand Color Theme">
+                                            <div className="flex gap-4">
+                                                {['bg-loops-primary', 'bg-loops-secondary', 'bg-loops-accent', 'bg-black'].map((color) => (
+                                                    <button
+                                                        key={color}
+                                                        onClick={() => setStoreBannerColor(color)}
+                                                        className={cn(
+                                                            "w-12 h-12 rounded-full border-4 transition-all",
+                                                            color,
+                                                            storeBannerColor === color ? "border-loops-main scale-110" : "border-transparent opacity-60"
+                                                        )}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </FormField>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                                        <Button
+                                            variant="outline"
+                                            className="h-14 flex-1 border-loops-primary text-loops-primary hover:bg-loops-primary/5 font-bold"
+                                            onClick={handleSubmit}
+                                            disabled={submitting}
+                                        >
+                                            {submitting ? "Processing..." : "Finish Signup (Setup Later)"}
+                                        </Button>
+                                        <Button
+                                            className="h-14 flex-1 bg-loops-primary text-white font-bold"
+                                            onClick={handleSubmit}
+                                            disabled={submitting}
+                                        >
+                                            {submitting ? "Finalizing Store..." : "Build My Storefront Now"}
+                                            <Zap className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {step === 3 && (
+                                <div className="text-center space-y-8 py-10 animate-in zoom-in duration-500">
+                                    <div className="w-24 h-24 bg-loops-success/10 rounded-full flex items-center justify-center mx-auto text-loops-success border border-loops-success/20">
+                                        <CheckCircle className="w-12 h-12" />
+                                    </div>
+                                    <h2 className="text-3xl font-bold font-display">Application Received!</h2>
+                                    <p className="text-loops-muted max-w-sm mx-auto">
+                                        We're reviewing your "Founding Plug" status. You'll get a WhatsApp invite to the founding group within 48 hours.
+                                    </p>
+                                    <div className="pt-6">
+                                        {storeName ? (
+                                            <div className={cn("p-6 rounded-2xl text-white space-y-2 max-w-xs mx-auto shadow-xl", storeBannerColor)}>
+                                                <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">Reserved Storefront</div>
+                                                <div className="text-xl font-bold">{storeName}</div>
+                                                <div className="text-[10px] italic">Founding 50 Collection</div>
+                                            </div>
+                                        ) : (
+                                            <div className="p-4 rounded-xl bg-loops-subtle border border-dashed border-loops-border italic text-xs text-loops-muted">
+                                                No storefront configured yet. You can do this in Settings after your account is activated.
+                                            </div>
+                                        )}
+                                    </div>
+                                    <Button variant="outline" className="mt-8 border-loops-border" onClick={() => window.location.href = '/'}>
+                                        Back to Home
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                     </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-6 p-8 bg-white rounded-3xl border border-loops-border shadow-2xl shadow-loops-primary/5">
-                        <FormField label="Full Name" required>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="John Doe"
-                                required
-                                className="w-full h-14 rounded-xl bg-loops-subtle border border-loops-border px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all"
-                            />
-                        </FormField>
-
-                        <FormField label="WhatsApp Number" required>
-                            <input
-                                type="tel"
-                                value={whatsapp}
-                                onChange={(e) => setWhatsapp(e.target.value)}
-                                placeholder="+234..."
-                                required
-                                className="w-full h-14 rounded-xl bg-loops-subtle border border-loops-border px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all"
-                            />
-                        </FormField>
-
-                        <FormField label="Campus Email (for verification)" required>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="you@university.edu"
-                                required
-                                className="w-full h-14 rounded-xl bg-loops-subtle border border-loops-border px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all"
-                            />
-                        </FormField>
-
-                        <FormField label="What do you sell/offer?" required>
-                            <div className="grid grid-cols-2 gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setOfferingType('product')}
-                                    className={cn(
-                                        "p-4 rounded-xl border-2 transition-all font-bold text-sm",
-                                        offeringType === 'product'
-                                            ? "border-loops-primary bg-loops-primary/5 text-loops-primary"
-                                            : "border-loops-border text-loops-muted hover:border-loops-primary/30"
-                                    )}
-                                >
-                                    Products
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setOfferingType('service')}
-                                    className={cn(
-                                        "p-4 rounded-xl border-2 transition-all font-bold text-sm",
-                                        offeringType === 'service'
-                                            ? "border-loops-primary bg-loops-primary/5 text-loops-primary"
-                                            : "border-loops-border text-loops-muted hover:border-loops-primary/30"
-                                    )}
-                                >
-                                    Services
-                                </button>
-                            </div>
-                        </FormField>
-
-                        <FormField label="Describe what you'd list (be specific)" required>
-                            <textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="e.g. Second-hand textbooks for CS courses, MacBook accessories, fashion items..."
-                                required
-                                rows={4}
-                                className="w-full p-6 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all resize-none"
-                            />
-                        </FormField>
-
-                        <FormField label="How many items/services could you post in the first week?" required>
-                            <select
-                                value={itemCount}
-                                onChange={(e) => setItemCount(e.target.value)}
-                                required
-                                className="w-full h-14 rounded-xl bg-loops-subtle border border-loops-border px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all appearance-none"
-                            >
-                                <option value="">Select...</option>
-                                <option value="1-2">1-2</option>
-                                <option value="3-5">3-5</option>
-                                <option value="6-10">6-10</option>
-                                <option value="10+">10+</option>
-                            </select>
-                        </FormField>
-
-                        <FormField label="Do you already sell on campus? Where?">
-                            <input
-                                type="text"
-                                value={currentlySelling}
-                                onChange={(e) => setCurrentlySelling(e.target.value)}
-                                placeholder="e.g. WhatsApp Status, Instagram, word of mouth..."
-                                className="w-full h-14 rounded-xl bg-loops-subtle border border-loops-border px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all"
-                            />
-                        </FormField>
-
-                        <FormField label="Why do you want to be a Founding Plug?" required>
-                            <textarea
-                                value={motivation}
-                                onChange={(e) => setMotivation(e.target.value)}
-                                placeholder="Tell us why this opportunity excites you..."
-                                required
-                                rows={3}
-                                className="w-full p-6 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all resize-none"
-                            />
-                        </FormField>
-
-                        <Button
-                            type="submit"
-                            disabled={submitting}
-                            className="w-full h-16 text-xl font-bold bg-loops-primary hover:bg-loops-primary/90 text-white shadow-xl shadow-loops-primary/20 transition-all"
-                        >
-                            {submitting ? "Submitting..." : "Submit Application"}
-                            {!submitting && <ArrowRight className="w-5 h-5 ml-2" />}
-                        </Button>
-
-                        <p className="text-center text-xs text-loops-muted">
-                            We'll review your application and get back to you within 48 hours via WhatsApp.
-                        </p>
-                    </form>
                 </div>
             </section>
 

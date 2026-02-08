@@ -24,3 +24,33 @@ body {
 ::-webkit-scrollbar-thumb {
   @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
 }
+
+@layer components {
+  .form-input {
+    @apply w-full h-14 rounded-xl bg-loops-subtle border border-loops-border px-6 focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium;
+  }
+
+  .form-textarea {
+    @apply w-full p-4 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all resize-none font-medium;
+  }
+
+  .selection-btn {
+    @apply p-4 rounded-xl border-2 transition-all font-bold text-sm border-loops-border text-loops-muted hover:border-loops-primary/30;
+  }
+
+  .selection-btn.active {
+    @apply border-loops-primary bg-loops-primary/5 text-loops-primary;
+  }
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #3B82F6, #8B5CF6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.secondary-gradient {
+  background: linear-gradient(to right, #8B5CF6, #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

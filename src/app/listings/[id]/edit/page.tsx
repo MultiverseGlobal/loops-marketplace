@@ -94,7 +94,7 @@ export default function EditListingPage() {
                 <div className="space-y-8">
                     <div className="space-y-4">
                         <p className="text-sm font-bold text-loops-primary uppercase tracking-widest">Editor Mode</p>
-                        <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main italic">Refine your Pulse.</h1>
+                        <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main italic">Refine your Listing.</h1>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">

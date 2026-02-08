@@ -157,7 +157,7 @@ export default function SettingsPage() {
 
                 <div className="space-y-12">
                     <div className="space-y-4">
-                        <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main italic">Global Pulse settings.</h1>
+                        <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main italic">Global Loop settings.</h1>
                         <p className="text-loops-muted text-lg">Manage your identity and preferences across the {campus?.name || 'Loop'}.</p>
                     </div>
 
@@ -171,7 +171,7 @@ export default function SettingsPage() {
 
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-widest text-loops-muted ml-1">Profile Pulse (Avatar)</label>
+                                    <label className="text-[10px] uppercase font-bold tracking-widest text-loops-muted ml-1">Profile Picture (Avatar)</label>
                                     <div className="pt-2">
                                         <ImageUpload
                                             maxFiles={1}
@@ -207,7 +207,7 @@ export default function SettingsPage() {
                                         onChange={(e) => setWhatsappNumber(e.target.value)}
                                         className="w-full h-14 px-4 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none transition-all font-bold"
                                     />
-                                    <p className="text-[9px] text-loops-muted ml-1 italic">Enables the <b>Loops AI Bot</b> and a direct "Chat" button on your Pulse.</p>
+                                    <p className="text-[9px] text-loops-muted ml-1 italic">Enables the <b>Loops AI Bot</b> and a direct "Chat" button on your Store.</p>
                                 </div>
                             </div>
                         </div>
