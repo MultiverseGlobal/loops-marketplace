@@ -32,7 +32,19 @@ export const metadata: Metadata = {
     robots: {
         index: true,
         follow: true
-    }
+    },
+    themeColor: '#10b981',
+    viewport: {
+        width: 'device-width',
+        initialScale: 1,
+        maximumScale: 1,
+        userScalable: false,
+    },
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: 'default',
+        title: 'Loops',
+    },
 };
 
 import { PageTransition } from "../components/layout/page-transition";
@@ -41,12 +53,28 @@ import { ToastProvider } from "../context/toast-context";
 import { ModalProvider } from "../context/modal-context";
 import { BottomNav } from "../components/layout/bottom-nav";
 import { Analytics } from "@vercel/analytics/next";
+import { useEffect } from "react";
 
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    useEffect(() => {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(
+                    (registration) => {
+                        console.log('SW registered: ', registration);
+                    },
+                    (registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    }
+                );
+            });
+        }
+    }, []);
+
     return (
         <html lang="en" suppressHydrationWarning>
             <body

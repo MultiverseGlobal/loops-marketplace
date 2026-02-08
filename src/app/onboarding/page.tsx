@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
+import { InstallPrompt } from "@/components/ui/install-prompt";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -664,6 +665,8 @@ export default function OnboardingPage() {
                                     <span className="text-loops-primary font-bold ml-1">{getTerm('communityName')}.</span>
                                 </p>
                             </div>
+
+                            <InstallPrompt />
 
                             {primaryRole === 'plug' && (
                                 <div className={cn("p-6 rounded-2xl border max-w-sm mx-auto space-y-2 text-white", storeBannerColor)}>
