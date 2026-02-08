@@ -22,6 +22,9 @@ export default function Home() {
     const [listings, setListings] = useState<any[]>([]);
     const [foundingPlugs, setFoundingPlugs] = useState<any[]>([]);
     const [counts, setCounts] = useState({ campuses: 0, students: 0, loops: 0 });
+    const [headlineIndex, setHeadlineIndex] = useState(0);
+    const headlines = ["Stay in", "Welcome to", "Flow with"];
+
     const supabase = createClient();
     const { campus, getTerm } = useCampus();
 
@@ -113,6 +116,13 @@ export default function Home() {
         return () => clearTimeout(timer);
     }, [supabase]);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setHeadlineIndex((prev) => (prev + 1) % headlines.length);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="bg-loops-bg">
             <Navbar />
@@ -142,9 +152,22 @@ export default function Home() {
                         transition={{ delay: 0.1 }}
                         className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-[-0.04em] leading-[0.9] text-loops-main"
                     >
-                        Trade inside <br />
+                        <div className="relative h-[1.1em] overflow-hidden">
+                            <AnimatePresence mode="wait">
+                                <motion.span
+                                    key={headlines[headlineIndex]}
+                                    initial={{ y: 40, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: -40, opacity: 0 }}
+                                    transition={{ duration: 0.5, ease: "circOut" }}
+                                    className="block"
+                                >
+                                    {headlines[headlineIndex]}
+                                </motion.span>
+                            </AnimatePresence>
+                        </div>
                         <span className="text-transparent bg-clip-text bg-gradient-to-br from-loops-primary to-loops-teal bg-[length:200%_auto] animate-gradient italic">
-                            the Loop.
+                            {getTerm('communityName') || 'the Loop'}.
                         </span>
                     </motion.h1>
 
@@ -163,15 +186,15 @@ export default function Home() {
                         transition={{ delay: 0.3 }}
                         className="flex flex-col sm:flex-row gap-4 justify-center pt-6"
                     >
-                        <Link href="/browse">
+                        <Link href="/login?view=signup">
                             <Button size="lg" className="h-14 px-10 text-lg font-bold bg-loops-primary text-white hover:bg-loops-primary/90 transition-all shadow-2xl shadow-loops-primary/25 rounded-2xl group">
-                                Start Trading
+                                Join the Loop
                                 <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
                             </Button>
                         </Link>
-                        <Link href="/onboarding">
+                        <Link href="/login">
                             <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-bold border-loops-border bg-white text-loops-main rounded-2xl hover:bg-loops-subtle transition-all">
-                                Join the Hub
+                                Sign In
                             </Button>
                         </Link>
                     </motion.div>
@@ -413,9 +436,9 @@ export default function Home() {
                             Join the movement on {campus?.name || 'your campus'}. Your verified institutional identity is your key to the safest marketplace in Nigeria.
                         </p>
                         <div className="pt-6">
-                            <Link href="/onboarding">
+                            <Link href="/login?view=signup">
                                 <Button size="lg" className="h-16 px-16 text-xl font-bold bg-white text-loops-main hover:bg-loops-subtle hover:scale-105 transition-all rounded-2xl shadow-xl">
-                                    Enter the {getTerm('communityName')}
+                                    Join the Loop
                                 </Button>
                             </Link>
                         </div>
