@@ -200,16 +200,16 @@ export default function ProfilePage() {
                             <div className="relative z-10 space-y-6">
                                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-loops-primary to-loops-secondary p-1 shadow-lg shadow-loops-primary/20">
                                     <div className="w-full h-full rounded-[14px] bg-white flex items-center justify-center overflow-hidden relative">
-                                        {profile?.avatar_url ? (
+                                        {(profile?.store_logo_url || profile?.avatar_url) ? (
                                             <Image
-                                                src={profile.avatar_url}
-                                                alt={profile.full_name || 'Profile'}
+                                                src={profile?.store_logo_url || profile?.avatar_url}
+                                                alt={profile?.store_name || profile?.full_name || 'Profile'}
                                                 fill
                                                 className="object-cover"
                                             />
                                         ) : (
                                             <div className="text-4xl font-bold font-display text-loops-primary">
-                                                {profile?.full_name?.charAt(0) || 'U'}
+                                                {profile?.store_name?.charAt(0) || profile?.full_name?.charAt(0) || 'U'}
                                             </div>
                                         )}
                                     </div>
@@ -223,9 +223,21 @@ export default function ProfilePage() {
                                         )}
                                     </div>
                                     {profile?.store_name && (
-                                        <div className={cn("flex items-center gap-2 px-3 py-1 border border-white/10 rounded-lg w-fit text-white shadow-lg", profile.store_banner_color || "bg-loops-primary")}>
-                                            <Sparkles className="w-3.5 h-3.5" />
-                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]">{profile.store_name} Merchant</span>
+                                        <div className="flex flex-wrap gap-2">
+                                            <div className={cn("flex items-center gap-2 px-3 py-1 border border-white/10 rounded-lg w-fit text-white shadow-lg", profile.store_banner_color || "bg-loops-primary")}>
+                                                <Sparkles className="w-3.5 h-3.5" />
+                                                <span className="text-[9px] font-black uppercase tracking-[0.2em]">{profile.store_name} Merchant</span>
+                                            </div>
+                                            {profile?.branding_tier === 'founding' && (
+                                                <div className="flex items-center gap-2 px-3 py-1 bg-loops-main/5 border border-loops-primary/20 rounded-lg w-fit text-loops-primary shadow-sm hover:bg-loops-primary/5 transition-colors cursor-help group/tier relative">
+                                                    <Award className="w-3.5 h-3.5" />
+                                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">Founding Plug</span>
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-loops-main text-white text-[10px] rounded-xl opacity-0 group-hover/tier:opacity-100 transition-opacity pointer-events-none z-50 shadow-2xl">
+                                                        <div className="font-bold mb-1 text-loops-primary">Verified Founder</div>
+                                                        This merchant is part of the first 50 students to shape the Loop at Veritas.
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                     <div className="flex items-center gap-2 text-loops-muted font-medium">

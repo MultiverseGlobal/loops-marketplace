@@ -143,11 +143,23 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
                     </div>
                     <div className="flex items-center justify-between">
                         <p className="text-[12px] md:text-[13px] text-loops-primary font-black tracking-tighter">{price}</p>
-                        <div className="flex items-center gap-1.5 opacity-60">
-                            <User className="w-2.5 h-2.5 text-loops-muted" />
-                            <span className="text-[9px] font-bold text-loops-muted uppercase tracking-wider truncate max-w-[80px]">{(author as any)?.store_name || (author as any)?.full_name || "Campus Hub"}</span>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-4 h-4 rounded-full bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
+                                {((author as any)?.store_logo_url || (author as any)?.avatar_url) ? (
+                                    <Image
+                                        src={(author as any)?.store_logo_url || (author as any)?.avatar_url}
+                                        alt={(author as any)?.store_name || "Seller"}
+                                        width={16}
+                                        height={16}
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <User className="w-2 h-2 text-loops-muted" />
+                                )}
+                            </div>
+                            <span className="text-[9px] font-bold text-loops-muted uppercase tracking-wider truncate max-w-[60px]">{(author as any)?.store_name || (author as any)?.full_name || "Campus Hub"}</span>
+                            <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse-subtle flex-shrink-0", (author as any)?.store_banner_color || "bg-loops-primary")} />
                         </div>
-                        <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse-subtle", (author as any)?.store_banner_color || "bg-loops-primary")} />
                     </div>
                 </div>
             </Link>
