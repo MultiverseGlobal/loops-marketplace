@@ -8,6 +8,7 @@ import { SkeletonCard } from "../components/ui/skeleton-loader";
 import { ArrowRight, Sparkles, ShieldCheck, Zap, MessageSquare } from "lucide-react";
 import { Footer } from "../components/layout/footer";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createClient } from "../lib/supabase/client";
 import { useCampus } from "../context/campus-context";
