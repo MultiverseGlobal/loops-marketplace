@@ -29,6 +29,18 @@ import { useToast } from "@/context/toast-context";
 import { cn } from "@/lib/utils";
 import { AdminSidebar, AdminView } from "@/components/admin/sidebar";
 import { motion, AnimatePresence } from "framer-motion";
+import { Profile } from "@/lib/types"; // Assuming there's a types file, if not I'll define it locally or use a generic
+
+interface AdminProfile {
+    id: string;
+    full_name: string | null;
+    email: string | null;
+    is_admin: boolean;
+    is_plug: boolean;
+    reputation: number;
+    avatar_url?: string | null;
+    created_at: string;
+}
 
 export default function AdminDashboard() {
     const [currentView, setCurrentView] = useState<AdminView>('dashboard');
@@ -43,7 +55,7 @@ export default function AdminDashboard() {
     const [analytics, setAnalytics] = useState<any>(null);
     const [applications, setApplications] = useState<any[]>([]);
     const [userSearch, setUserSearch] = useState("");
-    const [foundUser, setFoundUser] = useState<any>(null);
+    const [foundUser, setFoundUser] = useState<AdminProfile | null>(null);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [verificationResults, setVerificationResults] = useState<Record<string, any>>({});
@@ -182,7 +194,7 @@ export default function AdminDashboard() {
                 toast.success("Plug Approved! 🔌");
             }
 
-            setApplications(prev => prev.filter(a => a.id !== app.id));
+            setApplications((prev: any[]) => prev.filter(a => a.id !== app.id));
             toast.success(`Application ${action}`);
         } catch (err: any) {
             toast.error("Action failed");
@@ -195,7 +207,7 @@ export default function AdminDashboard() {
         setProcessingId(userId);
         try {
             await supabase.from('profiles').update({ is_plug: !currentStatus }).eq('id', userId);
-            setFoundUser(prev => prev ? { ...prev, is_plug: !currentStatus } : null);
+            setFoundUser((prev: AdminProfile | null) => prev ? { ...prev, is_plug: !currentStatus } : null);
             toast.success("Status updated");
         } finally {
             setProcessingId(null);
