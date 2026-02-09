@@ -13,7 +13,8 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
-import { CURRENCY } from "@/lib/constants";
+import { useCampus } from "@/context/campus-context";
+import { CURRENCY, LOOPBOT_NUMBER } from "@/lib/constants";
 import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
 import { UserPlus, UserMinus, Users, User } from "lucide-react";
 import { Rating } from "@/components/ui/rating";
@@ -400,17 +401,20 @@ export default function ProfilePage() {
                             {user?.id === profile?.id && (profile?.is_plug || profile?.primary_role === 'plug') && (
                                 <div className="pt-6 border-t border-loops-border">
                                     <a
-                                        href={`https://wa.me/13157376569?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Listings%20and%20list%20new%20items.`}
+                                        href={`https://wa.me/${LOOPBOT_NUMBER}?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Listings%20and%20list%20new%20items.`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="block"
                                     >
                                         <Button className="w-full bg-loops-success text-white hover:bg-loops-success/90 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-loops-success/20">
                                             <Phone className="w-4 h-4" />
-                                            Manage Listings via LoopBot
+                                            Manage with LoopBot
                                         </Button>
                                     </a>
-                                    <p className="text-[9px] text-loops-muted text-center mt-3 font-medium uppercase tracking-[0.1em]">AI Assistant Connection Active</p>
+                                    <div className="mt-3 p-3 bg-loops-success/5 rounded-xl border border-loops-success/10">
+                                        <p className="text-[9px] text-loops-success font-black uppercase tracking-[0.1em] mb-1">How it works:</p>
+                                        <p className="text-[9px] text-loops-muted leading-tight">1. Open the chat above<br />2. Send "Link my account"<br />3. Start listing items by typing naturally!</p>
+                                    </div>
                                 </div>
                             )}
                         </div>

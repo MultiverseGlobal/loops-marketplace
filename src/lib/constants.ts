@@ -20,3 +20,6 @@ export const CURRENCY = "₦";
 export const CURRENCY_CODE = "NGN";
 
 export const FALLBACK_PRODUCT_IMAGE = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000";
+
+// LoopBot Configuration
+export const LOOPBOT_NUMBER = "13157376569"; // Twilio Sandbox (Update to production Meta number)
