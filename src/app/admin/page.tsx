@@ -22,7 +22,8 @@ import {
     Trash2,
     Edit3,
     Search as SearchIcon,
-    AlertTriangle
+    AlertTriangle,
+    Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/context/toast-context";
