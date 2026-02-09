@@ -9,7 +9,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useCampus } from "@/context/campus-context";
 
-export default function TradeHistoryPage() {
+export default function ActivityLedgerPage() {
     const [transactions, setTransactions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -47,7 +47,7 @@ export default function TradeHistoryPage() {
 
                 <div className="space-y-12">
                     <div className="space-y-4">
-                        <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main italic">Trade Ledger.</h1>
+                        <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main italic">Activity Ledger.</h1>
                         <p className="text-loops-muted text-lg">Your historical footprint in the {getTerm('communityName')}.</p>
                     </div>
 
@@ -100,8 +100,8 @@ export default function TradeHistoryPage() {
                         ) : (
                             <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic space-y-4">
                                 <Receipt className="w-12 h-12 text-loops-muted/10 mx-auto" />
-                                <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Trades found.</h3>
-                                <p className="text-loops-muted max-w-xs mx-auto text-sm">You haven't completed any trades in the {getTerm('communityName')} yet. Start by exploring the marketplace!</p>
+                                <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Activity found.</h3>
+                                <p className="text-loops-muted max-w-xs mx-auto text-sm">You haven't completed any Loops in the {getTerm('communityName')} yet. Start by exploring the marketplace!</p>
                                 <Link href="/browse" className="inline-block pt-4">
                                     <Button className="font-bold uppercase tracking-widest text-[10px]">Browse Marketplace</Button>
                                 </Link>

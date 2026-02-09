@@ -379,7 +379,7 @@ export default function ProfilePage() {
                                         <textarea
                                             value={reviewComment}
                                             onChange={(e) => setReviewComment(e.target.value)}
-                                            placeholder="Add a quick note about the trade..."
+                                            placeholder="Add a quick note about the Loop..."
                                             className="w-full p-4 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none transition-all resize-none text-sm h-24"
                                         />
 
@@ -705,7 +705,7 @@ export default function ProfilePage() {
                                                 </div>
                                             ) : (
                                                 <div className="p-12 rounded-3xl border border-dashed border-loops-border text-center">
-                                                    <p className="text-loops-muted italic text-sm">You haven't made any offers yet. Don't be shy, campus trade is built on bargaining!</p>
+                                                    <p className="text-loops-muted italic text-sm">You haven't made any offers yet. Don't be shy, campus commerce is built on bargaining!</p>
                                                     <Link href="/browse" className="inline-block mt-4 text-loops-primary font-bold text-xs uppercase tracking-widest hover:underline">Start Browsing</Link>
                                                 </div>
                                             )}

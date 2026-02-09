@@ -168,7 +168,7 @@ export function Navbar() {
                         <div className="flex items-center gap-2">
                             <Link href="/login">
                                 <Button variant="ghost" className="h-11 px-6 rounded-2xl text-xs font-bold text-loops-muted hover:text-loops-primary hover:bg-loops-primary/5">
-                                    Log in
+                                    Sign In
                                 </Button>
                             </Link>
                             <Link href="/login?view=signup">

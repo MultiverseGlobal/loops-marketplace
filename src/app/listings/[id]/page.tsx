@@ -172,7 +172,7 @@ export default function ListingDetailPage() {
     const handleMarkSold = async () => {
         const confirmed = await modal.confirm({
             title: "Mark as Sold?",
-            message: "This item will be hidden from the Loop feed. Make sure the trade is complete!",
+            message: "This item will be hidden from the Loop feed. Make sure the Loop is complete!",
             confirmLabel: "Mark as Sold",
             cancelLabel: "Not Yet",
             type: 'warning'
@@ -577,7 +577,7 @@ export default function ListingDetailPage() {
                                 <ul className="space-y-4 text-sm text-loops-muted px-2">
                                     <li className="flex items-start gap-3">
                                         <div className="w-1.5 h-1.5 rounded-full bg-loops-primary mt-1.5" />
-                                        <span>Trade in public university spaces only.</span>
+                                        <span>Loop in public university spaces only.</span>
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <div className="w-1.5 h-1.5 rounded-full bg-loops-primary mt-1.5" />

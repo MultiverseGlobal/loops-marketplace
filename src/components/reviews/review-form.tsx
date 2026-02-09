@@ -49,7 +49,7 @@ export function ReviewForm({ listingId, revieweeId, onSuccess }: ReviewFormProps
         <div className="p-8 rounded-3xl bg-white border border-loops-border shadow-2xl shadow-loops-primary/5 space-y-8">
             <div className="space-y-2">
                 <p className="text-[10px] font-bold text-loops-primary uppercase tracking-widest leading-none">Trust Engine</p>
-                <h3 className="text-3xl font-bold font-display italic tracking-tighter text-loops-main">Rate the Trade.</h3>
+                <h3 className="text-3xl font-bold font-display italic tracking-tighter text-loops-main">Rate the Loop.</h3>
                 <p className="text-loops-muted text-xs font-bold uppercase tracking-widest opacity-60">Help keep the Loop secure for all students.</p>
             </div>
 

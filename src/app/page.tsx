@@ -23,7 +23,7 @@ export default function Home() {
     const [foundingPlugs, setFoundingPlugs] = useState<any[]>([]);
     const [counts, setCounts] = useState({ campuses: 0, students: 0, loops: 0 });
     const [headlineIndex, setHeadlineIndex] = useState(0);
-    const headlines = ["Stay in", "Welcome to", "Flow with"];
+    const headlines = ["Join", "Trust", "Enter"];
 
     const supabase = createClient();
     const { campus, getTerm } = useCampus();
@@ -297,7 +297,7 @@ export default function Home() {
                                 <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-50">Skill Exchange</span>
                             </div>
                             <div className="space-y-3 relative z-10">
-                                <h3 className="font-display text-3xl font-bold tracking-tight">Trade Talent.</h3>
+                                <h3 className="font-display text-3xl font-bold tracking-tight">Exchange Talent.</h3>
                                 <p className="text-white/60 text-base max-w-xs">Swap graphic design for tutoring, or coding for photography. No cash needed.</p>
                             </div>
                         </motion.div>
@@ -338,7 +338,7 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto text-center space-y-24">
                     <div className="space-y-4">
                         <h2 className="font-display text-4xl md:text-5xl font-bold text-loops-main tracking-tight italic">How the Loop flows.</h2>
-                        <p className="text-loops-muted text-lg max-w-xl mx-auto">Standard trading is broken. Loops makes it as fast as a heartbeat.</p>
+                        <p className="text-loops-muted text-lg max-w-xl mx-auto">Standard commerce is broken. Loops makes it as fast as a heartbeat.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">

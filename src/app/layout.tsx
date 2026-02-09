@@ -15,8 +15,8 @@ export const metadata: Metadata = {
         icon: "/logo.png",
         apple: "/logo.png",
     },
-    description: "The economic nervous system of Nigerian student life. Buy, sell, and trade safely within your verified university network.",
-    keywords: ["campus marketplace", "nigerian university", "student trade", "loops", "university marketplace"],
+    description: "The economic nervous system of Nigerian student life. Buy, sell, and connect safely within your verified university network.",
+    keywords: ["campus marketplace", "nigerian university", "student commerce", "loops", "university marketplace"],
     openGraph: {
         title: "Loops | The Campus Marketplace",
         description: "The economic nervous system of Nigerian student life.",

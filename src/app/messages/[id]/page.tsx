@@ -161,12 +161,12 @@ export default function ChatPage() {
 
     const updateListingStatus = async (status: string) => {
         const confirmed = await modal.confirm({
-            title: status === 'pending' ? 'Accept Offer?' : 'Complete Trade?',
+            title: status === 'pending' ? 'Accept Offer?' : 'Complete Loop?',
             message: status === 'pending'
                 ? `Are you sure you want to accept ${otherUser?.full_name}'s offer for this listing?`
-                : "Confirming this will finalize the trade and record it in the campus ledger. This cannot be undone.",
+                : "Confirming this will finalize the Loop and record it in the campus ledger. This cannot be undone.",
             type: status === 'pending' ? 'info' : 'warning',
-            confirmLabel: status === 'pending' ? 'Accept Offer' : 'Complete Trade',
+            confirmLabel: status === 'pending' ? 'Accept Offer' : 'Complete Loop',
             cancelLabel: 'Not yet'
         });
 
@@ -190,7 +190,7 @@ export default function ChatPage() {
                     status: 'completed'
                 });
                 setShowReview(true);
-                toast.success("Trade recorded successfully! Trade complete.");
+                toast.success("Loop recorded successfully! Loop complete.");
             } else {
                 toast.success("Offer accepted. Coordinate for completion.");
             }
@@ -245,7 +245,7 @@ export default function ChatPage() {
                                 onClick={() => updateListingStatus('completed')}
                                 className="bg-loops-accent hover:bg-loops-accent/90 text-white font-bold h-10 px-6 rounded-xl text-[10px] uppercase tracking-widest shadow-lg shadow-loops-accent/20"
                             >
-                                Complete Trade
+                                Complete Loop
                             </Button>
                         )}
                         <div className="text-right hidden sm:block border-l border-loops-border pl-4">
