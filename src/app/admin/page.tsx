@@ -29,7 +29,6 @@ import { useToast } from "@/context/toast-context";
 import { cn } from "@/lib/utils";
 import { AdminSidebar, AdminView } from "@/components/admin/sidebar";
 import { motion, AnimatePresence } from "framer-motion";
-import { Profile } from "@/lib/types"; // Assuming there's a types file, if not I'll define it locally or use a generic
 
 interface AdminProfile {
     id: string;
