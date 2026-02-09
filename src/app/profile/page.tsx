@@ -13,7 +13,6 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
-import { useCampus } from "@/context/campus-context";
 import { CURRENCY, LOOPBOT_NUMBER } from "@/lib/constants";
 import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
 import { UserPlus, UserMinus, Users, User } from "lucide-react";
