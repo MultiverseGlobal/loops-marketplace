@@ -83,8 +83,9 @@ export async function handleBotAction(from: string, intentData: BotIntent) {
     // Handle 'sell' and 'request' (both create listings)
     if ((intentData.intent === 'sell' || intentData.intent === 'request') && intentData.title) {
         const type = intentData.intent === 'sell' ? 'product' : 'request';
+        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://loops-marketplace.vercel.app';
 
-        const { error } = await supabase
+        const { data: newListing, error } = await supabase
             .from('listings')
             .insert({
                 seller_id: profile.id,
@@ -95,22 +96,27 @@ export async function handleBotAction(from: string, intentData: BotIntent) {
                 description: `Posted via WhatsApp: ${intentData.title}`,
                 status: 'active',
                 type: type
-            });
+            })
+            .select()
+            .single();
 
         if (error) {
             console.error('BOT_INSERT_ERROR:', error);
             return "My circuits jammed trying to save that. Mind trying again in a bit?";
         }
 
+        const listingUrl = `${APP_URL}/listings/${newListing.id}`;
+
         if (type === 'product') {
-            return `Bet! I've dropped your "${intentData.title}" for $${intentData.price || 0} to the campus feed. 🕸️`;
+            return `Bet! I've dropped your "${intentData.title}" for $${intentData.price || 0} to the campus feed. 🕸️\n\nView it live: ${listingUrl}`;
         } else {
-            return `Got it! I've posted your request for "${intentData.title}" to the Loop. Someone will hit you up soon! ⚡`;
+            return `Got it! I've posted your request for "${intentData.title}" to the Loop. Someone will hit you up soon! ⚡\n\nTrack your request: ${listingUrl}`;
         }
     }
 
     if (intentData.intent === 'karma') {
-        return `Yo ${profile.full_name}! Your current Karma is ${profile.reputation || 0} with a rating of ${profile.rating || 0} stars. Keep looping! 🕸️🔥`;
+        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://loops-marketplace.vercel.app';
+        return `Yo ${profile.full_name}! Your current Karma is ${profile.reputation || 0} with a rating of ${profile.rating || 0} stars. Keep looping! 🕸️🔥\n\nView your profile: ${APP_URL}/profile?u=${profile.id}`;
     }
 
     if (intentData.intent === 'search') {
