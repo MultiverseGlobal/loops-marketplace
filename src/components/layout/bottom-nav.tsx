@@ -45,7 +45,7 @@ export function BottomNav() {
 
     const navItems = [
         { label: "Feed", href: "/browse", icon: Home },
-        { label: "Saved", href: "/profile?tab=saved", icon: Heart, badge: wishlistCount },
+        { label: "Inbox", href: "/messages", icon: MessageSquare },
         { label: "Post", href: "/listings/create", icon: PlusSquare, primary: true },
         { label: "Cart", icon: ShoppingCart, badge: cartCount, isCart: true },
         { label: "Profile", href: user ? "/profile" : "/login", icon: User },
