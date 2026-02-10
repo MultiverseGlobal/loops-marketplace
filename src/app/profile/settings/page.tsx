@@ -207,7 +207,7 @@ export default function SettingsPage() {
                                         onChange={(e) => setWhatsappNumber(e.target.value)}
                                         className="w-full h-14 px-4 rounded-xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none transition-all font-bold"
                                     />
-                                    <p className="text-[9px] text-loops-muted ml-1 italic">Crucial for **LoopBot AI**. Use international format (e.g., 23481...).</p>
+                                    <p className="text-[9px] text-loops-muted ml-1 italic">Connect with buyers and sellers. Use international format (e.g., 23481...).</p>
                                 </div>
                             </div>
                         </div>

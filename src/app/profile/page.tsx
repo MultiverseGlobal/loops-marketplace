@@ -399,20 +399,17 @@ export default function ProfilePage() {
 
                             {user?.id === profile?.id && (profile?.is_plug || profile?.primary_role === 'plug') && (
                                 <div className="pt-6 border-t border-loops-border">
-                                    <a
-                                        href={`https://wa.me/${LOOPBOT_NUMBER}?text=Hi%20LoopBot!%20I'm%20${encodeURIComponent(profile?.full_name || 'a student')}%20from%20${encodeURIComponent(profile?.campuses?.name || 'Veritas University')}.%20I%20want%20to%20manage%20my%20Listings%20and%20list%20new%20items.`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block"
+                                    <button
+                                        disabled
+                                        className="w-full bg-gradient-to-r from-loops-primary/10 to-loops-secondary/10 text-loops-primary border-2 border-dashed border-loops-primary/30 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] relative overflow-hidden group cursor-not-allowed"
                                     >
-                                        <Button className="w-full bg-loops-success text-white hover:bg-loops-success/90 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-loops-success/20">
-                                            <Phone className="w-4 h-4" />
-                                            Manage with LoopBot
-                                        </Button>
-                                    </a>
-                                    <div className="mt-3 p-3 bg-loops-success/5 rounded-xl border border-loops-success/10">
-                                        <p className="text-[9px] text-loops-success font-black uppercase tracking-[0.1em] mb-1">How it works:</p>
-                                        <p className="text-[9px] text-loops-muted leading-tight">1. Open the chat above<br />2. Send "Link my account"<br />3. Start listing items by typing naturally!</p>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-loops-primary/5 to-loops-secondary/5 animate-pulse" />
+                                        <Sparkles className="w-4 h-4 relative z-10" />
+                                        <span className="relative z-10">LoopBot AI - Coming Soon</span>
+                                    </button>
+                                    <div className="mt-3 p-3 bg-loops-primary/5 rounded-xl border border-loops-primary/10">
+                                        <p className="text-[9px] text-loops-primary font-black uppercase tracking-[0.1em] mb-1">🚀 What's LoopBot?</p>
+                                        <p className="text-[9px] text-loops-muted leading-tight">An AI assistant that lets you create listings, check karma, and manage your store via WhatsApp. Stay tuned!</p>
                                     </div>
                                 </div>
                             )}

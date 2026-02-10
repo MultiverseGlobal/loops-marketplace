@@ -484,7 +484,7 @@ export default function OnboardingPage() {
                                             className="w-full h-14 pl-12 pr-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm font-bold"
                                         />
                                     </div>
-                                    <p className="text-[10px] text-loops-muted italic">Enables **LoopBot AI** assistant for quick listing and karma checks.</p>
+                                    <p className="text-[10px] text-loops-muted italic">Connect with buyers and sellers directly via WhatsApp.</p>
                                 </div>
 
                                 <div className="space-y-2">
