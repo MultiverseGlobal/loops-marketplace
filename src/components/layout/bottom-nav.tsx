@@ -31,7 +31,9 @@ export function BottomNav() {
 
     // Define routes where the bottom nav should be hidden
     const hideOnRoutes = ["/", "/onboarding", "/login", "/signup", "/auth", "/founding-plugs"];
-    const shouldHide = hideOnRoutes.includes(pathname) || pathname.startsWith("/auth/");
+    const shouldHide = hideOnRoutes.includes(pathname) ||
+        pathname.startsWith("/auth/") ||
+        pathname.startsWith("/messages/");
 
     if (shouldHide) return null;
 

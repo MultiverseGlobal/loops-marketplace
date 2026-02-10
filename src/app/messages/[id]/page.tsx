@@ -211,31 +211,41 @@ export default function ChatPage() {
             <Navbar />
 
             {/* Header */}
-            <header className="pt-24 pb-6 px-6 border-b border-loops-border bg-white/70 backdrop-blur-xl z-20 shadow-sm">
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link href="/messages" className="text-loops-muted hover:text-loops-primary transition-colors">
-                            <ArrowLeft className="w-5 h-5" />
+            <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-2xl border-b border-loops-border px-4 py-3 pb-4">
+                <div className="max-w-4xl mx-auto flex items-center justify-between mt-12 sm:mt-0">
+                    <div className="flex items-center gap-3">
+                        <Link href="/messages" className="p-2 -ml-2 text-loops-main hover:bg-loops-subtle rounded-full transition-colors">
+                            <ArrowLeft className="w-6 h-6" />
                         </Link>
-                        <div className="w-10 h-10 rounded-xl bg-loops-primary/5 border border-loops-primary/20 flex items-center justify-center text-loops-primary font-bold shadow-sm">
-                            {otherUser?.full_name?.charAt(0) || 'U'}
+
+                        {/* Avatar from screenshot */}
+                        <div className="w-12 h-12 rounded-2xl bg-white border border-loops-border flex items-center justify-center shadow-sm relative">
+                            <span className="text-xl font-bold text-loops-primary">
+                                {otherUser?.full_name?.charAt(0) || 'U'}
+                            </span>
                         </div>
-                        <div>
-                            <div className="font-bold flex items-center gap-1.5 text-loops-main leading-none mb-1">
-                                {otherUser?.full_name}
-                                {otherUser?.is_verified && <ShieldCheck className="w-3.5 h-3.5 text-loops-success" />}
+
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-1.5">
+                                <h1 className="font-display text-lg font-bold tracking-tight text-loops-main leading-none">
+                                    {otherUser?.full_name}
+                                </h1>
+                                {otherUser?.email_verified && <ShieldCheck className="w-4 h-4 text-loops-primary" />}
                             </div>
-                            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-loops-muted flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-loops-success" />
-                                {listing?.status === 'active' ? getTerm('statusActive') : listing?.status === 'pending' ? getTerm('statusPending') : getTerm('statusCompleted')}: {listing?.title}
+                            <div className="flex items-center gap-1.5 mt-1">
+                                <span className="w-2 h-2 rounded-full bg-loops-success shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                <span className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.1em]">
+                                    VIBING: {listing?.category?.toUpperCase() || 'CHAT'}
+                                </span>
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-4">
+
+                    <div className="flex items-center gap-2">
                         {currentUser?.id === listing?.seller_id && listing?.status === 'active' && (
                             <Button
                                 onClick={() => updateListingStatus('pending')}
-                                className="bg-loops-success hover:bg-loops-success/90 text-white font-bold h-10 px-6 rounded-xl text-[10px] uppercase tracking-widest shadow-lg shadow-loops-success/20"
+                                className="h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-loops-primary text-white shadow-lg shadow-loops-primary/20"
                             >
                                 Accept Offer
                             </Button>
@@ -243,22 +253,18 @@ export default function ChatPage() {
                         {listing?.status === 'pending' && (
                             <Button
                                 onClick={() => updateListingStatus('completed')}
-                                className="bg-loops-accent hover:bg-loops-accent/90 text-white font-bold h-10 px-6 rounded-xl text-[10px] uppercase tracking-widest shadow-lg shadow-loops-accent/20"
+                                className="h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-loops-accent text-white shadow-lg shadow-loops-accent/20"
                             >
                                 Complete Loop
                             </Button>
                         )}
-                        <div className="text-right hidden sm:block border-l border-loops-border pl-4">
-                            <div className="text-loops-success font-bold text-lg leading-none mb-1">${listing?.price}</div>
-                            <div className="text-[10px] uppercase font-bold text-loops-muted tracking-widest leading-none">Verified</div>
-                        </div>
                     </div>
                 </div>
             </header>
 
             {/* Chat Area */}
-            <main ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-12 bg-loops-bg">
-                <div className="max-w-4xl mx-auto space-y-8">
+            <main ref={scrollRef} className="flex-1 overflow-y-auto px-4 pt-40 pb-32 bg-loops-bg">
+                <div className="max-w-4xl mx-auto space-y-6">
                     <div className="text-center py-16 opacity-50">
                         <div className="w-20 h-20 rounded-3xl bg-loops-subtle border border-loops-border mx-auto mb-6 flex items-center justify-center text-loops-primary/20 shadow-inner">
                             {listing?.type === 'product' ? <Package className="w-10 h-10" /> : <Zap className="w-10 h-10" />}
@@ -275,8 +281,8 @@ export default function ChatPage() {
 
                         if (isSystem) {
                             return (
-                                <div key={m.id || i} className="flex justify-center my-8">
-                                    <div className="px-6 py-2 rounded-full bg-loops-subtle border border-loops-border text-[9px] font-bold uppercase tracking-[0.2em] text-loops-muted shadow-sm italic">
+                                <div key={m.id || i} className="flex justify-center my-6">
+                                    <div className="px-5 py-2 rounded-full bg-loops-subtle border border-loops-border text-[9px] font-bold uppercase tracking-[0.2em] text-loops-muted shadow-sm italic">
                                         {m.content.replace('SYSTEM: ', '').replace('LOOPS: ', '')}
                                     </div>
                                 </div>
@@ -289,19 +295,22 @@ export default function ChatPage() {
                                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 className={cn(
-                                    "flex flex-col max-w-[75%]",
-                                    isMe ? "ml-auto items-end" : "mr-auto items-start"
+                                    "flex flex-col group",
+                                    isMe ? "items-end" : "items-start"
                                 )}
                             >
                                 <div className={cn(
-                                    "px-6 py-4 rounded-2xl text-sm font-medium leading-relaxed mb-2 shadow-sm transition-all",
+                                    "px-5 py-3.5 text-[15px] font-medium leading-relaxed shadow-sm max-w-[85%] sm:max-w-[70%]",
                                     isMe
-                                        ? "bg-loops-primary text-white rounded-tr-none shadow-loops-primary/20"
-                                        : "bg-loops-subtle border border-loops-border text-loops-main rounded-tl-none"
+                                        ? "bg-loops-primary text-white rounded-[1.25rem] rounded-tr-none shadow-loops-primary/20"
+                                        : "bg-loops-subtle border border-loops-border text-loops-main rounded-[1.25rem] rounded-tl-none"
                                 )}>
                                     {m.content}
                                 </div>
-                                <span className="text-[9px] text-loops-muted font-bold uppercase tracking-widest px-1">
+                                <span className={cn(
+                                    "text-[9px] text-loops-muted font-bold uppercase tracking-widest mt-1.5 px-1",
+                                    isMe ? "mr-1" : "ml-1"
+                                )}>
                                     {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </motion.div>
@@ -329,21 +338,27 @@ export default function ChatPage() {
             </main>
 
             {/* Input Area */}
-            <div className="p-6 bg-white/80 backdrop-blur-xl border-t border-loops-border z-20">
-                <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto flex gap-4">
-                    <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type a proposal or ask a question..."
-                        className="flex-1 h-14 px-8 bg-loops-subtle border border-loops-border rounded-2xl focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/10 transition-all font-medium text-loops-main placeholder:text-loops-muted/50"
-                    />
-                    <Button type="submit" className="h-14 w-14 rounded-2xl bg-loops-primary hover:bg-loops-primary/90 p-0 shadow-xl shadow-loops-primary/20 text-white transition-all hover:scale-105 active:scale-95">
-                        <Send className="w-5 h-5" />
-                    </Button>
-                </form>
-                <div className="max-w-4xl mx-auto mt-2 text-center">
-                    <p className="text-[9px] text-loops-muted font-bold uppercase tracking-widest italic opacity-50">All communication is recorded for campus safety.</p>
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-2xl border-t border-loops-border z-40">
+                <div className="max-w-4xl mx-auto">
+                    <form onSubmit={handleSendMessage} className="relative flex items-center gap-3">
+                        <input
+                            type="text"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            placeholder="Type a message..."
+                            className="flex-1 h-14 pl-6 pr-16 bg-loops-subtle border border-loops-border rounded-2xl focus:border-loops-primary focus:outline-none focus:ring-4 focus:ring-loops-primary/5 transition-all font-medium text-loops-main placeholder:text-loops-muted/50 shadow-sm"
+                        />
+                        <Button
+                            type="submit"
+                            disabled={!newMessage.trim()}
+                            className="absolute right-2 h-10 w-10 rounded-xl bg-loops-primary hover:bg-loops-primary/90 p-0 shadow-lg shadow-loops-primary/20 text-white transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100"
+                        >
+                            <Send className="w-5 h-5" />
+                        </Button>
+                    </form>
+                    <p className="text-[8px] text-loops-muted font-bold uppercase tracking-widest text-center mt-3 opacity-40">
+                        Encrypted • Campus Network • Verified
+                    </p>
                 </div>
             </div>
         </div>
