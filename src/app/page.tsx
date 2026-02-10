@@ -12,6 +12,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createClient } from "../lib/supabase/client";
 import { useCampus } from "../context/campus-context";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../lib/constants";
 import { cn } from "../lib/utils"; // Relative import fix
@@ -26,6 +27,7 @@ export default function Home() {
     const headlines = ["Join", "Trust", "Enter"];
 
     const supabase = createClient();
+    const router = useRouter();
     const { campus, getTerm } = useCampus();
 
     useEffect(() => {
@@ -51,6 +53,23 @@ export default function Home() {
                 students: studentCount || 2400, // Fallback to 2.4k if 0
                 loops: loopCount || 500
             });
+
+            // Handle auto-redirect for authenticated users
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('campus_id')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profile?.campus_id) {
+                    router.push('/browse');
+                } else {
+                    router.push('/onboarding');
+                }
+                return;
+            }
 
             // Fetch trending listings with author names and review stats
             const { data } = await supabase

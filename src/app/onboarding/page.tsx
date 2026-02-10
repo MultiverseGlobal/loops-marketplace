@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronRight, School, User, Sparkles, ShieldCheck, Search } from "lucide-react";
+import { Check, ChevronRight, School, User, Sparkles, ShieldCheck, Search, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
@@ -106,6 +106,28 @@ export default function OnboardingPage() {
             if (!session) {
                 router.replace('/login?view=signup');
                 return;
+            }
+
+            // Check if user has already completed onboarding
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profile?.campus_id) {
+                router.replace('/browse');
+                return;
+            }
+
+            // Pre-fill state if profile exists (partial onboarding or system created)
+            if (profile) {
+                if (profile.full_name) setFullName(profile.full_name);
+                if (profile.bio) setBio(profile.bio);
+                if (profile.whatsapp_number) setWhatsappNumber(profile.whatsapp_number);
+                if (profile.primary_role) setPrimaryRole(profile.primary_role);
+                if (profile.store_name) setStoreName(profile.store_name);
+                if (profile.store_category) setStoreCategory(profile.store_category);
             }
 
             // Fetch all active campuses from DB
@@ -451,6 +473,21 @@ export default function OnboardingPage() {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">WhatsApp Number (Optional)</label>
+                                    <div className="relative group">
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-loops-muted group-focus-within:text-loops-primary transition-colors" />
+                                        <input
+                                            type="tel"
+                                            value={whatsappNumber}
+                                            onChange={(e) => setWhatsappNumber(e.target.value)}
+                                            placeholder="2348123456789"
+                                            className="w-full h-14 pl-12 pr-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm font-bold"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-loops-muted italic">Enables **LoopBot AI** assistant for quick listing and karma checks.</p>
+                                </div>
+
+                                <div className="space-y-2">
                                     <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Bio (Optional)</label>
                                     <textarea
                                         value={bio}
@@ -629,86 +666,76 @@ export default function OnboardingPage() {
                                     </select>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">WhatsApp Connectivity</label>
-                                    <input
-                                        type="tel"
-                                        value={whatsappNumber}
-                                        onChange={(e) => setWhatsappNumber(e.target.value)}
-                                        placeholder="2348123456789"
-                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-secondary focus:outline-none focus:ring-1 focus:ring-loops-secondary transition-all shadow-sm"
-                                    />
-                                    <p className="text-[10px] text-loops-muted italic">Mandatory for the L-Bot AI Listing assistant.</p>
                                 </div>
                             </div>
-
+ 
                             <div className="flex gap-4">
                                 <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
                                     Back
                                 </Button>
-                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-secondary text-white shadow-xl shadow-loops-secondary/20" disabled={!storeCategory || !whatsappNumber} onClick={handleNext}>
+                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-secondary text-white shadow-xl shadow-loops-secondary/20" disabled={!storeCategory} onClick={handleNext}>
                                     Go Live
                                 </Button>
                             </div>
                         </motion.div>
                     )}
 
-                    {step === 6 && (
-                        <motion.div
-                            key="step3"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="text-center space-y-8"
-                        >
-                            <div className="w-24 h-24 bg-loops-success/10 rounded-full flex items-center justify-center mx-auto text-loops-success border border-loops-success/20">
-                                <ShieldCheck className="w-12 h-12" />
+                {step === 6 && (
+                    <motion.div
+                        key="step3"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="text-center space-y-8"
+                    >
+                        <div className="w-24 h-24 bg-loops-success/10 rounded-full flex items-center justify-center mx-auto text-loops-success border border-loops-success/20">
+                            <ShieldCheck className="w-12 h-12" />
+                        </div>
+
+                        <div className="space-y-4">
+                            <h1 className="text-4xl font-bold font-display italic tracking-tighter text-loops-main">Verified.</h1>
+                            <p className="text-loops-muted text-lg max-w-sm mx-auto leading-relaxed">
+                                Your status has been pre-verified. You are now part of the
+                                <span className="text-loops-primary font-bold ml-1">{getTerm('communityName')}.</span>
+                            </p>
+                        </div>
+
+
+
+                        {primaryRole === 'plug' && (
+                            <div className={cn("p-6 rounded-2xl border max-w-sm mx-auto space-y-2 text-white", storeBannerColor)}>
+                                <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">Verified Plug Storefront</div>
+                                <div className="text-2xl font-display font-bold">{storeName}</div>
+                                <div className="text-xs font-medium opacity-90">{storeCategory} Hub</div>
                             </div>
+                        )}
 
-                            <div className="space-y-4">
-                                <h1 className="text-4xl font-bold font-display italic tracking-tighter text-loops-main">Verified.</h1>
-                                <p className="text-loops-muted text-lg max-w-sm mx-auto leading-relaxed">
-                                    Your status has been pre-verified. You are now part of the
-                                    <span className="text-loops-primary font-bold ml-1">{getTerm('communityName')}.</span>
-                                </p>
+                        <div className="grid gap-4 max-w-sm mx-auto pt-4">
+                            <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
+                                <Sparkles className="w-5 h-5 text-loops-accent" />
+                                <span className="text-sm font-bold text-loops-main">Plug Reputation activated</span>
                             </div>
-
-
-
-                            {primaryRole === 'plug' && (
-                                <div className={cn("p-6 rounded-2xl border max-w-sm mx-auto space-y-2 text-white", storeBannerColor)}>
-                                    <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">Verified Plug Storefront</div>
-                                    <div className="text-2xl font-display font-bold">{storeName}</div>
-                                    <div className="text-xs font-medium opacity-90">{storeCategory} Hub</div>
-                                </div>
-                            )}
-
-                            <div className="grid gap-4 max-w-sm mx-auto pt-4">
-                                <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
-                                    <Sparkles className="w-5 h-5 text-loops-accent" />
-                                    <span className="text-sm font-bold text-loops-main">Plug Reputation activated</span>
-                                </div>
-                                <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
-                                    <Check className="w-5 h-5 text-loops-success" />
-                                    <span className="text-sm font-bold text-loops-main">Unlimited Listings enabled</span>
-                                </div>
+                            <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
+                                <Check className="w-5 h-5 text-loops-success" />
+                                <span className="text-sm font-bold text-loops-main">Unlimited Listings enabled</span>
                             </div>
+                        </div>
 
-                            <div className="flex gap-4">
-                                <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={() => setStep(3)}>
-                                    Edit info
-                                </Button>
-                                <Button
-                                    className="h-14 flex-[2] text-lg font-bold bg-loops-success text-white shadow-xl shadow-loops-success/20 hover:bg-loops-success/90"
-                                    onClick={handleSubmit}
-                                    disabled={loading}
-                                >
-                                    {loading ? "Finalizing..." : "Enter the Loop"}
-                                </Button>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </main>
-        </div>
+                        <div className="flex gap-4">
+                            <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={() => setStep(3)}>
+                                Edit info
+                            </Button>
+                            <Button
+                                className="h-14 flex-[2] text-lg font-bold bg-loops-success text-white shadow-xl shadow-loops-success/20 hover:bg-loops-success/90"
+                                onClick={handleSubmit}
+                                disabled={loading}
+                            >
+                                {loading ? "Finalizing..." : "Enter the Loop"}
+                            </Button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </main>
+        </div >
     );
 }
