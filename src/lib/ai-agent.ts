@@ -1,7 +1,7 @@
-import { createClient } from '@/lib/supabase/server';
+import { createEdgeClient as createClient } from './supabase/edge';
 
 interface BotIntent {
-    intent: 'sell' | 'search' | 'help' | 'unknown';
+    intent: 'sell' | 'search' | 'help' | 'request' | 'karma' | 'unknown';
     title?: string;
     price?: number;
     category?: string;
@@ -28,12 +28,26 @@ export async function processIntent(text: string): Promise<BotIntent> {
                 messages: [
                     {
                         role: 'system',
-                        content: `You are the Loops Campus Bot. Analyze student messages to extract intents.
-                        Extracted categories: Electronics, Housing, Books, Fashion, Services, Other.
-                        Intents: sell, search, help.
+                        content: `You are the LoopBot, the AI heart of the Loops Campus Marketplace. 
+                        Your vibe is helpful, energetic, and student-focused.
+                        
+                        Analyze student messages to extract intents:
+                        - "sell": Posting an item (e.g., "Selling my laptop for 50k")
+                        - "search": Looking for something (e.g., "Who has textbooks?", "Find me a designer")
+                        - "request": A specific need or want that isn't a search (e.g., "I need a tutor," "Looking for a roommate," "Who can fix my screen?")
+                        - "karma": Checking their own profile status or reputation (e.g., "What's my karma?", "How do I look?")
+                        - "help": General questions about how Loops works.
+
+                        Categories: Electronics, Housing, Books, Fashion, Services, Other.
                         
                         Return JSON only:
-                        { "intent": "sell" | "search" | "help", "title": "string", "price": number, "category": "string", "query": "string" }`
+                        { 
+                          "intent": "sell" | "search" | "request" | "karma" | "help", 
+                          "title": "Short title for listing/request", 
+                          "price": number, 
+                          "category": "string", 
+                          "query": "search query" 
+                        }`
                     },
                     { role: 'user', content: text }
                 ],
@@ -44,7 +58,6 @@ export async function processIntent(text: string): Promise<BotIntent> {
         const data = await response.json();
         const intentResult = JSON.parse(data.choices[0].message.content) as BotIntent;
 
-        // If it's a 'sell' intent, we'll return the data to the webhook to handle saving
         return intentResult;
     } catch (error) {
         console.error('AI_AGENT_ERROR:', error);
@@ -56,18 +69,21 @@ export async function handleBotAction(from: string, intentData: BotIntent) {
     const supabase = await createClient();
 
     // 1. Find profile by whatsapp_number
-    // Note: Meta 'from' is usually '15551234567' (international format without +)
+    // Note: Meta 'from' is usually '234...' (international format without +)
     const { data: profile } = await supabase
         .from('profiles')
-        .select('id, campus_id')
+        .select('id, full_name, campus_id, reputation, rating')
         .eq('whatsapp_number', from)
         .single();
 
     if (!profile) {
-        return "Hey! I don't recognize this number. Please link your WhatsApp in your Loops profile settings first!";
+        return "Yo! I don't recognize this number. Please head to your Profile Settings on Loops and link your WhatsApp number so I can help you loop in!";
     }
 
-    if (intentData.intent === 'sell' && intentData.title) {
+    // Handle 'sell' and 'request' (both create listings)
+    if ((intentData.intent === 'sell' || intentData.intent === 'request') && intentData.title) {
+        const type = intentData.intent === 'sell' ? 'product' : 'request';
+
         const { error } = await supabase
             .from('listings')
             .insert({
@@ -78,32 +94,50 @@ export async function handleBotAction(from: string, intentData: BotIntent) {
                 category: intentData.category || 'Other',
                 description: `Posted via WhatsApp: ${intentData.title}`,
                 status: 'active',
-                type: 'product'
+                type: type
             });
 
         if (error) {
             console.error('BOT_INSERT_ERROR:', error);
-            return "My circuits jammed trying to save that listing. Try again in a sec?";
+            return "My circuits jammed trying to save that. Mind trying again in a bit?";
         }
 
-        return `Bet! I've posted your "${intentData.title}" for $${intentData.price || 0} to the feed. Students at your campus can see it now!`;
+        if (type === 'product') {
+            return `Bet! I've dropped your "${intentData.title}" for $${intentData.price || 0} to the campus feed. 🕸️`;
+        } else {
+            return `Got it! I've posted your request for "${intentData.title}" to the Loop. Someone will hit you up soon! ⚡`;
+        }
+    }
+
+    if (intentData.intent === 'karma') {
+        return `Yo ${profile.full_name}! Your current Karma is ${profile.reputation || 0} with a rating of ${profile.rating || 0} stars. Keep looping! 🕸️🔥`;
     }
 
     if (intentData.intent === 'search') {
         const query = intentData.query || intentData.title || '';
-        return `Searching the Loop for "${query}"... Check the live results here: https://loops-marketplace.vercel.app/browse?q=${encodeURIComponent(query)}`;
+        return `Scanning the Loop for "${query}"... Check the live results here: https://loops-marketplace.vercel.app/browse?q=${encodeURIComponent(query)}`;
     }
 
-    return "I'm standing by. Tell me what you want to sell or find on campus!";
+    if (intentData.intent === 'help') {
+        return "I'm LoopBot! You can tell me to sell something (e.g., 'Sell my phone for 20k'), find something ('Find me a laptop'), or drop a request ('I need a tutor'). You can also ask for your 'Karma' to see your reputation!";
+    }
+
+    return "I'm standing by. Tell me what you want to sell, find, or request on campus!";
 }
 
 function fallbackParsing(text: string): BotIntent {
     const lowText = text.toLowerCase();
-    if (lowText.includes('sell') || lowText.includes('listing')) {
-        return { intent: 'sell', title: text.replace(/sell|listing/gi, '').trim() };
+    if (lowText.includes('sell')) {
+        return { intent: 'sell', title: text.replace(/sell/gi, '').trim() };
+    }
+    if (lowText.includes('need') || lowText.includes('looking for') || lowText.includes('request')) {
+        return { intent: 'request', title: text.replace(/need|looking for|request/gi, '').trim() };
     }
     if (lowText.includes('search') || lowText.includes('find') || lowText.includes('buy')) {
         return { intent: 'search', query: text.replace(/search|find|buy/gi, '').trim() };
+    }
+    if (lowText.includes('karma') || lowText.includes('reputation') || lowText.includes('rating')) {
+        return { intent: 'karma' };
     }
     return { intent: 'help' };
 }
