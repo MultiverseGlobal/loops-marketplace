@@ -48,6 +48,9 @@ export default function Error({
 
             <div className="mt-20">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500/50">Error ID: {error.digest || 'Internal Loop Failure'}</p>
+                <p className="text-xs text-red-500 mt-2 font-mono bg-red-50 p-2 rounded border border-red-100 max-w-lg mx-auto overflow-auto">
+                    {error.message}
+                </p>
             </div>
         </div>
     )
