@@ -46,11 +46,16 @@ export default function Error({
                 </Button>
             </div>
 
-            <div className="mt-20">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500/50">Error ID: {error.digest || 'Internal Loop Failure'}</p>
-                <p className="text-xs text-red-500 mt-2 font-mono bg-red-50 p-2 rounded border border-red-100 max-w-lg mx-auto overflow-auto">
-                    {error.message}
-                </p>
+            <div className="mt-8 w-full max-w-lg mx-auto">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-left overflow-auto max-h-48">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500 mb-2">Error Details (Screenshot This)</p>
+                    <p className="text-xs text-red-600 font-mono break-all whitespace-pre-wrap">
+                        {error.message || "Unknown error occurred"}
+                    </p>
+                    {error.digest && (
+                        <p className="text-[10px] text-red-400 mt-2 font-mono">Digest: {error.digest}</p>
+                    )}
+                </div>
             </div>
         </div>
     )
