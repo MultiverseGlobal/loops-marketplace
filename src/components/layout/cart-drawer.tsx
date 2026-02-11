@@ -19,7 +19,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     const { cartItems, removeFromCart, updateQuantity, loading } = useCart();
 
     const totalPrice = cartItems.reduce((sum, item) =>
-        sum + (Number(item.listing.price) * item.quantity), 0
+        sum + (Number(item.listing?.price || 0) * item.quantity), 0
     );
 
     return (
@@ -76,8 +76,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                     <div key={item.id} className="flex gap-4 group">
                                         <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-loops-subtle flex-shrink-0 border border-loops-border">
                                             <Image
-                                                src={item.listing.images?.[0] || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000'}
-                                                alt={item.listing.title}
+                                                src={item.listing?.images?.[0] || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000'}
+                                                alt={item.listing?.title || 'Unknown Item'}
                                                 fill
                                                 className="object-cover"
                                             />
@@ -85,7 +85,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                         <div className="flex-1 flex flex-col justify-between py-1">
                                             <div className="space-y-1">
                                                 <div className="flex justify-between items-start gap-2">
-                                                    <h4 className="font-bold text-sm text-loops-main line-clamp-1">{item.listing.title}</h4>
+                                                    <h4 className="font-bold text-sm text-loops-main line-clamp-1">{item.listing?.title || 'Item Unavailable'}</h4>
                                                     <button
                                                         onClick={() => removeFromCart(item.id)}
                                                         className="text-loops-muted hover:text-red-500 transition-colors"
@@ -95,7 +95,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                                 </div>
                                                 <div className="flex items-center gap-1.5 text-[10px] text-loops-muted font-bold uppercase tracking-widest">
                                                     <Package className="w-3 h-3" />
-                                                    <span>{item.listing.profiles?.store_name || item.listing.profiles?.full_name}</span>
+                                                    <span>{item.listing?.profiles?.store_name || item.listing?.profiles?.full_name || 'Unknown Seller'}</span>
                                                 </div>
                                             </div>
 
@@ -117,7 +117,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                                     </button>
                                                 </div>
                                                 <div className="text-lg font-black text-loops-primary tracking-tighter">
-                                                    {CURRENCY}{Number(item.listing.price) * item.quantity}
+                                                    {CURRENCY}{Number(item.listing?.price || 0) * item.quantity}
                                                 </div>
                                             </div>
                                         </div>
