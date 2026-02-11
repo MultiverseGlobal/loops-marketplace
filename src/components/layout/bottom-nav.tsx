@@ -16,10 +16,10 @@ export function BottomNav() {
     const { getTerm } = useCampus();
     const [user, setUser] = useState<SupabaseUser | null>(null);
     const supabase = createClient();
-    // const { cartItems, wishlistCount } = useCart();
+    const { cartItems, wishlistCount } = useCart();
     const [isCartOpen, setIsCartOpen] = useState(false);
 
-    // const cartCount = (cartItems || []).reduce((sum, item) => sum + (item?.quantity || 0), 0);
+    const cartCount = (cartItems || []).reduce((sum, item) => sum + (item?.quantity || 0), 0);
 
     useEffect(() => {
         const getUser = async () => {
@@ -47,7 +47,7 @@ export function BottomNav() {
         { label: "Feed", href: "/browse", icon: Home },
         { label: "Inbox", href: "/messages", icon: MessageSquare },
         { label: "Post", href: "/listings/create", icon: PlusSquare, primary: true },
-        // { label: "Cart", icon: ShoppingCart, badge: cartCount, isCart: true },
+        { label: "Cart", icon: ShoppingCart, badge: cartCount, isCart: true },
         { label: "Profile", href: user ? "/profile" : "/login", icon: User },
     ];
 
@@ -77,7 +77,6 @@ export function BottomNav() {
                         }
 
                         // Cart button (opens drawer)
-                        /*
                         if (item.isCart) {
                             return (
                                 <button
@@ -99,7 +98,6 @@ export function BottomNav() {
                                 </button>
                             );
                         }
-                        */
 
                         return (
                             <Link
@@ -112,11 +110,11 @@ export function BottomNav() {
                                     isActive ? "bg-loops-primary/10 text-loops-primary" : "text-loops-muted group-hover:text-loops-main"
                                 )}>
                                     <Icon className={cn("w-5 h-5", isActive && "animate-pulse-subtle")} />
-                                    {/* {item.badge! > 0 && (
+                                    {item.badge! > 0 && (
                                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
                                             {item.badge}
                                         </span>
-                                    )} */}
+                                    )}
                                 </div>
                                 <span className={cn(
                                     "text-[10px] font-bold uppercase tracking-widest transition-all",
@@ -133,7 +131,7 @@ export function BottomNav() {
                 </nav>
             </div>
 
-            {/* <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} /> */}
+            <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
         </>
     );
 }
