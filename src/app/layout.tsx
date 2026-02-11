@@ -3,8 +3,8 @@ import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { cn } from "../lib/utils";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+// const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+// const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
     title: {
@@ -65,7 +65,8 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body
                 suppressHydrationWarning
-                className={cn(inter.variable, outfit.variable, "font-sans antialiased bg-loops-bg text-loops-main selection:bg-loops-secondary/30")}
+                // className={cn(inter.variable, outfit.variable, "font-sans antialiased bg-loops-bg text-loops-main selection:bg-loops-secondary/30")}
+                className={cn("font-sans antialiased bg-loops-bg text-loops-main selection:bg-loops-secondary/30")}
             >
                 <PWALogic />
                 <CampusProvider>
