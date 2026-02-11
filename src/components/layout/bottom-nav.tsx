@@ -36,7 +36,7 @@ export function BottomNav() {
     }, [supabase.auth]);
 
     // Define routes where the bottom nav should be hidden
-    const hideOnRoutes = ["/", "/onboarding", "/login", "/signup", "/auth", "/founding-plugs"];
+    const hideOnRoutes = ["/onboarding", "/login", "/signup", "/auth", "/founding-plugs"];
     const shouldHide = hideOnRoutes.includes(pathname) ||
         pathname.startsWith("/auth/") ||
         pathname.startsWith("/messages/");

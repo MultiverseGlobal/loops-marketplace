@@ -1,5 +1,7 @@
 'use client';
 
+const HEADLINES = ["Join", "Trust", "Enter"];
+
 import { Button } from "../components/ui/button";
 import { Navbar } from "../components/layout/navbar";
 import { ProductCard } from "../components/ui/product-card";
@@ -26,7 +28,6 @@ export default function Home() {
     const [counts, setCounts] = useState({ campuses: 0, students: 0, loops: 0 });
     const [headlineIndex, setHeadlineIndex] = useState(0);
     const [isCheckingSession, setIsCheckingSession] = useState(true);
-    const headlines = ["Join", "Trust", "Enter"];
 
     const supabase = createClient();
     const router = useRouter();
@@ -136,7 +137,7 @@ export default function Home() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setHeadlineIndex((prev) => (prev + 1) % headlines.length);
+            setHeadlineIndex((prev) => (prev + 1) % HEADLINES.length);
         }, 3000);
         return () => clearInterval(interval);
     }, []);
@@ -245,14 +246,14 @@ export default function Home() {
                                 <div className="relative h-[1.1em] overflow-hidden">
                                     <AnimatePresence mode="wait">
                                         <motion.span
-                                            key={headlines[headlineIndex]}
+                                            key={HEADLINES[headlineIndex]}
                                             initial={{ y: 40, opacity: 0 }}
                                             animate={{ y: 0, opacity: 1 }}
                                             exit={{ y: -40, opacity: 0 }}
                                             transition={{ duration: 0.5, ease: "circOut" }}
                                             className="block"
                                         >
-                                            {headlines[headlineIndex]}
+                                            {HEADLINES[headlineIndex]}
                                         </motion.span>
                                     </AnimatePresence>
                                 </div>
