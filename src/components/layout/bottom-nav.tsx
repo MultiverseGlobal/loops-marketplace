@@ -19,7 +19,7 @@ export function BottomNav() {
     const { cartItems, wishlistCount } = useCart();
     const [isCartOpen, setIsCartOpen] = useState(false);
 
-    const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCount = (cartItems || []).reduce((sum, item) => sum + (item?.quantity || 0), 0);
 
     useEffect(() => {
         const getUser = async () => {

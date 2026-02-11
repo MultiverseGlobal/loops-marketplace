@@ -537,6 +537,10 @@ export default function Home() {
                         </div>
                     </section>
                     <Footer />
+                    {/* Debug Version Indicator */}
+                    <div className="py-2 text-center text-[10px] text-loops-muted/20 font-mono">
+                        v1.1.2 (Mobile Fix Debug)
+                    </div>
                 </div>
             )}
         </>
