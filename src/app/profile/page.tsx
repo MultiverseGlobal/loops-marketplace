@@ -188,7 +188,7 @@ export default function ProfilePage() {
                     <div className="space-y-8">
                         <div className="relative p-6 md:p-8 rounded-3xl bg-loops-subtle border border-loops-border shadow-2xl shadow-loops-primary/5 overflow-hidden group">
                             {(!targetUserId || targetUserId === user?.id) && (
-                                <div className="absolute top-0 right-0 p-4">
+                                <div className="absolute top-0 right-0 p-4 z-20">
                                     <Link href="/profile/settings">
                                         <Button variant="ghost" size="icon" className="text-loops-muted hover:text-loops-primary">
                                             <Settings className="w-5 h-5" />
