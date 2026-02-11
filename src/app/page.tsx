@@ -295,7 +295,7 @@ export default function Home() {
                     <FeaturedHubs />
 
                     {/* NEW: Founding Plugs Spotlight */}
-                    {foundingPlugs.length > 0 && (
+                    {foundingPlugs && foundingPlugs.length > 0 && (
                         <section className="py-20 px-6 bg-white overflow-hidden">
                             <div className="max-w-7xl mx-auto">
                                 <div className="flex items-center justify-between mb-10">
@@ -309,7 +309,7 @@ export default function Home() {
                                 </div>
 
                                 <div className="flex gap-6 overflow-x-auto no-scrollbar pb-10">
-                                    {foundingPlugs.map((plug) => (
+                                    {foundingPlugs && foundingPlugs.length > 0 && foundingPlugs.map((plug) => (
                                         <motion.div
                                             key={plug.id}
                                             whileHover={{ y: -5 }}
@@ -469,7 +469,7 @@ export default function Home() {
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
-                            {listings.length > 0 ? (
+                            {listings && listings.length > 0 ? (
                                 listings.map((listing, idx) => (
                                     <ProductCard
                                         key={listing.id}
@@ -478,7 +478,7 @@ export default function Home() {
                                         price={`${CURRENCY}${listing.price}`}
                                         category={listing.category}
                                         image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
-                                        author={listing.profiles?.full_name}
+                                        author={listing.profiles}
                                         delay={idx * 0.1}
                                     />
                                 ))
