@@ -154,3 +154,89 @@ export async function sendWelcomeEmail(
         return { success: false, error };
     }
 }
+export async function sendFoundingPlugApprovalEmail(
+    name: string,
+    email: string
+) {
+    try {
+        const resend = getResend();
+        const { data, error } = await resend.emails.send({
+            from: 'Loops <onboarding@resend.dev>', // Change to your verified domain later
+            to: [email],
+            subject: '👑 Congratulations Founding Plug! The Loop Awaits.',
+            html: `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .header { background: #000; padding: 60px 20px; text-align: center; color: white; }
+        .header h1 { margin: 0; font-size: 32px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; font-style: italic; }
+        .content { padding: 50px 40px; }
+        .greeting { font-size: 24px; font-weight: 800; margin-bottom: 24px; color: #000; letter-spacing: -0.5px; }
+        .empire-box { background: #f1f5f9; border-radius: 20px; padding: 30px; margin: 30px 0; border: 1px dashed #cbd5e1; }
+        .step-title { font-weight: 900; color: #6366f1; text-transform: uppercase; font-size: 11px; letter-spacing: 2px; margin-bottom: 8px; }
+        .empire-text { font-size: 15px; color: #475569; line-height: 1.6; }
+        .btn-container { text-align: center; margin-top: 40px; }
+        .button { display: inline-block; background: #6366f1; color: white; padding: 20px 40px; border-radius: 16px; text-decoration: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; }
+        .footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 12px; font-weight: 600; }
+        .branding { color: #6366f1; font-weight: 900; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>♾️ LOOPS COMMAND</h1>
+        </div>
+        
+        <div class="content">
+            <p class="greeting">CHAMPION STATUS: ${name.toUpperCase()}</p>
+            
+            <p style="font-size: 16px; color: #475569; line-height: 1.6;">
+                The Council has spoken. Your application to become a <span class="branding">Founding Plug</span> on Loops has been **OFFICIALLY APPROVED**.
+            </p>
+            
+            <div class="empire-box">
+                <div class="step-title">Phase 1: Sit Back</div>
+                <p class="empire-text">We are finalizing the campus-wide infrastructure. You don't need to do anything right now. Just relax and keep an eye on your WhatsApp for the "Launch Sequence" notification.</p>
+            </div>
+            
+            <div class="empire-box">
+                <div class="step-title">Phase 2: Build the Empire</div>
+                <p class="empire-text">Loops is only as strong as its network. As an approved Founding Plug, we encourage you to <strong>refer other elite vendors</strong>. More variety means more traffic for your storefront.</p>
+            </div>
+            
+            <div class="btn-container">
+                <a href="https://loops-stores.vercel.app/profile" class="button">Visit Your Command Deck</a>
+            </div>
+            
+            <p style="margin-top: 50px; color: #475569; font-size: 14px; text-align: center;">
+                Welcome to the movement. Veritas University commerce belongs to the students now.
+            </p>
+            
+            <p style="font-weight: 900; color: #000; margin-top: 30px; text-align: center; font-style: italic;">
+                ♾️ THE SYSTEM IS LIVE.
+            </p>
+        </div>
+        
+        <div class="footer">
+            &copy; 2026 LOOPS PLATFORMS. ALL RIGHTS RESERVED.
+        </div>
+    </div>
+</body>
+</html>
+            `,
+        });
+
+        if (error) {
+            console.error('Approval email send error:', error);
+            return { success: false, error };
+        }
+
+        return { success: true, data };
+    } catch (error) {
+        console.error('Email service error:', error);
+        return { success: false, error };
+    }
+}
