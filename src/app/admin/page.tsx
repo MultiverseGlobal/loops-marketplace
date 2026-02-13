@@ -23,7 +23,9 @@ import {
     Edit3,
     Search as SearchIcon,
     AlertTriangle,
-    Settings
+    Settings,
+    ChevronRight,
+    ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/context/toast-context";
