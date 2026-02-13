@@ -26,7 +26,9 @@ import {
     Settings,
     ChevronRight,
     ChevronDown,
-    ArrowUpRight
+    ArrowUpRight,
+    Copy,
+    Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/context/toast-context";
@@ -370,9 +372,8 @@ export default function AdminDashboard() {
                 if (n.email.success && n.whatsapp.success) {
                     toast.success("Empire Expanded: Plug approved & fully notified! 👑");
                 } else {
-                    if (!n.email.success) toast.error(`Email failed: ${n.email.error || 'Unknown error'}`);
-                    if (!n.whatsapp.success) toast.error(`WhatsApp failed: ${n.whatsapp.error || 'Check 24h window'}`);
-                    toast.success("Plug status updated, but some notifications failed.");
+                    const failReason = !n.email.success ? 'Email config pending' : 'WhatsApp window/template pending';
+                    toast.warning(`Plug status updated, but automated notifications failed: ${failReason}. Use the manual buttons below! 👇`);
                 }
             } catch (err: any) {
                 toast.error(`Approval failed: ${err.message}`);
@@ -533,10 +534,22 @@ export default function AdminDashboard() {
                                                             </div>
                                                         </div>
                                                         <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    const text = `👑 CONGRATULATIONS ${app.full_name.toUpperCase()}! Your Founding Plug application for "${app.store_name}" has been APPROVED. \n\nYou are now part of the elite Founding 50. Please wait for the full launch sequence. \n\n♾️ LOOPS PLATFORMS`;
+                                                                    navigator.clipboard.writeText(text);
+                                                                    toast.success("Approval message copied to clipboard!");
+                                                                }}
+                                                                className="p-3 bg-loops-subtle text-loops-muted rounded-xl hover:bg-loops-main hover:text-white transition-all border border-loops-border"
+                                                                title="Copy Approval Message"
+                                                            >
+                                                                <Copy className="w-5 h-5" />
+                                                            </button>
                                                             <a
-                                                                href={`https://wa.me/${app.whatsapp_number?.replace(/\+/g, '')}`}
+                                                                href={`https://wa.me/${app.whatsapp_number?.replace(/\+/g, '')}?text=${encodeURIComponent(`👑 CONGRATULATIONS ${app.full_name.toUpperCase()}! Your Founding Plug application for "${app.store_name}" has been APPROVED. \n\nYou are now part of the elite Founding 50. Please wait for the full launch sequence. \n\n♾️ LOOPS PLATFORMS`)}`}
                                                                 target="_blank"
                                                                 className="p-3 bg-loops-success/5 text-loops-success rounded-xl hover:bg-loops-success hover:text-white transition-all border border-loops-success/10"
+                                                                title="Open WhatsApp with Pre-filled Message"
                                                             >
                                                                 <MessageCircle className="w-5 h-5" />
                                                             </a>
