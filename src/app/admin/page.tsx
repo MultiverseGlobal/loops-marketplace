@@ -51,7 +51,8 @@ export default function AdminDashboard() {
     const [currentView, setCurrentView] = useState<AdminView>('dashboard');
     const [stats, setStats] = useState({
         totalUsers: 0,
-        totalListings: 0,
+        totalPlugs: 0,
+        foundingPlugs: 0,
         products: 0,
         services: 0,
         reports: 0,
