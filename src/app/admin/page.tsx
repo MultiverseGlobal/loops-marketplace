@@ -294,12 +294,23 @@ export default function AdminDashboard() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ applicationId: app.id })
                 });
-                if (!res.ok) throw new Error('API request failed');
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || 'API request failed');
 
                 setApplications(prev => prev.filter(a => a.id !== app.id));
-                toast.success("Empire Expanded: Plug approved & notified! 👑");
-            } catch (err) {
-                toast.error("Failed to approve plug.");
+
+                // Detailed success feedback
+                const n = data.notifications;
+                if (n.email.success && n.whatsapp.success) {
+                    toast.success("Empire Expanded: Plug approved & fully notified! 👑");
+                } else {
+                    if (!n.email.success) toast.error(`Email failed: ${n.email.error || 'Unknown error'}`);
+                    if (!n.whatsapp.success) toast.error(`WhatsApp failed: ${n.whatsapp.error || 'Check 24h window'}`);
+                    toast.success("Plug status updated, but some notifications failed.");
+                }
+            } catch (err: any) {
+                toast.error(`Approval failed: ${err.message}`);
             } finally {
                 setProcessingId(null);
             }

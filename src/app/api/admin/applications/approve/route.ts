@@ -54,18 +54,38 @@ export async function POST(request: Request) {
         }
 
         // 4. Trigger Notifications
+        const notificationResults = {
+            email: { success: false, error: null as string | null },
+            whatsapp: { success: false, error: null as string | null }
+        };
+
         // a. Email
         if (app.campus_email) {
-            await sendFoundingPlugApprovalEmail(app.full_name, app.campus_email);
+            const emailRes = await sendFoundingPlugApprovalEmail(app.full_name, app.campus_email);
+            notificationResults.email.success = emailRes.success;
+            if (!emailRes.success) notificationResults.email.error = JSON.stringify(emailRes.error);
         }
 
         // b. WhatsApp
         if (app.whatsapp_number) {
             const waMessage = `👑 CONGRATULATIONS ${app.full_name.toUpperCase()}! Your Founding Plug application for "${app.store_name}" has been APPROVED. \n\nYou are now part of the elite Founding 50. Please wait for the full launch sequence. \n\n♾️ LOOPS PLATFORMS`;
-            await sendWhatsAppMessage(app.whatsapp_number, waMessage);
+            const waRes = await sendWhatsAppMessage(app.whatsapp_number, waMessage);
+
+            // Meta API returns error field if failed
+            if (waRes?.error) {
+                notificationResults.whatsapp.success = false;
+                notificationResults.whatsapp.error = waRes.error.message;
+            } else if (waRes?.messages) {
+                notificationResults.whatsapp.success = true;
+            } else {
+                notificationResults.whatsapp.error = "Unknown WhatsApp error. Check credentials.";
+            }
         }
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({
+            success: true,
+            notifications: notificationResults
+        });
 
     } catch (error: any) {
         console.error('APPROVAL_ERROR:', error);
