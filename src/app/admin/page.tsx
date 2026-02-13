@@ -116,9 +116,10 @@ export default function AdminDashboard() {
             setLoading(true);
             try {
                 // 1. Stats
-                const [users, listings, products, servicesCount, reportsCount] = await Promise.all([
+                const [users, activePlugs, foundingCount, products, servicesCount, reportsCount] = await Promise.all([
                     supabase.from('profiles').select('*', { count: 'exact', head: true }),
-                    supabase.from('listings').select('*', { count: 'exact', head: true }),
+                    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_plug', true),
+                    supabase.from('seller_applications').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
                     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'product'),
                     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'service'),
                     supabase.from('reports').select('*', { count: 'exact', head: true })
@@ -162,7 +163,8 @@ export default function AdminDashboard() {
 
                 setStats({
                     totalUsers: users.count || 0,
-                    totalListings: listings.count || 0,
+                    totalPlugs: activePlugs.count || 0,
+                    foundingPlugs: foundingCount.count || 0,
                     products: products.count || 0,
                     services: servicesCount.count || 0,
                     reports: reportsCount.count || 0,
@@ -262,13 +264,29 @@ export default function AdminDashboard() {
 
     const DashboardView = () => (
         <div className="space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <StatCard
+                    icon={Users}
+                    label="Active Plugs"
+                    value={stats.totalPlugs}
+                    description={`${stats.foundingPlugs} Founding`}
+                    color="text-loops-primary"
+                    onClick={() => {
+                        setCurrentView('users');
+                        setUserTab('directory');
+                        setDirectoryFilter('plug');
+                    }}
+                />
                 <StatCard
                     icon={Users}
                     label="Total Users"
                     value={stats.totalUsers}
-                    color="text-loops-primary"
-                    onClick={() => setCurrentView('users')}
+                    color="text-loops-muted"
+                    onClick={() => {
+                        setCurrentView('users');
+                        setUserTab('directory');
+                        setDirectoryFilter('all');
+                    }}
                 />
                 <StatCard
                     icon={Package}
@@ -944,7 +962,7 @@ export default function AdminDashboard() {
     );
 }
 
-function StatCard({ icon: Icon, label, value, color, onClick }: { icon: any, label: string, value: any, color: string, onClick?: () => void }) {
+function StatCard({ icon: Icon, label, value, description, color, onClick }: { icon: any, label: string, value: any, description?: string, color: string, onClick?: () => void }) {
     return (
         <div
             onClick={onClick}
@@ -960,8 +978,15 @@ function StatCard({ icon: Icon, label, value, color, onClick }: { icon: any, lab
                 {onClick && <ArrowUpRight className="w-4 h-4 text-loops-muted group-hover:text-loops-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />}
             </div>
             <p className="text-[10px] font-black text-loops-muted uppercase tracking-[0.2em] mb-1">{label}</p>
-            <div className="text-4xl font-black font-display text-loops-main group-hover:text-loops-primary transition-colors tracking-tight italic">
-                {value}
+            <div className="flex items-end justify-between">
+                <div className="text-4xl font-black font-display text-loops-main group-hover:text-loops-primary transition-colors tracking-tight italic">
+                    {value}
+                </div>
+                {description && (
+                    <div className="text-[9px] font-bold text-loops-muted bg-loops-subtle px-2 py-1 rounded-lg border border-loops-border">
+                        {description}
+                    </div>
+                )}
             </div>
         </div>
     );
