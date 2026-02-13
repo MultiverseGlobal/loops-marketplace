@@ -25,7 +25,8 @@ import {
     AlertTriangle,
     Settings,
     ChevronRight,
-    ChevronDown
+    ChevronDown,
+    ArrowUpRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/context/toast-context";
@@ -68,6 +69,11 @@ export default function AdminDashboard() {
     // Universities States
     const [campuses, setCampuses] = useState<any[]>([]);
     const [campusRequests, setCampusRequests] = useState<any[]>([]);
+
+    // Marketplace Management
+    const [allListings, setAllListings] = useState<any[]>([]);
+    const [marketplaceFilter, setMarketplaceFilter] = useState<'all' | 'product' | 'service'>('all');
+    const [marketplaceSearch, setMarketplaceSearch] = useState("");
 
     const supabase = createClient();
     const router = useRouter();
@@ -131,7 +137,13 @@ export default function AdminDashboard() {
                 // 5. Reports
                 const { data: reportsData } = await supabase
                     .from('reports')
-                    .select('*, profiles(full_name, email), listings(title, images)')
+                    .select('*, profiles(full_name, email), listings(title, images, type)')
+                    .order('created_at', { ascending: false });
+
+                // 6. All Listings for Marketplace View
+                const { data: listingsData } = await supabase
+                    .from('listings')
+                    .select('*, profiles(full_name, avatar_url)')
                     .order('created_at', { ascending: false });
 
                 setStats({
@@ -147,6 +159,7 @@ export default function AdminDashboard() {
                 setCampuses(campusesData.data || []);
                 setCampusRequests(requestsData.data || []);
                 setReports(reportsData || []);
+                setAllListings(listingsData || []);
 
             } catch (err) {
                 console.error("Data fetch error:", err);
@@ -235,10 +248,40 @@ export default function AdminDashboard() {
     const DashboardView = () => (
         <div className="space-y-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard icon={Users} label="Total Users" value={stats.totalUsers} color="text-loops-primary" />
-                <StatCard icon={Package} label="Products" value={stats.products} color="text-blue-500" />
-                <StatCard icon={Zap} label="Services" value={stats.services} color="text-amber-500" />
-                <StatCard icon={ShieldAlert} label="Active Reports" value={stats.reports} color="text-red-500" />
+                <StatCard
+                    icon={Users}
+                    label="Total Users"
+                    value={stats.totalUsers}
+                    color="text-loops-primary"
+                    onClick={() => setCurrentView('users')}
+                />
+                <StatCard
+                    icon={Package}
+                    label="Products"
+                    value={stats.products}
+                    color="text-blue-500"
+                    onClick={() => {
+                        setCurrentView('marketplace');
+                        setMarketplaceFilter('product');
+                    }}
+                />
+                <StatCard
+                    icon={Zap}
+                    label="Services"
+                    value={stats.services}
+                    color="text-amber-500"
+                    onClick={() => {
+                        setCurrentView('marketplace');
+                        setMarketplaceFilter('service');
+                    }}
+                />
+                <StatCard
+                    icon={ShieldAlert}
+                    label="Active Reports"
+                    value={stats.reports}
+                    color="text-red-500"
+                    onClick={() => setCurrentView('safety')}
+                />
             </div>
 
             {analytics && (
@@ -644,10 +687,95 @@ export default function AdminDashboard() {
                         {currentView === 'universities' && <UniversityView />}
                         {currentView === 'safety' && <SafetyView />}
                         {currentView === 'marketplace' && (
-                            <div className="p-12 text-center bg-white border border-loops-border rounded-3xl shadow-sm">
-                                <SearchIcon className="w-12 h-12 text-loops-muted mx-auto mb-4 opacity-20" />
-                                <h2 className="text-xl font-bold font-display">Feed Content Moderate</h2>
-                                <p className="text-loops-muted mt-2">Listing search and direct feed control coming soon.</p>
+                            <div className="space-y-8">
+                                {/* Marketplace Search & Filter */}
+                                <div className="bg-white border border-loops-border rounded-[2rem] p-4 flex flex-col md:flex-row gap-4 items-center shadow-xl shadow-loops-primary/5">
+                                    <div className="relative flex-1 w-full">
+                                        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-loops-muted" />
+                                        <input
+                                            type="text"
+                                            value={marketplaceSearch}
+                                            onChange={e => setMarketplaceSearch(e.target.value)}
+                                            placeholder="Search items, vendors, or descriptions..."
+                                            className="w-full h-14 pl-12 pr-6 rounded-2xl bg-loops-subtle border border-transparent focus:border-loops-primary focus:bg-white outline-none transition-all font-bold"
+                                        />
+                                    </div>
+                                    <div className="flex bg-loops-subtle p-1.5 rounded-2xl border border-loops-border">
+                                        {(['all', 'product', 'service'] as const).map((tab) => (
+                                            <button
+                                                key={tab}
+                                                onClick={() => setMarketplaceFilter(tab)}
+                                                className={cn(
+                                                    "px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all capitalize",
+                                                    marketplaceFilter === tab ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
+                                                )}
+                                            >
+                                                {tab}s
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {allListings.filter(item => {
+                                        const matchesSearch = item.title?.toLowerCase().includes(marketplaceSearch.toLowerCase()) ||
+                                            item.profiles?.full_name?.toLowerCase().includes(marketplaceSearch.toLowerCase());
+                                        const matchesTab = marketplaceFilter === 'all' || item.type === marketplaceFilter;
+                                        return matchesSearch && matchesTab;
+                                    }).map(item => (
+                                        <div key={item.id} className="bg-white border border-loops-border rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all group flex flex-col">
+                                            <div className="aspect-square rounded-2xl bg-loops-subtle overflow-hidden mb-4 relative">
+                                                {item.images?.[0] ? (
+                                                    <img src={item.images[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-loops-muted/30">
+                                                        <Package className="w-12 h-12" />
+                                                    </div>
+                                                )}
+                                                <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur rounded-full text-[10px] font-black uppercase tracking-widest text-loops-primary border border-loops-primary/10">
+                                                    {item.type}
+                                                </div>
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="font-bold text-lg leading-tight mb-2 group-hover:text-loops-primary transition-colors">{item.title}</h3>
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <div className="w-6 h-6 rounded-full bg-loops-subtle flex items-center justify-center text-[10px] font-bold text-loops-primary">
+                                                        {item.profiles?.full_name?.charAt(0)}
+                                                    </div>
+                                                    <p className="text-xs text-loops-muted font-bold">{item.profiles?.full_name}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between pt-4 border-t border-loops-border mt-auto">
+                                                <span className="font-black text-xl italic text-loops-main">₦{item.price?.toLocaleString()}</span>
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="h-9 w-9 p-0 rounded-lg text-loops-muted border-loops-border hover:bg-red-50 hover:text-red-500 transition-all"
+                                                        onClick={async () => {
+                                                            if (confirm('Moderate this listing? It will be removed.')) {
+                                                                const { error } = await supabase.from('listings').delete().eq('id', item.id);
+                                                                if (!error) {
+                                                                    setAllListings(prev => prev.filter(l => l.id !== item.id));
+                                                                    toast.success("Listing Moderated");
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {allListings.length === 0 && (
+                                    <div className="py-24 text-center">
+                                        <Package className="w-12 h-12 text-loops-muted mx-auto mb-4 opacity-20" />
+                                        <p className="text-loops-muted italic font-medium">No active listings found.</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                         {currentView === 'settings' && (
@@ -664,17 +792,25 @@ export default function AdminDashboard() {
     );
 }
 
-function StatCard({ icon: Icon, label, value, color }: { icon: any, label: string, value: any, color: string }) {
+function StatCard({ icon: Icon, label, value, color, onClick }: { icon: any, label: string, value: any, color: string, onClick?: () => void }) {
     return (
-        <div className="p-8 bg-white border border-loops-border rounded-3xl shadow-sm hover:shadow-xl transition-all group">
+        <div
+            onClick={onClick}
+            className={cn(
+                "p-8 bg-white border border-loops-border rounded-3xl shadow-sm hover:shadow-xl transition-all group",
+                onClick && "cursor-pointer hover:border-loops-primary"
+            )}
+        >
             <div className="flex items-center justify-between mb-4">
                 <div className={cn("p-3 rounded-2xl bg-opacity-10 group-hover:scale-110 transition-transform", color.replace('text-', 'bg-'))}>
                     <Icon className={cn("w-6 h-6", color)} />
                 </div>
-                <TrendingUp className="w-4 h-4 text-loops-success opacity-0 group-hover:opacity-100 transition-opacity" />
+                {onClick && <ArrowUpRight className="w-4 h-4 text-loops-muted group-hover:text-loops-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />}
             </div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-loops-muted mb-1">{label}</p>
-            <div className="text-4xl font-black font-display tracking-tighter text-loops-main">{value}</div>
+            <p className="text-[10px] font-black text-loops-muted uppercase tracking-[0.2em] mb-1">{label}</p>
+            <div className="text-4xl font-black font-display text-loops-main group-hover:text-loops-primary transition-colors tracking-tight italic">
+                {value}
+            </div>
         </div>
     );
 }
