@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { sendFoundingPlugApprovalEmail } from '@/lib/email';
-import { sendWhatsAppMessage } from '@/lib/whatsapp';
+import { sendWhatsAppMessage, sendWhatsAppTemplate } from '@/lib/whatsapp';
 
 export async function POST(request: Request) {
     try {
@@ -68,17 +68,33 @@ export async function POST(request: Request) {
 
         // b. WhatsApp
         if (app.whatsapp_number) {
-            const waMessage = `👑 CONGRATULATIONS ${app.full_name.toUpperCase()}! Your Founding Plug application for "${app.store_name}" has been APPROVED. \n\nYou are now part of the elite Founding 50. Please wait for the full launch sequence. \n\n♾️ LOOPS PLATFORMS`;
-            const waRes = await sendWhatsAppMessage(app.whatsapp_number, waMessage);
+            // Try sending via template first (bypasses 24h window)
+            const templateRes = await sendWhatsAppTemplate(
+                app.whatsapp_number,
+                'founding_plug_approval',
+                'en_US',
+                [{
+                    type: 'body',
+                    parameters: [
+                        { type: 'text', text: app.full_name },
+                        { type: 'text', text: app.store_name }
+                    ]
+                }]
+            );
 
-            // Meta API returns error field if failed
-            if (waRes?.error) {
-                notificationResults.whatsapp.success = false;
-                notificationResults.whatsapp.error = waRes.error.message;
-            } else if (waRes?.messages) {
+            if (templateRes?.messages) {
                 notificationResults.whatsapp.success = true;
             } else {
-                notificationResults.whatsapp.error = "Unknown WhatsApp error. Check credentials.";
+                // Fallback to text message (works if user messaged bot within 24h)
+                const waMessage = `👑 CONGRATULATIONS ${app.full_name.toUpperCase()}! Your Founding Plug application for "${app.store_name}" has been APPROVED. \n\nYou are now part of the elite Founding 50. Please wait for the full launch sequence. \n\n♾️ LOOPS PLATFORMS`;
+                const waRes = await sendWhatsAppMessage(app.whatsapp_number, waMessage);
+
+                if (waRes?.messages) {
+                    notificationResults.whatsapp.success = true;
+                } else {
+                    notificationResults.whatsapp.success = false;
+                    notificationResults.whatsapp.error = templateRes?.error?.message || waRes?.error?.message || "Template 'founding_plug_approval' not found or active.";
+                }
             }
         }
 
