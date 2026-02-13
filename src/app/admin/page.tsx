@@ -273,8 +273,18 @@ export default function AdminDashboard() {
 
     const UserView = () => {
         const [showUserManager, setShowUserManager] = useState(false);
-        const [activeSubTab, setActiveSubTab] = useState<'products' | 'services'>('products');
-        const groups = groupApplications(applications.filter(a => a.offering_type === activeSubTab));
+        const [activeSubTab, setActiveSubTab] = useState<'product' | 'service' | 'review'>('product');
+
+        // Filter applications based on tab
+        const tabFilteredApps = applications.filter(a => {
+            if (activeSubTab === 'review') {
+                // Return apps that don't match standard types
+                return a.offering_type !== 'product' && a.offering_type !== 'service';
+            }
+            return a.offering_type === activeSubTab;
+        });
+
+        const groups = groupApplications(tabFilteredApps);
 
         const approveWithNotifications = async (app: any) => {
             setProcessingId(app.id);
@@ -356,22 +366,31 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex bg-loops-subtle p-1.5 rounded-2xl border border-loops-border">
                         <button
-                            onClick={() => setActiveSubTab('products')}
+                            onClick={() => setActiveSubTab('product')}
                             className={cn(
                                 "px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all",
-                                activeSubTab === 'products' ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
+                                activeSubTab === 'product' ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
                             )}
                         >
                             Products
                         </button>
                         <button
-                            onClick={() => setActiveSubTab('services')}
+                            onClick={() => setActiveSubTab('service')}
                             className={cn(
                                 "px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all",
-                                activeSubTab === 'services' ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
+                                activeSubTab === 'service' ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
                             )}
                         >
                             Services
+                        </button>
+                        <button
+                            onClick={() => setActiveSubTab('review')}
+                            className={cn(
+                                "px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all",
+                                activeSubTab === 'review' ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
+                            )}
+                        >
+                            Review ({applications.filter(a => a.offering_type !== 'product' && a.offering_type !== 'service').length})
                         </button>
                     </div>
                 </div>
