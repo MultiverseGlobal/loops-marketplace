@@ -336,6 +336,7 @@ export default function ListingDetailPage() {
                 .insert({
                     listing_id: id,
                     buyer_id: currentUser.id,
+                    seller_id: listing.seller_id,
                     amount: Number(offerAmount),
                     message: offerMessage,
                     status: 'pending'
@@ -597,6 +598,17 @@ export default function ListingDetailPage() {
                                     </Button>
                                 </div>
 
+                                {/* Safety Handshake Card */}
+                                <div className="p-5 rounded-2xl bg-loops-primary/5 border border-loops-primary/10 space-y-3">
+                                    <div className="flex items-center gap-2 text-loops-primary">
+                                        <ShieldCheck className="w-5 h-5" />
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest">Campus Safety Handshake</h4>
+                                    </div>
+                                    <p className="text-[10px] text-loops-muted leading-relaxed">
+                                        For {campus?.name || 'this campus'}, we recommend meeting at <span className="text-loops-main font-bold">popular student hotspots</span> during daylight hours. Always verify the item before exchanging payment.
+                                    </p>
+                                </div>
+
                                 <p className="text-center text-[10px] uppercase tracking-widest font-bold text-loops-muted bg-loops-subtle py-2 rounded-lg italic flex items-center justify-center gap-2">
                                     <ShieldCheck className="w-3 h-3 text-loops-primary" />
                                     Verified Campus Transaction
@@ -664,7 +676,7 @@ export default function ListingDetailPage() {
                         </div>
                     </div>
                 </div>
-            </main >
+            </main>
 
             {/* Make Offer Modal */}
             <AnimatePresence>
@@ -739,8 +751,13 @@ export default function ListingDetailPage() {
                         </motion.div>
                     )
                 }
-            </AnimatePresence >
-        </div >
+            </AnimatePresence>
+
+            {/* Loop Loading Overlay */}
+            {loopLoading && (
+                <LoopLoading type={loopType} onComplete={handleLoopLoadingComplete} />
+            )}
+        </div>
     );
 }
 
@@ -760,8 +777,7 @@ function AccordionItem({ title, isOpen, onClick, children }: { title: string, is
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                    >
+                        className="overflow-hidden" >
                         <div className="pb-8">
                             {children}
                         </div>
@@ -769,15 +785,5 @@ function AccordionItem({ title, isOpen, onClick, children }: { title: string, is
                 )}
             </AnimatePresence>
         </div>
-    );
-}
-
-// Loop Loading Overlay
-{
-    loopLoading && (
-        <LoopLoading type={loopType} onComplete={handleLoopLoadingComplete} />
-    )
-}
-        </div >
     );
 }

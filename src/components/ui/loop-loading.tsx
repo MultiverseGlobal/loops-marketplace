@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Infinity, Zap, Package, Sparkles } from 'lucide-react';
+import { Infinity as InfinityIcon, Zap, Package, Sparkles } from 'lucide-react';
 
 interface LoopLoadingProps {
     type: 'product' | 'service';
@@ -95,7 +95,7 @@ export function LoopLoading({ type, onComplete }: LoopLoadingProps) {
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                     >
-                        <Infinity className="w-8 h-8 text-loops-primary" />
+                        <InfinityIcon className="w-8 h-8 text-loops-primary" />
                     </motion.div>
                     <Sparkles className="w-4 h-4 text-loops-secondary animate-pulse" />
                 </div>

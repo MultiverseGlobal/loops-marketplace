@@ -4,6 +4,7 @@ import { Navbar } from "../../components/layout/navbar";
 import { ProductCard } from "../../components/ui/product-card";
 import { Button } from "../../components/ui/button";
 import { VerificationBanner } from "../../components/ui/verification-banner";
+import { CampusBuzz } from "../../components/ui/campus-buzz";
 import * as Icons from "lucide-react";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
@@ -131,6 +132,8 @@ export default function MarketplacePage() {
                     <VerificationBanner email={userEmail} isVerified={isVerified} />
                 </div>
             )}
+
+            <CampusBuzz />
 
             {/* App Header */}
             <header className="bg-white/80 backdrop-blur-xl border-b border-loops-border pt-4 md:pt-32 pb-4 md:pb-8 px-4 sm:px-6 relative z-10">

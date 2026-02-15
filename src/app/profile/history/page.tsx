@@ -8,6 +8,7 @@ import { ChevronLeft, Receipt, ArrowUpRight, ArrowDownLeft, Clock, ShieldCheck }
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useCampus } from "@/context/campus-context";
+import { CURRENCY } from "@/lib/constants";
 
 export default function ActivityLedgerPage() {
     const [transactions, setTransactions] = useState<any[]>([]);
@@ -64,7 +65,7 @@ export default function ActivityLedgerPage() {
                                             {isBuyer ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownLeft className="w-6 h-6" />}
                                         </div>
 
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className={cn(
                                                     "text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-widest",
@@ -76,23 +77,69 @@ export default function ActivityLedgerPage() {
                                                     <Clock className="w-3 h-3" />
                                                     {new Date(tx.created_at).toLocaleDateString()}
                                                 </span>
+                                                <span className={cn(
+                                                    "text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-widest ring-1 ring-inset",
+                                                    tx.status === 'completed' ? "bg-loops-success/10 text-loops-success ring-loops-success/20" :
+                                                        tx.status === 'vendor_confirmed' ? "bg-amber-50 text-amber-600 ring-amber-200" :
+                                                            "bg-loops-primary/10 text-loops-primary ring-loops-primary/20"
+                                                )}>
+                                                    {tx.status}
+                                                </span>
                                             </div>
-                                            <h3 className="font-bold text-lg text-loops-main tracking-tight">{tx.listings?.title}</h3>
+                                            <h3 className="font-bold text-lg text-loops-main tracking-tight truncate group-hover:text-loops-primary transition-colors">{tx.listings?.title}</h3>
                                             <p className="text-xs text-loops-muted font-bold uppercase tracking-widest opacity-60">
                                                 {isBuyer ? `Seller: ${tx.seller?.full_name}` : `Buyer: ${tx.buyer?.full_name}`}
                                             </p>
                                         </div>
 
-                                        <div className="text-right">
-                                            <div className={cn(
-                                                "text-xl font-bold font-display tracking-tighter",
-                                                isBuyer ? "text-red-500" : "text-loops-success"
-                                            )}>
-                                                {isBuyer ? "-" : "+"}${tx.amount}
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-right hidden sm:block">
+                                                <div className={cn(
+                                                    "text-xl font-bold font-display tracking-tighter",
+                                                    isBuyer ? "text-red-500" : "text-loops-success"
+                                                )}>
+                                                    {isBuyer ? "-" : "+"}{isBuyer ? "" : CURRENCY}{tx.amount}{isBuyer ? CURRENCY : ""}
+                                                </div>
                                             </div>
-                                            <div className="text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-40">
-                                                Status: {tx.status}
-                                            </div>
+
+                                            {/* Action Buttons Based on Status */}
+                                            {tx.status !== 'completed' && (
+                                                <div className="flex gap-2">
+                                                    {!isBuyer && tx.status === 'pending' && (
+                                                        <Button
+                                                            size="sm"
+                                                            className="bg-loops-primary text-white text-[9px] font-black uppercase tracking-widest px-4 h-9 shadow-lg shadow-loops-primary/20"
+                                                            onClick={async () => {
+                                                                const res = await fetch(`/api/loops/${tx.id}/vendor-confirm`, { method: 'POST' });
+                                                                if (res.ok) window.location.reload();
+                                                            }}
+                                                        >
+                                                            Mark Fulfilled
+                                                        </Button>
+                                                    )}
+                                                    {isBuyer && tx.status === 'vendor_confirmed' && (
+                                                        <Button
+                                                            size="sm"
+                                                            className="bg-loops-success text-white text-[9px] font-black uppercase tracking-widest px-4 h-9 shadow-lg shadow-loops-success/20"
+                                                            onClick={async () => {
+                                                                // This would ideally open a review modal, but for now direct confirm
+                                                                const res = await fetch(`/api/loops/${tx.id}/buyer-confirm`, {
+                                                                    method: 'POST',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ rating: 5, review: "Great exchange!" })
+                                                                });
+                                                                if (res.ok) window.location.reload();
+                                                            }}
+                                                        >
+                                                            Confirm Receipt
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {tx.status === 'completed' && (
+                                                <ShieldCheck className="w-6 h-6 text-loops-success" />
+                                            )}
                                         </div>
                                     </div>
                                 );

@@ -157,6 +157,37 @@ export default function ProfilePage() {
         }
     };
 
+    const handleOfferAction = async (offerId: string, action: 'accepted' | 'rejected') => {
+        setSubmittingReview(true); // Reusing for loading state or add new state
+        try {
+            const response = await fetch('/api/offers/handle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ offerId, action })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || 'Failed to process offer');
+
+            toast.success(data.message);
+
+            // Update local state
+            setReceivedOffers(prev =>
+                prev.map(o => o.id === offerId ? { ...o, status: action } : o)
+            );
+
+            if (action === 'accepted' && data.transactionId) {
+                // Optionally redirect to the transaction or just refresh views
+                router.push('/profile/history'); // Assuming history or a new dashboard
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Failed to process offer.");
+        } finally {
+            setSubmittingReview(false);
+        }
+    };
+
     if (loading) return null;
 
     return (
@@ -647,25 +678,32 @@ export default function ProfilePage() {
                                                                 <div className="flex items-center gap-2">
                                                                     <Button
                                                                         variant="outline"
-                                                                        className="h-10 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest"
-                                                                        onClick={async () => {
-                                                                            const { error } = await supabase.from('offers').update({ status: 'rejected' }).eq('id', offer.id);
-                                                                            if (!error) toast.success("Offer declined.");
-                                                                        }}
+                                                                        disabled={submittingReview}
+                                                                        className="h-11 px-6 rounded-xl text-[10px] font-bold uppercase tracking-widest border-loops-border hover:bg-red-50 hover:text-red-600 transition-all"
+                                                                        onClick={() => handleOfferAction(offer.id, 'rejected')}
                                                                     >
                                                                         Decline
                                                                     </Button>
                                                                     <Button
-                                                                        className="h-10 px-4 rounded-xl bg-loops-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-loops-primary/10"
-                                                                        onClick={async () => {
-                                                                            const { error } = await supabase.from('offers').update({ status: 'accepted' }).eq('id', offer.id);
-                                                                            if (!error) toast.success("Offer accepted! Chat with the buyer to finalize.");
-                                                                        }}
+                                                                        disabled={submittingReview}
+                                                                        className="h-11 px-6 rounded-xl bg-loops-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-loops-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                                                        onClick={() => handleOfferAction(offer.id, 'accepted')}
                                                                     >
-                                                                        Accept
+                                                                        Accept & Start Loop
                                                                     </Button>
                                                                 </div>
                                                             </div>
+                                                        ) : (
+                                                        <div key={offer.id} className="p-6 rounded-3xl bg-loops-subtle/30 border border-loops-border opacity-60 grayscale flex items-center justify-between">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="w-10 h-10 rounded-xl bg-white border border-loops-border flex items-center justify-center">
+                                                                    {offer.status === 'accepted' ? <ShieldCheck className="w-5 h-5 text-loops-success" /> : <Icons.X className="w-5 h-5 text-red-400" />}
+                                                                </div>
+                                                                <div className="text-sm font-bold text-loops-muted uppercase tracking-widest">Offer {offer.status}</div>
+                                                            </div>
+                                                            <div className="text-loops-muted font-bold">{CURRENCY}{offer.amount}</div>
+                                                        </div>
+                                                        )
                                                         ))}
                                                     </div>
                                                 ) : (

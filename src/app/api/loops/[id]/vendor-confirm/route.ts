@@ -3,8 +3,9 @@ import { NextResponse } from 'next/server';
 
 export async function POST(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     const supabase = await createClient();
 
     try {
@@ -20,7 +21,7 @@ export async function POST(
         const { data: transaction, error: fetchError } = await supabase
             .from('transactions')
             .select('id, seller_id, buyer_id, listing_id, status')
-            .eq('id', params.id)
+            .eq('id', id)
             .single();
 
         if (fetchError || !transaction) {
@@ -45,7 +46,7 @@ export async function POST(
                 vendor_confirmed_at: new Date().toISOString(),
                 vendor_proof_url: proofUrl || null
             })
-            .eq('id', params.id);
+            .eq('id', id);
 
         if (updateError) {
             console.error('Vendor confirmation error:', updateError);

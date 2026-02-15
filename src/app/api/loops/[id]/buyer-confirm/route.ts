@@ -3,8 +3,9 @@ import { NextResponse } from 'next/server';
 
 export async function POST(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     const supabase = await createClient();
 
     try {
@@ -20,7 +21,7 @@ export async function POST(
         const { data: transaction, error: fetchError } = await supabase
             .from('transactions')
             .select('id, seller_id, buyer_id, listing_id, status, amount')
-            .eq('id', params.id)
+            .eq('id', id)
             .single();
 
         if (fetchError || !transaction) {
@@ -45,7 +46,7 @@ export async function POST(
                 buyer_confirmed_at: new Date().toISOString(),
                 buyer_proof_url: proofUrl || null
             })
-            .eq('id', params.id);
+            .eq('id', id);
 
         if (updateError) {
             console.error('Buyer confirmation error:', updateError);
@@ -53,12 +54,15 @@ export async function POST(
         }
 
         // Award reputation points
+        const { data: sellerProfile } = await supabase.from('profiles').select('reputation').eq('id', transaction.seller_id).single();
+        const { data: buyerProfile } = await supabase.from('profiles').select('reputation').eq('id', transaction.buyer_id).single();
+
         const reputationUpdates = [
             supabase.from('profiles').update({
-                reputation: supabase.raw('reputation + 10')
+                reputation: (sellerProfile?.reputation || 0) + 10
             }).eq('id', transaction.seller_id),
             supabase.from('profiles').update({
-                reputation: supabase.raw('reputation + 5')
+                reputation: (buyerProfile?.reputation || 0) + 5
             }).eq('id', transaction.buyer_id)
         ];
 
@@ -81,8 +85,9 @@ export async function POST(
             });
 
             // Extra +5 reputation bonus for leaving a review
+            const { data: latestBuyerProfile } = await supabase.from('profiles').select('reputation').eq('id', user.id).single();
             await supabase.from('profiles').update({
-                reputation: supabase.raw('reputation + 5')
+                reputation: (latestBuyerProfile?.reputation || 0) + 5
             }).eq('id', user.id);
         }
 
