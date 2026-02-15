@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Zap, MessageSquare, Phone, Sparkles, Award, Smartphone, Download, Heart } from "lucide-react";
+import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Zap, MessageSquare, Phone, Sparkles, Award, Smartphone, Download, Heart, X } from "lucide-react";
 import Image from "next/image";
 import { cn, formatWhatsAppNumber } from "@/lib/utils";
 import Link from "next/link";
@@ -662,48 +662,49 @@ export default function ProfilePage() {
                                                 {receivedOffers.length > 0 ? (
                                                     <div className="grid gap-4">
                                                         {receivedOffers.map((offer) => (
-                                                            <div key={offer.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                                                                <div className="flex items-center gap-4">
-                                                                    <div className="w-12 h-12 rounded-2xl bg-loops-primary/5 flex items-center justify-center overflow-hidden border border-loops-primary/10">
-                                                                        {offer.buyer?.avatar_url ? <img src={offer.buyer.avatar_url} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-loops-primary" />}
-                                                                    </div>
-                                                                    <div>
-                                                                        <div className="font-bold text-loops-main">{offer.buyer?.full_name} wants "{offer.listing?.title}"</div>
-                                                                        <div className="flex items-center gap-3">
-                                                                            <div className="text-loops-success font-black text-xl">{CURRENCY}{offer.amount}</div>
-                                                                            <div className="text-[10px] text-loops-muted line-through">L: {CURRENCY}{offer.listing?.price}</div>
+                                                            offer.status === 'pending' ? (
+                                                                <div key={offer.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="w-12 h-12 rounded-2xl bg-loops-primary/5 flex items-center justify-center overflow-hidden border border-loops-primary/10">
+                                                                            {offer.buyer?.avatar_url ? <img src={offer.buyer.avatar_url} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-loops-primary" />}
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className="font-bold text-loops-main">{offer.buyer?.full_name} wants "{offer.listing?.title}"</div>
+                                                                            <div className="flex items-center gap-3">
+                                                                                <div className="text-loops-success font-black text-xl">{CURRENCY}{offer.amount}</div>
+                                                                                <div className="text-[10px] text-loops-muted line-through">L: {CURRENCY}{offer.listing?.price}</div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Button
+                                                                            variant="outline"
+                                                                            disabled={submittingReview}
+                                                                            className="h-11 px-6 rounded-xl text-[10px] font-bold uppercase tracking-widest border-loops-border hover:bg-red-50 hover:text-red-600 transition-all"
+                                                                            onClick={() => handleOfferAction(offer.id, 'rejected')}
+                                                                        >
+                                                                            Decline
+                                                                        </Button>
+                                                                        <Button
+                                                                            disabled={submittingReview}
+                                                                            className="h-11 px-6 rounded-xl bg-loops-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-loops-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                                                            onClick={() => handleOfferAction(offer.id, 'accepted')}
+                                                                        >
+                                                                            Accept & Start Loop
+                                                                        </Button>
+                                                                    </div>
                                                                 </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        disabled={submittingReview}
-                                                                        className="h-11 px-6 rounded-xl text-[10px] font-bold uppercase tracking-widest border-loops-border hover:bg-red-50 hover:text-red-600 transition-all"
-                                                                        onClick={() => handleOfferAction(offer.id, 'rejected')}
-                                                                    >
-                                                                        Decline
-                                                                    </Button>
-                                                                    <Button
-                                                                        disabled={submittingReview}
-                                                                        className="h-11 px-6 rounded-xl bg-loops-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-loops-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
-                                                                        onClick={() => handleOfferAction(offer.id, 'accepted')}
-                                                                    >
-                                                                        Accept & Start Loop
-                                                                    </Button>
+                                                            ) : (
+                                                                <div key={offer.id} className="p-6 rounded-3xl bg-loops-subtle/30 border border-loops-border opacity-60 grayscale flex items-center justify-between">
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="w-10 h-10 rounded-xl bg-white border border-loops-border flex items-center justify-center">
+                                                                            {offer.status === 'accepted' ? <ShieldCheck className="w-5 h-5 text-loops-success" /> : <X className="w-5 h-5 text-red-400" />}
+                                                                        </div>
+                                                                        <div className="text-sm font-bold text-loops-muted uppercase tracking-widest">Offer {offer.status}</div>
+                                                                    </div>
+                                                                    <div className="text-loops-muted font-bold">{CURRENCY}{offer.amount}</div>
                                                                 </div>
-                                                            </div>
-                                                        ) : (
-                                                        <div key={offer.id} className="p-6 rounded-3xl bg-loops-subtle/30 border border-loops-border opacity-60 grayscale flex items-center justify-between">
-                                                            <div className="flex items-center gap-4">
-                                                                <div className="w-10 h-10 rounded-xl bg-white border border-loops-border flex items-center justify-center">
-                                                                    {offer.status === 'accepted' ? <ShieldCheck className="w-5 h-5 text-loops-success" /> : <Icons.X className="w-5 h-5 text-red-400" />}
-                                                                </div>
-                                                                <div className="text-sm font-bold text-loops-muted uppercase tracking-widest">Offer {offer.status}</div>
-                                                            </div>
-                                                            <div className="text-loops-muted font-bold">{CURRENCY}{offer.amount}</div>
-                                                        </div>
-                                                        )
+                                                            )
                                                         ))}
                                                     </div>
                                                 ) : (
