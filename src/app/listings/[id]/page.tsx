@@ -3,7 +3,7 @@
 
 import { Navbar } from "../../../components/layout/navbar";
 import { Button } from "../../../components/ui/button";
-import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle, ArrowRight } from "lucide-react";
+import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle, ArrowRight, Package, ShoppingCart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -18,6 +18,7 @@ import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../../lib/constants";
 import { followUser, unfollowUser, getFollowStatus } from "../../../lib/follows";
 import { UserPlus, UserMinus } from "lucide-react";
 import { Rating } from "../../../components/ui/rating";
+import { LoopLoading } from "../../../components/ui/loop-loading";
 
 export default function ListingDetailPage() {
     const { id } = useParams();
@@ -30,6 +31,8 @@ export default function ListingDetailPage() {
     const [offerAmount, setOfferAmount] = useState("");
     const [offerMessage, setOfferMessage] = useState("");
     const [isSubmittingOffer, setIsSubmittingOffer] = useState(false);
+    const [loopLoading, setLoopLoading] = useState(false);
+    const [loopType, setLoopType] = useState<'product' | 'service'>('product');
 
     const supabase = createClient();
     const router = useRouter();
@@ -89,6 +92,69 @@ export default function ListingDetailPage() {
         }
         fetchUser();
     }, [supabase]);
+
+    const handleStartLoop = async () => {
+        if (!currentUser) {
+            router.push('/login');
+            return;
+        }
+
+        if (!currentUser.email_verified) {
+            toast.warning("Verification Required: You must verify your university email first.");
+            return;
+        }
+
+        // Set loading state and type for the animation
+        setLoopType(listing.type);
+        setLoopLoading(true);
+
+        try {
+            const response = await fetch('/api/loops/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listingId: listing.id })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to create loop');
+            }
+
+            // WhatsApp will open after loading animation completes
+            const loopId = data.loopId;
+            const message = listing.type === 'product'
+                ? `Hi ${listing.profiles.full_name}! 👋\n\nI just started a purchase loop for "${listing.title}" (${CURRENCY}${listing.price}).\n\nLoop ID: #${loopId.substring(0, 8)}\n\nLet's arrange pickup! ♾️🛍️`
+                : `Hi ${listing.profiles.full_name}! 👋\n\nI just started a service loop for "${listing.title}" (${CURRENCY}${listing.price}).\n\nLoop ID: #${loopId.substring(0, 8)}\n\nLooking forward to working together! ♾️⚡`;
+
+            // Store for post-loading action
+            localStorage.setItem('pendingWhatsAppMessage', JSON.stringify({
+                number: listing.profiles?.whatsapp_number,
+                message,
+                loopId
+            }));
+
+        } catch (error: any) {
+            setLoopLoading(false);
+            toast.error(error.message || 'Failed to start loop');
+        }
+    };
+
+    const handleLoopLoadingComplete = () => {
+        setLoopLoading(false);
+
+        // Retrieve and execute WhatsApp action
+        const pending = localStorage.getItem('pendingWhatsAppMessage');
+        if (pending) {
+            const { number, message } = JSON.parse(pending);
+            localStorage.removeItem('pendingWhatsAppMessage');
+
+            if (number) {
+                window.open(`https://wa.me/${formatWhatsAppNumber(number)}?text=${encodeURIComponent(message)}`, '_blank');
+                toast.success('Loop created! Opening WhatsApp... 🎉');
+            }
+        }
+    };
 
     if (loading) return null;
     if (!listing) return <div className="min-h-screen bg-loops-bg text-loops-main p-10 flex items-center justify-center font-bold uppercase tracking-widest text-xs">Listing not found.</div>;
@@ -489,35 +555,45 @@ export default function ListingDetailPage() {
                         ) : (
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {/* Primary Call to Action: WhatsApp */}
+                                    {/* Primary Action: Buy / Start a Loop */}
+                                    <Button
+                                        onClick={handleStartLoop}
+                                        disabled={loopLoading}
+                                        className="h-16 text-xl font-bold bg-loops-primary text-white shadow-2xl shadow-loops-primary/20 transition-all font-display group hover:scale-105 sm:col-span-2"
+                                    >
+                                        {listing.type === 'product' ? (
+                                            <>
+                                                <ShoppingCart className="w-6 h-6 mr-3 group-hover:animate-bounce" />
+                                                Buy Now
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Zap className="w-6 h-6 mr-3 group-hover:animate-pulse" />
+                                                Start a Loop
+                                            </>
+                                        )}
+                                    </Button>
+
+                                    {/* Secondary: WhatsApp Chat (No Loop) */}
                                     <Button
                                         onClick={handleWhatsApp}
-                                        disabled={isInteracting}
-                                        className="h-14 sm:h-16 text-base sm:text-xl font-bold bg-[#25D366] hover:bg-[#25D366]/90 text-white shadow-xl shadow-[#25D366]/20 transition-all font-display sm:col-span-2"
+                                        disabled={isInteracting || loopLoading}
+                                        variant="outline"
+                                        className="h-14 text-base font-bold border-2 border-loops-success text-loops-success hover:bg-loops-success hover:text-white shadow-xl shadow-loops-success/10 transition-all font-display"
                                     >
-                                        <MessageSquare className="w-5 h-5 mr-3 flex-shrink-0" />
-                                        {listing.type === 'service' ? 'Interested in Hiring? Chat on WhatsApp' : 'Ready to Buy? Chat on WhatsApp'}
+                                        <MessageSquare className="w-5 h-5 mr-2" />
+                                        Chat Only
                                     </Button>
 
                                     {/* Social Bargain: Make Offer */}
                                     <Button
                                         onClick={() => setOfferModalOpen(true)}
-                                        disabled={isInteracting}
+                                        disabled={isInteracting || loopLoading}
                                         variant="outline"
-                                        className="h-14 sm:h-16 text-base sm:text-xl font-bold border-loops-primary text-loops-primary hover:bg-loops-primary/5 shadow-xl shadow-loops-primary/5 transition-all font-display sm:col-span-2 group"
+                                        className="h-14 text-base font-bold border-loops-primary text-loops-primary hover:bg-loops-primary/5 shadow-xl shadow-loops-primary/5 transition-all font-display group"
                                     >
-                                        <Zap className="w-5 h-5 mr-3 text-loops-primary group-hover:animate-pulse" />
-                                        Make an Offer (Bargain)
-                                    </Button>
-
-                                    {/* Secondary: Loops Internal Chat */}
-                                    <Button
-                                        onClick={handleInteraction}
-                                        disabled={isInteracting}
-                                        variant="outline"
-                                        className="h-12 sm:col-span-2 text-loops-muted text-[10px] font-bold uppercase tracking-[0.2em] border-loops-border/50 hover:bg-loops-subtle transition-all"
-                                    >
-                                        Use Loops Internal Chat instead
+                                        <Zap className="w-5 h-5 mr-2 text-loops-primary group-hover:animate-pulse" />
+                                        Make an Offer
                                     </Button>
                                 </div>
 
@@ -693,5 +769,15 @@ function AccordionItem({ title, isOpen, onClick, children }: { title: string, is
                 )}
             </AnimatePresence>
         </div>
+    );
+}
+
+// Loop Loading Overlay
+{
+    loopLoading && (
+        <LoopLoading type={loopType} onComplete={handleLoopLoadingComplete} />
+    )
+}
+        </div >
     );
 }
