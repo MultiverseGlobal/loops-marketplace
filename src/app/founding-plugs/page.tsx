@@ -130,7 +130,8 @@ export default function FoundingPlugsCarousel() {
                     store_category: formData.storeCategory || (formData.offeringType === 'product' ? 'General Goods' : 'Campus Services'),
                     store_logo_url: formData.storeLogoUrl,
                     motivation: `Intent: ${formData.intent} | Tier: ${formData.brandingTier}`,
-                    referred_by_code: formData.referralCode || null
+                    referred_by_code: formData.referralCode || null,
+                    user_id: (await supabase.auth.getUser()).data.user?.id || null
                 });
 
 

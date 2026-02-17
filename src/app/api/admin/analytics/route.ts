@@ -59,21 +59,21 @@ export async function GET(request: NextRequest) {
         // 5. Top Sellers Leaderboard (based on listing count for now)
         const { data: topSellers, error: sellerError } = await supabase
             .from('listings')
-            .select('vendor_id, profiles(full_name, avatar_url)')
+            .select('seller_id, profiles(full_name, avatar_url)')
             .eq('status', 'active');
 
         const sellerCounts: Record<string, { name: string, avatar: string, count: number }> = {};
         topSellers?.forEach(item => {
-            if (!item.vendor_id) return;
+            if (!item.seller_id) return;
             const profile: any = item.profiles;
-            if (!sellerCounts[item.vendor_id]) {
-                sellerCounts[item.vendor_id] = {
+            if (!sellerCounts[item.seller_id]) {
+                sellerCounts[item.seller_id] = {
                     name: profile?.full_name || 'Unknown',
                     avatar: profile?.avatar_url || '',
                     count: 0
                 };
             }
-            sellerCounts[item.vendor_id].count++;
+            sellerCounts[item.seller_id].count++;
         });
 
         const sortedSellers = Object.values(sellerCounts)

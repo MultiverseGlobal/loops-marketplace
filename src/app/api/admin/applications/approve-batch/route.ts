@@ -49,7 +49,23 @@ export async function POST(request: Request) {
                 if (updateError) throw updateError;
 
                 // Grant plug status if registered
-                if (app.user_id) {
+                let targetUserId = app.user_id;
+
+                if (!targetUserId && app.campus_email) {
+                    const { data: matchedUser } = await supabase
+                        .from('profiles')
+                        .select('id')
+                        .eq('email', app.campus_email)
+                        .single();
+
+                    if (matchedUser) {
+                        targetUserId = matchedUser.id;
+                        // Also update the application to link the user_id for future reference
+                        await supabase.from('seller_applications').update({ user_id: targetUserId }).eq('id', app.id);
+                    }
+                }
+
+                if (targetUserId) {
                     await supabase.from('profiles').update({
                         is_plug: true,
                         reputation: 100,
@@ -57,7 +73,7 @@ export async function POST(request: Request) {
                         store_banner_color: app.store_banner_color,
                         store_logo_url: app.store_logo_url,
                         primary_role: 'plug'
-                    }).eq('id', app.user_id);
+                    }).eq('id', targetUserId);
                 }
 
                 // 4. Trigger Notifications
