@@ -37,10 +37,11 @@ export default function Home() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Count active campuses
+                // Count active campuses (Founding 10 Nodes)
                 const { count: campusCount } = await supabase
                     .from('campuses')
-                    .select('*', { count: 'exact', head: true });
+                    .select('*', { count: 'exact', head: true })
+                    .eq('is_active', true);
 
                 // Count total students (profiles)
                 const { count: studentCount } = await supabase
@@ -54,9 +55,9 @@ export default function Home() {
                     .eq('status', 'completed');
 
                 setCounts({
-                    campuses: campusCount || 12, // Fallback to 12 if 0 for "vibe" during development
-                    students: studentCount || 2400, // Fallback to 2.4k if 0
-                    loops: loopCount || 500
+                    campuses: campusCount || 10,
+                    students: studentCount || 500,
+                    loops: loopCount || 50
                 });
 
                 // Handle auto-redirect for authenticated users
