@@ -838,7 +838,7 @@ export default function AdminDashboard() {
                                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                                             animate={{ scale: 1, opacity: 1, y: 0 }}
                                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                                            className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-loops-border"
+                                            className="bg-white w-full max-w-xl max-h-[85vh] rounded-[2.5rem] shadow-2xl overflow-y-auto border border-loops-border"
                                         >
                                             <div className="p-8 border-b border-loops-border bg-loops-subtle/30">
                                                 <h3 className="text-2xl font-black italic tracking-tight text-loops-main">Batch Approval Sequence</h3>
@@ -889,7 +889,7 @@ export default function AdminDashboard() {
                                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                                             animate={{ scale: 1, opacity: 1, y: 0 }}
                                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                                            className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-loops-border"
+                                            className="bg-white w-full max-w-xl max-h-[85vh] rounded-[2.5rem] shadow-2xl overflow-y-auto border border-loops-border"
                                         >
                                             <div className="p-8 border-b border-loops-border bg-loops-subtle/30">
                                                 <h3 className="text-2xl font-black italic tracking-tight text-loops-main flex items-center gap-3">
