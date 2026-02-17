@@ -160,16 +160,21 @@ export default function AdminDashboard() {
         setProcessingId('broadcast');
 
         try {
-            // Prepare recipients
-            let recipients = [];
-            if (isFromApps) {
-                recipients = applications
+            // Prepare recipients (combine both lists if selected)
+            let recipients: any[] = [];
+
+            if (selectedApps.length > 0) {
+                const appRecipients = applications
                     .filter(a => selectedApps.includes(a.id))
-                    .map(a => ({ id: a.id, whatsapp_number: a.whatsapp_number, full_name: a.full_name }));
-            } else {
-                recipients = allUsers
+                    .map(a => ({ id: a.id, whatsapp_number: a.whatsapp_number, full_name: a.full_name, type: 'Applicant' }));
+                recipients = [...recipients, ...appRecipients];
+            }
+
+            if (selectedUsers.length > 0) {
+                const userRecipients = allUsers
                     .filter(u => selectedUsers.includes(u.id))
-                    .map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name }));
+                    .map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name, type: 'Plug' }));
+                recipients = [...recipients, ...userRecipients];
             }
 
             const res = await fetch('/api/admin/broadcast', {
@@ -266,7 +271,7 @@ export default function AdminDashboard() {
                     .from('profiles')
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(100);
+                    .limit(1000);
 
                 setStats({
                     totalUsers: users.count || 0,
@@ -531,25 +536,46 @@ export default function AdminDashboard() {
         return (
             <div className="space-y-8">
                 {/* View Switcher */}
-                <div className="flex gap-4 border-b border-loops-border pb-6">
-                    <button
-                        onClick={() => setShowUserManager(false)}
-                        className={cn(
-                            "px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all",
-                            !showUserManager ? "bg-loops-primary text-white shadow-xl shadow-loops-primary/20" : "text-loops-muted hover:text-loops-main"
-                        )}
+                <div className="flex gap-4 border-b border-loops-border pb-6 justify-between items-center">
+                    <div className="flex gap-4">
+                        <button
+                            onClick={() => setShowUserManager(false)}
+                            className={cn(
+                                "px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all",
+                                !showUserManager ? "bg-loops-primary text-white shadow-xl shadow-loops-primary/20" : "text-loops-muted hover:text-loops-main"
+                            )}
+                        >
+                            Join Requests ({applications.length})
+                        </button>
+                        <button
+                            onClick={() => setShowUserManager(true)}
+                            className={cn(
+                                "px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all",
+                                showUserManager ? "bg-loops-primary text-white shadow-xl shadow-loops-primary/20" : "text-loops-muted hover:text-loops-main"
+                            )}
+                        >
+                            Student Directory ({allUsers.length})
+                        </button>
+                    </div>
+
+                    <Button
+                        onClick={() => {
+                            // Select ALL Pending
+                            const allPendingIds = applications.map(a => a.id);
+                            setSelectedApps(allPendingIds);
+
+                            // Select ALL Plugs
+                            const allPlugIds = allUsers.filter(u => u.is_plug).map(u => u.id);
+                            setSelectedUsers(allPlugIds);
+
+                            setShowBroadcastModal(true);
+                            setBroadcastMessage("");
+                        }}
+                        className="bg-black text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2"
                     >
-                        Join Requests ({applications.length})
-                    </button>
-                    <button
-                        onClick={() => setShowUserManager(true)}
-                        className={cn(
-                            "px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all",
-                            showUserManager ? "bg-loops-primary text-white shadow-xl shadow-loops-primary/20" : "text-loops-muted hover:text-loops-main"
-                        )}
-                    >
-                        Student Directory ({allUsers.length})
-                    </button>
+                        <MessageCircle className="w-4 h-4" />
+                        Broadcast to All ({applications.length + allUsers.filter(u => u.is_plug).length})
+                    </Button>
                 </div>
 
                 {!showUserManager ? (
@@ -1189,7 +1215,7 @@ export default function AdminDashboard() {
                                     <MessageCircle className="w-6 h-6 text-loops-primary" />
                                     Broadcast Transmission
                                 </h3>
-                                <p className="text-sm text-loops-muted font-medium mt-1">Targeting {selectedApps.length || selectedUsers.length} Recipients.</p>
+                                <p className="text-sm text-loops-muted font-medium mt-1">Targeting {selectedApps.length + selectedUsers.length} Recipients.</p>
                             </div>
 
                             <div className="p-8 space-y-6">
