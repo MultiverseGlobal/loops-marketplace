@@ -1054,39 +1054,103 @@ export default function AdminDashboard() {
     };
 
     const UniversityView = () => (
-        <div className="space-y-8">
+        <div className="space-y-12">
+            {/* Launch Coverage Summary */}
+            <div className="bg-loops-main rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                            <span className="px-3 py-1 bg-white/10 backdrop-blur rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">Phase 1: Grand Launch</span>
+                            <span className="text-loops-primary font-black animate-pulse text-[10px] uppercase">● System Live</span>
+                        </div>
+                        <h2 className="text-4xl font-black italic tracking-tighter">10 Nodes Coverage</h2>
+                        <p className="text-white/60 font-medium text-sm">Strategic dominance across Veritas, Bingham, Nile, UniAbuja, ATBU, UniJos, MOUAU, UNILAG, ABU, and UNN.</p>
+                    </div>
+                    <div className="flex gap-4">
+                        <div className="text-center p-4 bg-white/5 rounded-2xl border border-white/10">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">Target Nodes</p>
+                            <p className="text-2xl font-black italic">10</p>
+                        </div>
+                        <div className="text-center p-4 bg-loops-primary rounded-2xl border border-white/10">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-loops-main/40 mb-1">Active Now</p>
+                            <p className="text-2xl font-black italic text-loops-main">{campuses.length}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-loops-primary/20 rounded-full -mr-32 -mt-32 blur-3xl" />
+            </div>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {campuses.map(campus => (
-                    <div key={campus.id} className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-loops-primary/10 rounded-xl flex items-center justify-center text-loops-primary font-bold">
-                                <School className="w-5 h-5" />
+                    <div key={campus.id} className="p-8 rounded-[2rem] bg-white border border-loops-border shadow-sm hover:shadow-xl transition-all group flex flex-col gap-6">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-loops-subtle rounded-2xl flex items-center justify-center text-loops-primary border border-loops-border group-hover:bg-loops-primary group-hover:text-white transition-all">
+                                    <School className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-base tracking-tight">{campus.name}</h3>
+                                    <p className="text-[10px] text-loops-muted font-bold uppercase tracking-widest">{campus.domain}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-bold text-sm tracking-tight">{campus.name}</h3>
-                                <p className="text-[10px] text-loops-muted font-bold uppercase">{campus.domain}</p>
+                            <div className={cn(
+                                "w-2.5 h-2.5 rounded-full",
+                                campus.is_active ? "bg-loops-success shadow-[0_0_10px_rgba(34,197,94,0.5)]" : "bg-loops-muted opacity-30"
+                            )} />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="p-3 bg-loops-subtle rounded-xl border border-loops-border">
+                                <p className="text-[8px] font-black uppercase tracking-widest text-loops-muted mb-1">Type</p>
+                                <p className="text-[10px] font-bold capitalize">{campus.type || 'Standard'}</p>
+                            </div>
+                            <div className="p-3 bg-loops-subtle rounded-xl border border-loops-border">
+                                <p className="text-[8px] font-black uppercase tracking-widest text-loops-muted mb-1">Location</p>
+                                <p className="text-[10px] font-bold truncate">{campus.location || 'Unknown'}</p>
                             </div>
                         </div>
-                        <div className="w-2 h-2 rounded-full bg-loops-success" />
+
+                        <div className="flex items-center justify-between pt-4 border-t border-loops-border">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-loops-muted">Node Status: <span className="text-loops-main">Stable</span></span>
+                            <Button variant="ghost" size="sm" className="h-8 p-0 w-8 rounded-lg text-loops-muted hover:text-loops-primary">
+                                <Globe className="w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            <div className="bg-white border border-loops-border rounded-3xl shadow-sm overflow-hidden">
-                <div className="p-8 border-b">
-                    <h2 className="text-xl font-bold font-display flex items-center gap-2"><Globe className="w-5 h-5 text-loops-primary" /> Node Launch Requests</h2>
+            <div className="bg-white border border-loops-border rounded-[2.5rem] shadow-sm overflow-hidden">
+                <div className="p-10 border-b flex items-center justify-between">
+                    <div>
+                        <h2 className="text-2xl font-black italic tracking-tight flex items-center gap-3">
+                            <Globe className="w-6 h-6 text-loops-primary" />
+                            Node Launch Requests
+                        </h2>
+                        <p className="text-sm text-loops-muted font-medium mt-1">Founders asking to bridge their campus into the Loop.</p>
+                    </div>
+                    <span className="px-4 py-2 bg-loops-subtle rounded-xl text-[10px] font-black uppercase tracking-widest">{campusRequests.length} Pending</span>
                 </div>
-                <div className="divide-y">
+                <div className="divide-y divide-loops-border">
                     {campusRequests.map(req => (
-                        <div key={req.id} className="p-6 flex items-center justify-between">
-                            <div className="space-y-1">
-                                <h3 className="font-bold">{req.university_name}</h3>
-                                <p className="text-xs text-loops-muted">{req.school_email}</p>
+                        <div key={req.id} className="p-8 hover:bg-loops-subtle transition-colors flex items-center justify-between group">
+                            <div className="space-y-2">
+                                <h3 className="font-black text-lg italic group-hover:text-loops-primary transition-colors">{req.university_name}</h3>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">{req.school_email}</span>
+                                    <span className="w-1 h-1 bg-loops-border rounded-full" />
+                                    <span className="text-[10px] font-bold text-loops-primary uppercase tracking-widest bg-loops-primary/5 px-2 py-0.5 rounded-full border border-loops-primary/10">Priority Node</span>
+                                </div>
                             </div>
-                            <Button className="bg-loops-primary text-white font-bold text-xs uppercase tracking-widest px-6 h-10 rounded-xl">Launch Node</Button>
+                            <Button className="bg-loops-primary text-white font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-2xl shadow-xl shadow-loops-primary/20 hover:scale-105 transition-all">Launch Node 🚀</Button>
                         </div>
                     ))}
-                    {campusRequests.length === 0 && <div className="p-12 text-center text-loops-muted italic font-medium">No pending launch requests.</div>}
+                    {campusRequests.length === 0 && (
+                        <div className="p-20 text-center space-y-4">
+                            <Award className="w-12 h-12 text-loops-muted opacity-20 mx-auto" />
+                            <p className="text-loops-muted italic font-medium">All valid node requests have been bridged.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
