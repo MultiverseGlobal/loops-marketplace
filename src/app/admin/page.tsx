@@ -900,6 +900,32 @@ export default function AdminDashboard() {
                                             </div>
 
                                             <div className="p-8 space-y-6">
+                                                {/* Quick Templates */}
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-loops-muted ml-2">Quick Templates</label>
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <button
+                                                            onClick={() => {
+                                                                const launchDate = new Date('2026-10-05');
+                                                                const today = new Date();
+                                                                const daysUntil = Math.ceil((launchDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                                                                setBroadcastMessage(`🚀 Hey {name}!\n\nYour campus store is officially in the works! We're building something legendary for you.\n\n⏰ GRAND LAUNCH: October 5, 2026 (${daysUntil} days to go!)\n\nGet ready to Loop like never before. Your marketplace. Your rules. 🔥\n\n- The Loops Team`);
+                                                            }}
+                                                            className="p-4 rounded-2xl bg-gradient-to-br from-loops-primary/10 to-loops-primary/5 border border-loops-primary/20 hover:border-loops-primary/40 transition-all text-left group"
+                                                        >
+                                                            <div className="text-[10px] font-black uppercase tracking-widest text-loops-primary mb-1">🚀 Launch Countdown</div>
+                                                            <div className="text-xs text-loops-muted font-medium">Oct 5 launch with days counter</div>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setBroadcastMessage(`Hi {name} 👋\n\nWelcome to the Founding Plugs club! You're one of the first vendors on campus.\n\nWe'll be in touch soon with exclusive early access and setup instructions.\n\nStay Looped! ⚡`)}
+                                                            className="p-4 rounded-2xl bg-gradient-to-br from-loops-success/10 to-loops-success/5 border border-loops-success/20 hover:border-loops-success/40 transition-all text-left group"
+                                                        >
+                                                            <div className="text-[10px] font-black uppercase tracking-widest text-loops-success mb-1">🎯 Welcome Plugs</div>
+                                                            <div className="text-xs text-loops-muted font-medium">Onboarding message</div>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
                                                 <div className="space-y-3">
                                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-loops-muted ml-2">Broadcast Message Content</label>
                                                     <textarea
@@ -908,10 +934,13 @@ export default function AdminDashboard() {
                                                         placeholder="Enter your message here... Use {name} for personalization."
                                                         className="w-full h-48 p-6 rounded-3xl bg-loops-subtle border border-loops-border outline-none focus:ring-2 focus:ring-loops-primary/20 transition-all font-medium text-sm resize-none"
                                                     />
-                                                    <div className="p-4 bg-loops-primary/5 rounded-2xl border border-loops-primary/10">
+                                                    <div className="flex items-center justify-between p-4 bg-loops-primary/5 rounded-2xl border border-loops-primary/10">
                                                         <p className="text-[10px] text-loops-primary font-black uppercase tracking-widest italic">
                                                             Broadcasting to {selectedApps.length > 0 ? 'Pending Applicants' : 'Approved Plugs'}.
                                                         </p>
+                                                        {broadcastMessage && (
+                                                            <span className="text-[10px] font-bold text-loops-muted">{broadcastMessage.length} chars</span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
