@@ -601,12 +601,31 @@ export default function AdminDashboard() {
                                                 <div className="space-y-4">
                                                     <div>
                                                         <h4 className="text-xl font-black italic tracking-tight">{app.store_name}</h4>
-                                                        <p className="text-xs font-bold text-loops-muted">{app.full_name}</p>
+                                                        <div className="flex flex-col">
+                                                            <p className="text-xs font-bold text-loops-muted">{app.full_name}</p>
+                                                            {app.referred_by_code && (
+                                                                <p className="text-[10px] font-bold text-loops-primary mt-1">
+                                                                    Ref: <span className="font-mono">{app.referred_by_code}</span>
+                                                                </p>
+                                                            )}
+                                                        </div>
                                                     </div>
 
-                                                    <div className="flex items-center gap-2 text-[10px] font-black text-loops-primary/60 uppercase tracking-widest bg-loops-primary/5 px-3 py-1.5 rounded-full w-fit border border-loops-primary/10">
-                                                        <School className="w-3 h-3" />
-                                                        {app.university}
+                                                    <div className="flex flex-wrap gap-2 mt-2">
+                                                        <div className="flex items-center gap-2 text-[10px] font-black text-loops-primary/60 uppercase tracking-widest bg-loops-primary/5 px-3 py-1.5 rounded-full w-fit border border-loops-primary/10">
+                                                            <School className="w-3 h-3" />
+                                                            {app.university}
+                                                        </div>
+                                                        <a
+                                                            href={`https://wa.me/${app.whatsapp_number?.replace(/\+/g, '')}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            className="flex items-center gap-2 text-[10px] font-black text-green-600 uppercase tracking-widest bg-green-50 px-3 py-1.5 rounded-full w-fit border border-green-100 hover:bg-green-100 transition-colors"
+                                                        >
+                                                            <MessageCircle className="w-3 h-3" />
+                                                            Chat
+                                                        </a>
                                                     </div>
                                                 </div>
 
