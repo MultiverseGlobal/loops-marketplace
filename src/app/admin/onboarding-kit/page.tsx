@@ -52,7 +52,7 @@ export default function OnboardingKit() {
             title: 'Recruit Founding Plugs',
             icon: Zap,
             description: 'Best for campus groups and student associations.',
-            content: `Hey ${selectedCampus.name}! 🚀\n\nI'm launching Loops on our campus and we're looking for the first 50 "Founding Plugs".\n\nIf you sell items, clothes, or provide services (hair, tutoring, etc.), you can now get a verified storefront and a professional reputation on the ${selectedCampus.communityName || 'Campus Loop'}.\n\nSecure your spot here:\nhttps://loops-marketplace.vercel.app/onboarding?campus=${selectedCampus.slug}\n\nLet's keep the money in the community! 🔌✨`
+            content: `Hey ${selectedCampus.name}! 🚀\n\nI'm launching Loops on our campus and we're looking for the first 50 "Founding Plugs".\n\nIf you sell items, clothes, or provide services (hair, tutoring, etc.), you can now get a verified storefront and a professional reputation on the ${selectedCampus.communityName || 'Campus Loop'}.\n\nSecure your spot here:\nhttps://loops-marketplace.vercel.app/founding-plugs?campus=${selectedCampus.slug}\n\nLet's keep the money in the community! 🔌✨`
         },
         {
             id: 'buyer-hype',
@@ -66,7 +66,7 @@ export default function OnboardingKit() {
             title: 'Service Provider Focus',
             icon: Briefcase,
             description: 'For skilled students (Barbers, Braiders, Photographers).',
-            content: `Attention ${selectedCampus.name} Creatives! 📸💇‍♂️\n\nStop taking bookings in the DMs. Get a professional portfolio on Loops and let the campus find you easily.\n\nVerified reputation + Auto-scheduling is now live.\n\nLaunch your store:\nhttps://loops-marketplace.vercel.app/founding-plugs`
+            content: `Attention ${selectedCampus.name} Creatives! 📸💇‍♂️\n\nStop taking bookings in the DMs. Get a professional portfolio on Loops and let the campus find you easily.\n\nVerified reputation + Auto-scheduling is now live.\n\nLaunch your store:\nhttps://loops-marketplace.vercel.app/founding-plugs?campus=${selectedCampus.slug}`
         }
     ] : [];
 

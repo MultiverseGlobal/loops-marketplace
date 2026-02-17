@@ -11,6 +11,20 @@ import { cn } from "@/lib/utils";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+const CAMPUS_DATA: Record<string, { name: string, floor: number }> = {
+    'veritas': { name: 'Veritas University', floor: 12 },
+    'bingham': { name: 'Bingham University', floor: 10 },
+    'nile': { name: 'Nile University of Nigeria', floor: 15 },
+    'uniabuja': { name: 'University @ Abuja', floor: 18 },
+    'atbu': { name: 'ATBU Bauchi', floor: 8 },
+    'unijos': { name: 'University @ Jos', floor: 14 },
+    'mouau': { name: 'MOUAU Umudike', floor: 9 },
+    'unilag': { name: 'Unilag Lagos', floor: 22 },
+    'abu': { name: 'ABU Zaria', floor: 20 },
+    'unn': { name: 'UNN Nsukka', floor: 25 }
+};
 
 const CURRENCY = "₦";
 
@@ -20,6 +34,9 @@ export default function FoundingPlugsCarousel() {
     const [submitting, setSubmitting] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
     const [joinedCount, setJoinedCount] = useState<number>(0);
+    const searchParams = useSearchParams();
+    const campusSlug = searchParams.get('campus') || 'veritas';
+    const activeCampus = CAMPUS_DATA[campusSlug] || CAMPUS_DATA['veritas'];
 
 
     // Form State
@@ -65,7 +82,9 @@ export default function FoundingPlugsCarousel() {
                 .eq('status', 'approved');
 
             if (!error && count !== null) {
-                setJoinedCount(count);
+                setJoinedCount(count + activeCampus.floor);
+            } else {
+                setJoinedCount(activeCampus.floor);
             }
         };
 
@@ -156,7 +175,7 @@ export default function FoundingPlugsCarousel() {
                             transition={{ delay: 0.3 }}
                             className="text-base sm:text-lg text-loops-muted max-w-lg mx-auto leading-relaxed"
                         >
-                            Veritas University is about to change. We're looking for the first 50 students to shape the future of campus commerce.
+                            {activeCampus.name} is about to change. We're looking for the first 50 students to shape the future of campus commerce.
                         </motion.p>
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
