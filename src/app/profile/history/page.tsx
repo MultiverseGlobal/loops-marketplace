@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
-import { ChevronLeft, Receipt, ArrowUpRight, ArrowDownLeft, Clock, ShieldCheck } from "lucide-react";
+import { ChevronLeft, Receipt, ArrowUpRight, ArrowDownLeft, Clock, ShieldCheck, Truck, UserCheck, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useCampus } from "@/context/campus-context";
@@ -24,7 +24,7 @@ export default function ActivityLedgerPage() {
                 setCurrentUserId(user.id);
                 const { data } = await supabase
                     .from('transactions')
-                    .select('*, listings(title, images), buyer:buyer_id(full_name), seller:seller_id(full_name)')
+                    .select('*, listings(title, images, type), buyer:buyer_id(full_name), seller:seller_id(full_name)')
                     .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
                     .order('created_at', { ascending: false });
 
@@ -100,39 +100,80 @@ export default function ActivityLedgerPage() {
                                                 )}>
                                                     {isBuyer ? "-" : "+"}{isBuyer ? "" : CURRENCY}{tx.amount}{isBuyer ? CURRENCY : ""}
                                                 </div>
+                                                {tx.handoff_method && (
+                                                    <div className="flex items-center justify-end gap-1 mt-1">
+                                                        {tx.handoff_method === 'drop_off' && <Truck className="w-3 h-3 text-loops-muted/60" />}
+                                                        {tx.handoff_method === 'meet_up' && <UserCheck className="w-3 h-3 text-loops-muted/60" />}
+                                                        {tx.handoff_method === 'service_rendered' && <CheckCircle2 className="w-3 h-3 text-loops-muted/60" />}
+                                                        <span className="text-[8px] font-black uppercase tracking-tighter text-loops-muted/60">
+                                                            {tx.handoff_method.replace('_', ' ')}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Action Buttons Based on Status */}
                                             {tx.status !== 'completed' && (
                                                 <div className="flex gap-2">
                                                     {!isBuyer && tx.status === 'pending' && (
-                                                        <Button
-                                                            size="sm"
-                                                            className="bg-loops-primary text-white text-[9px] font-black uppercase tracking-widest px-4 h-9 shadow-lg shadow-loops-primary/20"
-                                                            onClick={async () => {
-                                                                const res = await fetch(`/api/loops/${tx.id}/vendor-confirm`, { method: 'POST' });
-                                                                if (res.ok) window.location.reload();
-                                                            }}
-                                                        >
-                                                            Mark Fulfilled
-                                                        </Button>
+                                                        <div className="flex flex-col gap-1 items-end">
+                                                            <div className="flex gap-1">
+                                                                <Button
+                                                                    size="sm"
+                                                                    className="bg-loops-primary text-white text-[9px] font-black uppercase tracking-widest px-3 h-8 shadow-lg shadow-loops-primary/20"
+                                                                    onClick={async () => {
+                                                                        const method = tx.listings?.type === 'service' ? 'service_rendered' : 'meet_up';
+                                                                        const res = await fetch(`/api/loops/${tx.id}/vendor-confirm`, {
+                                                                            method: 'POST',
+                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                            body: JSON.stringify({ handoffMethod: method })
+                                                                        });
+                                                                        if (res.ok) window.location.reload();
+                                                                    }}
+                                                                >
+                                                                    {tx.listings?.type === 'service' ? 'Complete Service' : 'Confirm Handoff'}
+                                                                </Button>
+                                                                {tx.listings?.type !== 'service' && (
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        className="border-loops-border text-loops-main text-[9px] font-black uppercase tracking-widest px-3 h-8"
+                                                                        onClick={async () => {
+                                                                            const res = await fetch(`/api/loops/${tx.id}/vendor-confirm`, {
+                                                                                method: 'POST',
+                                                                                headers: { 'Content-Type': 'application/json' },
+                                                                                body: JSON.stringify({ handoffMethod: 'drop_off' })
+                                                                            });
+                                                                            if (res.ok) window.location.reload();
+                                                                        }}
+                                                                    >
+                                                                        Drop-off Item
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+                                                            <span className="text-[7px] font-bold text-loops-muted uppercase tracking-widest opacity-40">Choose status to notify buyer</span>
+                                                        </div>
                                                     )}
                                                     {isBuyer && tx.status === 'vendor_confirmed' && (
-                                                        <Button
-                                                            size="sm"
-                                                            className="bg-loops-success text-white text-[9px] font-black uppercase tracking-widest px-4 h-9 shadow-lg shadow-loops-success/20"
-                                                            onClick={async () => {
-                                                                // This would ideally open a review modal, but for now direct confirm
-                                                                const res = await fetch(`/api/loops/${tx.id}/buyer-confirm`, {
-                                                                    method: 'POST',
-                                                                    headers: { 'Content-Type': 'application/json' },
-                                                                    body: JSON.stringify({ rating: 5, review: "Great exchange!" })
-                                                                });
-                                                                if (res.ok) window.location.reload();
-                                                            }}
-                                                        >
-                                                            Confirm Receipt
-                                                        </Button>
+                                                        <div className="flex flex-col gap-1 items-end">
+                                                            <Button
+                                                                size="sm"
+                                                                className="bg-loops-success text-white text-[9px] font-black uppercase tracking-widest px-4 h-9 shadow-lg shadow-loops-success/20"
+                                                                onClick={async () => {
+                                                                    const res = await fetch(`/api/loops/${tx.id}/buyer-confirm`, {
+                                                                        method: 'POST',
+                                                                        headers: { 'Content-Type': 'application/json' },
+                                                                        body: JSON.stringify({ rating: 5, review: "Great exchange!" })
+                                                                    });
+                                                                    if (res.ok) window.location.reload();
+                                                                }}
+                                                            >
+                                                                Confirm {tx.handoff_method === 'service_rendered' ? 'Completion' : 'Receipt'}
+                                                            </Button>
+                                                            {tx.handoff_method === 'drop_off' && (
+                                                                <span className="text-[7px] font-bold text-amber-600 uppercase tracking-widest animate-pulse">Item at Hub</span>
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </div>
                                             )}

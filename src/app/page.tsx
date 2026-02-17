@@ -8,6 +8,7 @@ import { ProductCard } from "../components/ui/product-card";
 import { FeaturedHubs } from "../components/ui/featured-hubs";
 import { SkeletonCard } from "../components/ui/skeleton-loader";
 import { ArrowRight, Sparkles, ShieldCheck, Zap, MessageSquare } from "lucide-react";
+import { ActivityBuzz } from "../components/ui/activity-buzz";
 import { Footer } from "../components/layout/footer";
 import Link from "next/link";
 import Image from "next/image";
@@ -217,6 +218,7 @@ export default function Home() {
             {!isCheckingSession && (
                 <div className="bg-loops-bg">
                     <Navbar />
+                    <ActivityBuzz />
 
                     {/* Hero Section: The "Wow" Factor */}
                     <section className="relative min-h-[70vh] flex items-center justify-center pt-24 pb-12 px-6 overflow-hidden">

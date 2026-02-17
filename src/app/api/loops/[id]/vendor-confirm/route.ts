@@ -9,7 +9,7 @@ export async function POST(
     const supabase = await createClient();
 
     try {
-        const { proofUrl } = await request.json();
+        const { proofUrl, handoffMethod, scheduledAt, handoffDetails } = await request.json();
 
         // Get current user
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -44,7 +44,10 @@ export async function POST(
             .update({
                 status: 'vendor_confirmed',
                 vendor_confirmed_at: new Date().toISOString(),
-                vendor_proof_url: proofUrl || null
+                vendor_proof_url: proofUrl || null,
+                handoff_method: handoffMethod || 'meet_up',
+                scheduled_at: scheduledAt || null,
+                handoff_details: handoffDetails || null
             })
             .eq('id', id);
 
