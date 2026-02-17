@@ -130,10 +130,11 @@ export default function OnboardingPage() {
                 if (profile.store_category) setStoreCategory(profile.store_category);
             }
 
-            // Fetch all active campuses from DB
+            // Fetch all active campuses from DB (only show activated founding nodes)
             const { data } = await supabase
                 .from('campuses')
                 .select('*')
+                .eq('is_active', true)
                 .order('name', { ascending: true });
             if (data) setCampuses(data);
         };

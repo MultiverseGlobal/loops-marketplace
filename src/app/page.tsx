@@ -292,62 +292,64 @@ export default function Home() {
                                 </Link>
                             </motion.div>
                         </div>
-                    </section>
+                    </section >
 
                     <FeaturedHubs />
 
                     {/* NEW: Founding Plugs Spotlight */}
-                    {foundingPlugs && foundingPlugs.length > 0 && (
-                        <section className="py-20 px-6 bg-white overflow-hidden">
-                            <div className="max-w-7xl mx-auto">
-                                <div className="flex items-center justify-between mb-10">
-                                    <div className="space-y-1">
-                                        <h2 className="text-3xl font-bold font-display tracking-tight">Meet the Founding Plugs</h2>
-                                        <p className="text-sm text-loops-muted">Verified creators and sellers leading the {campus?.name || 'campus'} economy.</p>
+                    {
+                        foundingPlugs && foundingPlugs.length > 0 && (
+                            <section className="py-20 px-6 bg-white overflow-hidden">
+                                <div className="max-w-7xl mx-auto">
+                                    <div className="flex items-center justify-between mb-10">
+                                        <div className="space-y-1">
+                                            <h2 className="text-3xl font-bold font-display tracking-tight">Meet the Founding Plugs</h2>
+                                            <p className="text-sm text-loops-muted">Verified creators and sellers leading the {campus?.name || 'campus'} economy.</p>
+                                        </div>
+                                        <Link href="/browse" className="text-loops-primary text-xs font-bold uppercase tracking-widest hover:underline flex items-center gap-2">
+                                            Browse All <ArrowRight className="w-4 h-4" />
+                                        </Link>
                                     </div>
-                                    <Link href="/browse" className="text-loops-primary text-xs font-bold uppercase tracking-widest hover:underline flex items-center gap-2">
-                                        Browse All <ArrowRight className="w-4 h-4" />
-                                    </Link>
-                                </div>
 
-                                <div className="flex gap-6 overflow-x-auto no-scrollbar pb-10">
-                                    {foundingPlugs && foundingPlugs.length > 0 && foundingPlugs.map((plug) => (
-                                        <motion.div
-                                            key={plug.id}
-                                            whileHover={{ y: -5 }}
-                                            className="flex-shrink-0 w-64 p-6 rounded-[2rem] bg-loops-subtle border border-loops-border relative group"
-                                        >
-                                            <div className="absolute top-4 right-4">
-                                                <div className="w-8 h-8 rounded-full bg-loops-primary/10 flex items-center justify-center text-loops-primary">
-                                                    <ShieldCheck className="w-4 h-4" />
+                                    <div className="flex gap-6 overflow-x-auto no-scrollbar pb-10">
+                                        {foundingPlugs && foundingPlugs.length > 0 && foundingPlugs.map((plug) => (
+                                            <motion.div
+                                                key={plug.id}
+                                                whileHover={{ y: -5 }}
+                                                className="flex-shrink-0 w-64 p-6 rounded-[2rem] bg-loops-subtle border border-loops-border relative group"
+                                            >
+                                                <div className="absolute top-4 right-4">
+                                                    <div className="w-8 h-8 rounded-full bg-loops-primary/10 flex items-center justify-center text-loops-primary">
+                                                        <ShieldCheck className="w-4 h-4" />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="space-y-4">
-                                                <div className="w-16 h-16 rounded-2xl border-4 border-white shadow-lg overflow-hidden relative">
-                                                    {plug.avatar_url ? (
-                                                        <Image src={plug.avatar_url} alt={plug.full_name} fill className="object-cover" />
-                                                    ) : (
-                                                        <div className="w-full h-full bg-loops-primary/10 flex items-center justify-center text-loops-primary font-bold text-xl">
-                                                            {plug.full_name?.charAt(0)}
-                                                        </div>
-                                                    )}
+                                                <div className="space-y-4">
+                                                    <div className="w-16 h-16 rounded-2xl border-4 border-white shadow-lg overflow-hidden relative">
+                                                        {plug.avatar_url ? (
+                                                            <Image src={plug.avatar_url} alt={plug.full_name} fill className="object-cover" />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-loops-primary/10 flex items-center justify-center text-loops-primary font-bold text-xl">
+                                                                {plug.full_name?.charAt(0)}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-bold text-lg truncate">{plug.full_name}</h3>
+                                                        <p className="text-xs text-loops-muted uppercase font-bold tracking-widest">{plug.store_name || 'Campus Merchant'}</p>
+                                                    </div>
+                                                    <Link href={`/profile?u=${plug.id}`}>
+                                                        <Button variant="outline" className="w-full mt-2 rounded-xl text-[10px] font-bold uppercase tracking-widest h-10 border-loops-primary/20 text-loops-primary hover:bg-loops-primary/5">
+                                                            Visit Store
+                                                        </Button>
+                                                    </Link>
                                                 </div>
-                                                <div>
-                                                    <h3 className="font-bold text-lg truncate">{plug.full_name}</h3>
-                                                    <p className="text-xs text-loops-muted uppercase font-bold tracking-widest">{plug.store_name || 'Campus Merchant'}</p>
-                                                </div>
-                                                <Link href={`/profile?u=${plug.id}`}>
-                                                    <Button variant="outline" className="w-full mt-2 rounded-xl text-[10px] font-bold uppercase tracking-widest h-10 border-loops-primary/20 text-loops-primary hover:bg-loops-primary/5">
-                                                        Visit Store
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        </motion.div>
-                                    ))}
+                                            </motion.div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </section>
-                    )}
+                            </section>
+                        )
+                    }
 
                     {/* Bento Feature Grid */}
                     <section className="py-32 px-4 sm:px-6 relative z-10 bg-white">
@@ -543,8 +545,9 @@ export default function Home() {
                     <div className="py-2 text-center text-[10px] text-loops-muted/20 font-mono">
                         v1.1.2 (Mobile Fix Debug)
                     </div>
-                </div>
-            )}
+                </div >
+            )
+            }
         </>
     );
 }

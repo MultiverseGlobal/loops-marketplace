@@ -169,6 +169,37 @@ export default function FoundingPlugsCarousel() {
                                 {joinedCount}/50 Plugs Joined
                             </span>
                         </motion.div>
+
+                        {/* Launch Countdown */}
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.6 }}
+                            className="pt-6"
+                        >
+                            <div className="inline-flex items-center gap-4 px-6 py-4 rounded-2xl bg-gradient-to-br from-loops-primary/10 via-loops-primary/5 to-transparent border border-loops-primary/20 backdrop-blur-sm shadow-xl shadow-loops-primary/5">
+                                <div className="flex items-baseline gap-2">
+                                    <Zap className="w-4 h-4 text-loops-primary animate-pulse" />
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-loops-primary">
+                                        Launching in
+                                    </span>
+                                </div>
+                                <motion.span
+                                    key={Math.ceil((new Date('2026-03-01').getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}
+                                    initial={{ scale: 1.2, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    className="text-3xl font-black font-display text-loops-primary tracking-tight"
+                                >
+                                    {Math.ceil((new Date('2026-03-01').getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}
+                                </motion.span>
+                                <span className="text-xs font-bold text-loops-muted uppercase">
+                                    Days
+                                </span>
+                            </div>
+                            <p className="text-[8px] text-loops-muted uppercase tracking-[0.3em] font-black mt-3 opacity-50">
+                                March 1, 2026 • Second Semester
+                            </p>
+                        </motion.div>
                     </div>
 
                     <Button
