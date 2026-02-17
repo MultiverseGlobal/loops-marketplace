@@ -26,7 +26,7 @@ SELECT
     (l.boosted_until > now()) as is_boosted,
     l.created_at
 FROM public.listings l
-JOIN public.profiles p_seller ON l.user_id = p_seller.id
+JOIN public.profiles p_seller ON l.seller_id = p_seller.id
 JOIN public.campuses c ON l.campus_id = c.id
 WHERE l.status = 'active'
 ORDER BY 
