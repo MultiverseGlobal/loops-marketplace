@@ -27,6 +27,8 @@ export default function ProfilePage() {
     const [wishlistItems, setWishlistItems] = useState<any[]>([]);
     const [myOffers, setMyOffers] = useState<any[]>([]);
     const [receivedOffers, setReceivedOffers] = useState<any[]>([]);
+    const [myTransactions, setMyTransactions] = useState<any[]>([]);
+    const [soldTransactions, setSoldTransactions] = useState<any[]>([]);
     const searchParams = useSearchParams();
     const targetUserId = searchParams.get('u');
     const supabase = createClient();
@@ -70,6 +72,14 @@ export default function ProfilePage() {
                         .select('*, listing:listings(title, price, images, type)')
                         .eq('buyer_id', userIdToFetch)
                         .order('created_at', { ascending: false }),
+                    supabase.from('transactions')
+                        .select('*, listing:listings(title, price, images, type), seller:profiles!transactions_seller_id_fkey(full_name, avatar_url)')
+                        .eq('buyer_id', userIdToFetch)
+                        .order('created_at', { ascending: false }),
+                    supabase.from('transactions')
+                        .select('*, listing:listings(title, price, images, type), buyer:profiles!transactions_buyer_id_fkey(full_name, avatar_url)')
+                        .eq('seller_id', userIdToFetch)
+                        .order('created_at', { ascending: false }),
                 ]);
 
                 if (profileRes.data) setProfile(profileRes.data);
@@ -82,6 +92,8 @@ export default function ProfilePage() {
 
                 if (wishlistRes.data) setWishlistItems(wishlistRes.data.map((w: any) => w.listing));
                 if (myOffersRes.data) setMyOffers(myOffersRes.data);
+                if ((myOffersRes as any)[4]?.data) setMyTransactions((myOffersRes as any)[4].data);
+                if ((myOffersRes as any)[5]?.data) setSoldTransactions((myOffersRes as any)[5].data);
 
                 // Fetching received offers requires a bit more logic because of the join structure
                 const { data: recOffers } = await supabase
@@ -568,35 +580,87 @@ export default function ProfilePage() {
                                         </div>
 
                                         {listings.length > 0 ? (
-                                            <div className="grid gap-4">
-                                                {listings.map((listing) => (
-                                                    <Link
-                                                        key={listing.id}
-                                                        href={`/listings/${listing.id}`}
-                                                        className="group p-6 rounded-2xl bg-loops-subtle border border-loops-border hover:bg-white hover:border-loops-primary/30 transition-all flex items-center gap-6 shadow-sm hover:shadow-lg hover:shadow-loops-primary/5"
-                                                    >
-                                                        <div className="w-16 h-16 rounded-xl bg-white border border-loops-border overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">
-                                                            {listing.type === 'product' ? <Package className="w-8 h-8 text-loops-primary opacity-20" /> : <Zap className="w-8 h-8 text-loops-primary opacity-20" />}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-loops-primary/5 text-loops-primary uppercase tracking-widest">
-                                                                    {listing.type}
-                                                                </span>
-                                                                <span className="text-[10px] font-bold text-loops-muted uppercase tracking-tighter italic">
-                                                                    Status: {listing.status}
-                                                                </span>
+                                            <div className="grid gap-6">
+                                                {/* Active Sales Tracking */}
+                                                {soldTransactions.filter(tx => tx.status !== 'completed').length > 0 && (
+                                                    <div className="space-y-4 mb-10">
+                                                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-loops-primary px-2">Active Handoffs</h4>
+                                                        {soldTransactions.filter(tx => tx.status !== 'completed').map(tx => (
+                                                            <div key={tx.id} className="p-6 rounded-3xl bg-loops-primary border border-loops-primary/20 shadow-xl text-white group relative overflow-hidden">
+                                                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+                                                                <div className="flex items-center justify-between gap-6 relative z-10">
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center">
+                                                                            <Package className="w-6 h-6" />
+                                                                        </div>
+                                                                        <div className="space-y-0.5">
+                                                                            <div className="text-[10px] font-black uppercase tracking-widest opacity-60">Pending {tx.listing?.type} Handoff</div>
+                                                                            <div className="font-bold text-lg">{tx.listing?.title}</div>
+                                                                            <div className="text-xs font-medium opacity-80">Buyer: {tx.buyer?.full_name}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <Button
+                                                                        onClick={async () => {
+                                                                            const token = prompt("Enter verification token (8 chars) from buyer:");
+                                                                            if (token) {
+                                                                                const res = await fetch(`/api/loops/${tx.id}/verify`, {
+                                                                                    method: 'POST',
+                                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                                    body: JSON.stringify({ token })
+                                                                                });
+                                                                                const data = await res.json();
+                                                                                if (res.ok) {
+                                                                                    toast.success(data.message);
+                                                                                    setSoldTransactions(prev => prev.map(t => t.id === tx.id ? { ...t, status: 'completed' } : t));
+                                                                                    // Also update user's myTransactions if they are the buyer viewing their own profile
+                                                                                    setMyTransactions(prev => prev.map(t => t.id === tx.id ? { ...t, status: 'completed' } : t));
+                                                                                } else {
+                                                                                    toast.error(data.error);
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        className="bg-white text-loops-primary font-black uppercase tracking-widest text-[10px] px-6 h-12 rounded-xl hover:scale-105 transition-all shadow-lg"
+                                                                    >
+                                                                        Complete Loop 🤝
+                                                                    </Button>
+                                                                </div>
                                                             </div>
-                                                            <h3 className="font-bold text-xl truncate group-hover:text-loops-primary transition-colors text-loops-main tracking-tight">
-                                                                {listing.title}
-                                                            </h3>
-                                                            <div className="text-loops-success font-bold text-lg">{CURRENCY}{listing.price}</div>
-                                                        </div>
-                                                        <Button variant="ghost" size="icon" className="text-loops-muted group-hover:text-loops-primary transition-colors">
-                                                            <ExternalLink className="w-5 h-5" />
-                                                        </Button>
-                                                    </Link>
-                                                ))}
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                {/* Regular Listings */}
+                                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-loops-muted px-2">Store Inventory</h4>
+                                                <div className="grid gap-4">
+                                                    {listings.map((listing) => (
+                                                        <Link
+                                                            key={listing.id}
+                                                            href={`/listings/${listing.id}`}
+                                                            className="group p-6 rounded-2xl bg-loops-subtle border border-loops-border hover:bg-white hover:border-loops-primary/30 transition-all flex items-center gap-6 shadow-sm hover:shadow-lg hover:shadow-loops-primary/5"
+                                                        >
+                                                            <div className="w-16 h-16 rounded-xl bg-white border border-loops-border overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">
+                                                                {listing.type === 'product' ? <Package className="w-8 h-8 text-loops-primary opacity-20" /> : <Zap className="w-8 h-8 text-loops-primary opacity-20" />}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-loops-primary/5 text-loops-primary uppercase tracking-widest">
+                                                                        {listing.type}
+                                                                    </span>
+                                                                    <span className="text-[10px] font-bold text-loops-muted uppercase tracking-tighter italic">
+                                                                        Status: {listing.status}
+                                                                    </span>
+                                                                </div>
+                                                                <h3 className="font-bold text-xl truncate group-hover:text-loops-primary transition-colors text-loops-main tracking-tight">
+                                                                    {listing.title}
+                                                                </h3>
+                                                                <div className="text-loops-success font-bold text-lg">{CURRENCY}{listing.price}</div>
+                                                            </div>
+                                                            <Button variant="ghost" size="icon" className="text-loops-muted group-hover:text-loops-primary transition-colors">
+                                                                <ExternalLink className="w-5 h-5" />
+                                                            </Button>
+                                                        </Link>
+                                                    ))}
+                                                </div>
                                             </div>
                                         ) : (
                                             <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
@@ -610,17 +674,84 @@ export default function ProfilePage() {
                                     <div className="space-y-6">
                                         <div className="flex items-end justify-between">
                                             <h2 className="text-2xl font-bold font-display tracking-tight text-loops-main uppercase tracking-tighter italic">
-                                                Purchase Tracking
+                                                Active Loops ({myTransactions.length})
                                             </h2>
                                         </div>
-                                        <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
-                                            <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
-                                            <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">{getTerm('buyerName')} History</h3>
-                                            <p className="text-loops-muted mt-2">When you message sellers or buy items, they will appear here for tracking.</p>
-                                            <Link href="/browse" className="inline-block mt-4">
-                                                <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>
-                                            </Link>
-                                        </div>
+
+                                        {myTransactions.length > 0 ? (
+                                            <div className="grid gap-6">
+                                                {myTransactions.map((tx) => (
+                                                    <div key={tx.id} className="p-8 rounded-[2rem] bg-white border border-loops-border shadow-xl hover:shadow-2xl transition-all group overflow-hidden relative">
+                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-loops-primary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-loops-primary/10 transition-all" />
+
+                                                        <div className="flex flex-col md:flex-row gap-8 items-center md:items-start relative z-10">
+                                                            {/* QR Section */}
+                                                            <div className="w-48 h-48 bg-loops-subtle rounded-3xl border border-loops-border p-3 flex flex-col items-center justify-center gap-2 group-hover:border-loops-primary/30 transition-all shadow-inner">
+                                                                {tx.status === 'completed' ? (
+                                                                    <div className="flex flex-col items-center">
+                                                                        <ShieldCheck className="w-16 h-16 text-loops-success mb-2" />
+                                                                        <span className="text-[10px] font-black uppercase text-loops-success tracking-widest">Verified</span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="relative w-full aspect-square bg-white rounded-xl overflow-hidden shadow-sm">
+                                                                            <img
+                                                                                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${tx.id}|${tx.verification_token}`}
+                                                                                alt="Handshake QR"
+                                                                                className="w-full h-full p-2"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="text-[9px] font-black uppercase text-loops-primary tracking-[0.2em] animate-pulse">Scan to verify</div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="flex-1 space-y-4 text-center md:text-left">
+                                                                <div className="flex flex-wrap justify-center md:justify-start gap-2">
+                                                                    <span className={cn(
+                                                                        "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                                                        tx.status === 'completed' ? "bg-loops-success/10 text-loops-success border-loops-success/20" : "bg-loops-primary/10 text-loops-primary border-loops-primary/20"
+                                                                    )}>
+                                                                        {tx.status}
+                                                                    </span>
+                                                                    <span className="px-3 py-1 rounded-full bg-loops-subtle text-loops-muted text-[10px] font-black uppercase tracking-widest border border-loops-border">
+                                                                        {tx.listing?.type} Loop
+                                                                    </span>
+                                                                </div>
+
+                                                                <h3 className="text-2xl font-bold font-display text-loops-main tracking-tight group-hover:text-loops-primary transition-colors italic">
+                                                                    {tx.listing?.title}
+                                                                </h3>
+
+                                                                <div className="flex items-center justify-center md:justify-start gap-3">
+                                                                    <div className="w-8 h-8 rounded-full bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
+                                                                        {tx.seller?.avatar_url ? <img src={tx.seller.avatar_url} className="w-full h-full object-cover" /> : <User className="w-4 h-4 text-loops-muted" />}
+                                                                    </div>
+                                                                    <div className="text-sm font-bold text-loops-muted">
+                                                                        Purchased from <span className="text-loops-main">{tx.seller?.full_name}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <p className="text-xs text-loops-muted max-w-sm">
+                                                                    {tx.status === 'completed'
+                                                                        ? "This transaction is verified and complete. 🎓"
+                                                                        : "Show this QR code to the seller during physical handoff to verify your purchase."}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-24 rounded-3xl border border-loops-border bg-loops-subtle/50 italic">
+                                                <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
+                                                <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Active Loops</h3>
+                                                <p className="text-loops-muted mt-2">When you message sellers or buy items, they will appear here for tracking.</p>
+                                                <Link href="/browse" className="inline-block mt-4">
+                                                    <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : activeTab === 'saved' ? (
                                     <div className="space-y-6">
@@ -807,7 +938,7 @@ export default function ProfilePage() {
                         </AnimatePresence>
                     </div>
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }

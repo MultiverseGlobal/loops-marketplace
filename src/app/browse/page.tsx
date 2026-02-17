@@ -64,8 +64,10 @@ export default function MarketplacePage() {
 
             // Apply sorting
             if (sortBy === 'newest') {
-                // Priority placement: Plugs first, then newest
-                query = query.order('is_plug_priority', { ascending: false, foreignTable: 'profiles' })
+                // Priority placement: Boosted items first, then Plugs, then newest
+                query = query
+                    .order('boosted_until', { ascending: false, nullsFirst: false })
+                    .order('is_plug_priority', { ascending: false, foreignTable: 'profiles' })
                     .order('created_at', { ascending: false });
             } else if (sortBy === 'oldest') {
                 query = query.order('created_at', { ascending: true });
@@ -267,6 +269,7 @@ export default function MarketplacePage() {
                                     category={listing.category}
                                     image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
                                     author={listing.profiles}
+                                    boosted_until={listing.boosted_until}
                                     delay={idx * 0.05}
                                 />
                             ))}

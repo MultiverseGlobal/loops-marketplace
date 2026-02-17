@@ -19,9 +19,10 @@ interface ProductCardProps {
     category: string;
     delay?: number;
     author?: any;
+    boosted_until?: string | null;
 }
 
-export function ProductCard({ id, title, price, image, category, delay = 0, author }: ProductCardProps) {
+export function ProductCard({ id, title, price, image, category, delay = 0, author, boosted_until }: ProductCardProps) {
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [wishlistLoading, setWishlistLoading] = useState(false);
     const { addToCart, refreshWishlist } = useCart();
@@ -102,10 +103,16 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute top-2 left-2 md:top-4 md:left-4">
+                    <div className="absolute top-2 left-2 md:top-4 md:left-4 flex flex-col gap-2 items-start">
                         <span className="text-[8px] md:text-[10px] font-bold px-2 py-0.5 rounded-lg bg-white/95 text-loops-main backdrop-blur-md uppercase tracking-widest shadow-sm border border-loops-border/50">
                             {category}
                         </span>
+                        {boosted_until && new Date(boosted_until) > new Date() && (
+                            <div className="flex items-center gap-1.5 px-3 py-1 bg-loops-primary text-loops-main rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl animate-pulse-subtle">
+                                <Plus className="w-2.5 h-2.5 fill-current" />
+                                <span>Loop Boost</span>
+                            </div>
+                        )}
                     </div>
                     <button
                         onClick={toggleWishlist}

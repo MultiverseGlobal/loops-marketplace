@@ -10,12 +10,13 @@ import {
     Settings,
     ChevronLeft,
     ChevronRight,
-    Search
+    Search,
+    Zap
 } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-export type AdminView = 'dashboard' | 'users' | 'universities' | 'marketplace' | 'safety' | 'settings';
+export type AdminView = 'dashboard' | 'users' | 'universities' | 'marketplace' | 'safety' | 'settings' | 'onboarding';
 
 interface AdminSidebarProps {
     currentView: AdminView;
@@ -31,6 +32,7 @@ export function AdminSidebar({ currentView, onViewChange }: AdminSidebarProps) {
         { id: 'universities' as const, label: 'Universities', icon: School },
         { id: 'marketplace' as const, label: 'Marketplace', icon: ShoppingBag },
         { id: 'safety' as const, label: 'Safety Hub', icon: ShieldAlert },
+        { id: 'onboarding' as const, label: 'Blitz Kit', icon: Zap },
         { id: 'settings' as const, label: 'Settings', icon: Settings },
     ];
 

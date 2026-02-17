@@ -33,6 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/context/toast-context";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { AdminSidebar, AdminView } from "@/components/admin/sidebar";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -198,6 +199,14 @@ export default function AdminDashboard() {
         checkAdmin();
     }, [supabase, router]);
 
+    const handleViewChange = (view: AdminView) => {
+        if (view === 'onboarding') {
+            router.push('/admin/onboarding-kit');
+            return;
+        }
+        setCurrentView(view);
+    };
+
     // Empire Management Helper Functions
     const handleApplicationAction = async (app: any, action: 'approved' | 'rejected', reason?: string) => {
         setProcessingId(app.id);
@@ -274,6 +283,47 @@ export default function AdminDashboard() {
 
     const DashboardView = () => (
         <div className="space-y-12">
+            {/* Grand Launch Pad */}
+            <div className="bg-loops-main rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl border border-white/10 group">
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
+                    <div className="space-y-4 max-w-xl">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-loops-primary rounded-2xl flex items-center justify-center text-loops-main shadow-lg shadow-loops-primary/20 group-hover:scale-110 transition-transform">
+                                <Zap className="w-6 h-6 fill-current" />
+                            </div>
+                            <span className="px-3 py-1 bg-white/10 backdrop-blur rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">Active Campaign</span>
+                        </div>
+                        <h2 className="text-4xl font-black italic tracking-tighter leading-tight">Bring the 10 Nodes Online.</h2>
+                        <p className="text-white/60 font-medium text-base">We've seeded the infrastructure. Now use the **Blitz Kit** to recruit your first 500 Plugs. High-conversion scripts and asset packs ready.</p>
+                        <div className="pt-2 flex gap-4">
+                            <Link href="/admin/onboarding-kit">
+                                <Button className="bg-loops-primary text-loops-main font-black uppercase tracking-widest text-xs px-8 h-12 rounded-2xl hover:scale-105 transition-all">Open Blitz Kit 🚀</Button>
+                            </Link>
+                            <Button variant="ghost" className="text-white/60 hover:text-white font-bold text-xs uppercase tracking-widest px-6 h-12 rounded-2xl border border-white/5 hover:bg-white/5">View Node Stats</Button>
+                        </div>
+                    </div>
+
+                    <div className="relative w-full md:w-64 aspect-square flex items-center justify-center">
+                        <div className="absolute inset-0 bg-loops-primary/20 rounded-full blur-[80px]" />
+                        <div className="relative z-10 grid grid-cols-2 gap-3 w-full">
+                            <div className="p-4 bg-white/5 backdrop-blur rounded-2xl border border-white/10 text-center">
+                                <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mb-1">Target</p>
+                                <p className="text-2xl font-black text-white italic">10</p>
+                            </div>
+                            <div className="p-4 bg-loops-primary rounded-2xl border border-white/10 text-center">
+                                <p className="text-[8px] font-black uppercase tracking-widest text-loops-main/40 mb-1">Live</p>
+                                <p className="text-2xl font-black text-loops-main italic">{campuses.length}</p>
+                            </div>
+                            <div className="col-span-2 p-4 bg-white/5 backdrop-blur rounded-2xl border border-white/10 text-center">
+                                <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mb-1">Recruitment Link Clicked</p>
+                                <p className="text-xl font-black text-white italic">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-loops-primary/10 rounded-full blur-[100px]" />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <StatCard
                     icon={Users}
@@ -1212,7 +1262,7 @@ export default function AdminDashboard() {
 
     return (
         <div className="min-h-screen bg-loops-bg text-loops-main flex">
-            <AdminSidebar currentView={currentView} onViewChange={setCurrentView} />
+            <AdminSidebar currentView={currentView} onViewChange={handleViewChange} />
 
             <main className="flex-1 ml-[280px] p-12 overflow-y-auto">
                 <header className="mb-12 flex items-center justify-between">
@@ -1303,6 +1353,33 @@ export default function AdminDashboard() {
                                             <div className="flex items-center justify-between pt-4 border-t border-loops-border mt-auto">
                                                 <span className="font-black text-xl italic text-loops-main">₦{item.price?.toLocaleString()}</span>
                                                 <div className="flex gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className={cn(
+                                                            "h-9 px-3 rounded-lg flex items-center gap-2 font-black uppercase text-[10px] tracking-widest transition-all",
+                                                            item.boosted_until && new Date(item.boosted_until) > new Date()
+                                                                ? "bg-loops-primary text-loops-main border-loops-primary"
+                                                                : "bg-loops-subtle text-loops-muted border-loops-border hover:bg-loops-primary hover:text-loops-main hover:border-loops-primary"
+                                                        )}
+                                                        onClick={async () => {
+                                                            const isCurrentlyBoosted = item.boosted_until && new Date(item.boosted_until) > new Date();
+                                                            const newDate = isCurrentlyBoosted ? null : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+                                                            const { error } = await supabase
+                                                                .from('listings')
+                                                                .update({ boosted_until: newDate })
+                                                                .eq('id', item.id);
+
+                                                            if (!error) {
+                                                                setAllListings(prev => prev.map(l => l.id === item.id ? { ...l, boosted_until: newDate } : l));
+                                                                toast.success(isCurrentlyBoosted ? "Boost Removed" : "Loop Boost Activated! ⚡");
+                                                            }
+                                                        }}
+                                                    >
+                                                        <Zap className={cn("w-3.5 h-3.5", item.boosted_until && new Date(item.boosted_until) > new Date() ? "fill-current" : "")} />
+                                                        {item.boosted_until && new Date(item.boosted_until) > new Date() ? "Boosted" : "Boost"}
+                                                    </Button>
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
