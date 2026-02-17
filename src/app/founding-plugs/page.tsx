@@ -19,6 +19,8 @@ export default function FoundingPlugsCarousel() {
     const [direction, setDirection] = useState(0);
     const [submitting, setSubmitting] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
+    const [joinedCount, setJoinedCount] = useState<number>(0);
+
 
     // Form State
     const [formData, setFormData] = useState({
@@ -33,8 +35,10 @@ export default function FoundingPlugsCarousel() {
         storeCategory: "",
         storeLogoUrl: "",
         brandingTier: 'founding' as 'basic' | 'founding' | 'premium',
-        estimatedItemCount: ""
+        estimatedItemCount: "",
+        referralCode: ""
     });
+
 
     const supabase = createClient();
     const toast = useToast();
@@ -53,6 +57,42 @@ export default function FoundingPlugsCarousel() {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
+    useEffect(() => {
+        const fetchJoinedCount = async () => {
+            const { count, error } = await supabase
+                .from('seller_applications')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'approved');
+
+            if (!error && count !== null) {
+                setJoinedCount(count);
+            }
+        };
+
+        fetchJoinedCount();
+
+        // Subscribe to real-time updates
+        const channel = supabase
+            .channel('joined-plugs-count')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'seller_applications'
+                },
+                () => {
+                    fetchJoinedCount();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
+
+
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
@@ -70,8 +110,10 @@ export default function FoundingPlugsCarousel() {
                     store_banner_color: formData.storeBannerColor,
                     store_category: formData.storeCategory || (formData.offeringType === 'product' ? 'General Goods' : 'Campus Services'),
                     store_logo_url: formData.storeLogoUrl,
-                    motivation: `Intent: ${formData.intent} | Tier: ${formData.brandingTier}`
+                    motivation: `Intent: ${formData.intent} | Tier: ${formData.brandingTier}`,
+                    referred_by_code: formData.referralCode || null
                 });
+
 
             if (error) throw error;
 
@@ -116,6 +158,17 @@ export default function FoundingPlugsCarousel() {
                         >
                             Veritas University is about to change. We're looking for the first 50 students to shape the future of campus commerce.
                         </motion.p>
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="inline-flex items-center gap-2 px-6 py-2 bg-loops-primary/10 border border-loops-primary/20 rounded-full mt-4"
+                        >
+                            <Users className="w-4 h-4 text-loops-primary" />
+                            <span className="text-sm font-black italic uppercase tracking-widest text-loops-primary">
+                                {joinedCount}/50 Plugs Joined
+                            </span>
+                        </motion.div>
                     </div>
 
                     <Button
@@ -216,6 +269,16 @@ export default function FoundingPlugsCarousel() {
                                 value={formData.email}
                                 onChange={(e) => handleFormChange('email', e.target.value)}
                                 placeholder="student@university.edu"
+                                className="w-full p-4 sm:p-6 text-lg sm:text-xl font-bold bg-white border border-loops-border rounded-2xl sm:rounded-3xl focus:border-loops-primary outline-none transition-all"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-2">Referral Code (Optional)</label>
+                            <input
+                                type="text"
+                                value={formData.referralCode}
+                                onChange={(e) => handleFormChange('referralCode', e.target.value)}
+                                placeholder="Enter Referral Code"
                                 className="w-full p-4 sm:p-6 text-lg sm:text-xl font-bold bg-white border border-loops-border rounded-2xl sm:rounded-3xl focus:border-loops-primary outline-none transition-all"
                             />
                         </div>

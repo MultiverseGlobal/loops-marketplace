@@ -42,7 +42,9 @@ export default function ProfilePage() {
     const [reviewComment, setReviewComment] = useState("");
     const [submittingReview, setSubmittingReview] = useState(false);
     const [reviews, setReviews] = useState<any[]>([]);
+    const [isStandalone, setIsStandalone] = useState(false);
     const router = useRouter();
+
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -103,8 +105,15 @@ export default function ProfilePage() {
             }
             setLoading(false);
         };
+        // Check if app is running in standalone mode (installed PWA)
+        if (typeof window !== 'undefined') {
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+            setIsStandalone(!!isPWA);
+        }
+
         fetchProfile();
     }, [supabase, targetUserId]);
+
 
     const handleFollowToggle = async () => {
         if (!user) {
@@ -302,7 +311,8 @@ export default function ProfilePage() {
                                     <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Following</div>
                                 </div>
 
-                                {(!targetUserId || targetUserId === user?.id) && (
+                                {(!targetUserId || targetUserId === user?.id) && !isStandalone && (
+
                                     <button
                                         onClick={() => window.dispatchEvent(new CustomEvent('show-pwa-install'))}
                                         className="w-full p-6 rounded-3xl bg-loops-primary text-white space-y-3 relative overflow-hidden group hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-loops-primary/20 text-left"
