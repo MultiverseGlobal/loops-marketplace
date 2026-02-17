@@ -906,15 +906,15 @@ export default function AdminDashboard() {
                                                     <div className="grid grid-cols-2 gap-3">
                                                         <button
                                                             onClick={() => {
-                                                                const launchDate = new Date('2026-10-05');
+                                                                const launchDate = new Date('2026-03-01');
                                                                 const today = new Date();
                                                                 const daysUntil = Math.ceil((launchDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                                                                setBroadcastMessage(`🚀 Hey {name}!\n\nYour campus store is officially in the works! We're building something legendary for you.\n\n⏰ GRAND LAUNCH: October 5, 2026 (${daysUntil} days to go!)\n\nGet ready to Loop like never before. Your marketplace. Your rules. 🔥\n\n- The Loops Team`);
+                                                                setBroadcastMessage(`🚀 Hey {name}!\n\nYour campus store is ALMOST READY! We're launching at the start of second semester.\n\n⏰ GRAND LAUNCH: March 1, 2026 (${daysUntil} days to go!)\n\nGet ready to Loop like never before. Your marketplace. Your rules. 🔥\n\n- The Loops Team`);
                                                             }}
                                                             className="p-4 rounded-2xl bg-gradient-to-br from-loops-primary/10 to-loops-primary/5 border border-loops-primary/20 hover:border-loops-primary/40 transition-all text-left group"
                                                         >
                                                             <div className="text-[10px] font-black uppercase tracking-widest text-loops-primary mb-1">🚀 Launch Countdown</div>
-                                                            <div className="text-xs text-loops-muted font-medium">Oct 5 launch with days counter</div>
+                                                            <div className="text-xs text-loops-muted font-medium">March 1 launch with days counter</div>
                                                         </button>
                                                         <button
                                                             onClick={() => setBroadcastMessage(`Hi {name} 👋\n\nWelcome to the Founding Plugs club! You're one of the first vendors on campus.\n\nWe'll be in touch soon with exclusive early access and setup instructions.\n\nStay Looped! ⚡`)}
