@@ -1,11 +1,11 @@
 -- DATA INTEGRITY FIX: Sync Approved Plugs with Profiles in Real-time
 
--- 1. Backfill user_id in seller_applications using email matching
+-- 1. Backfill user_id in seller_applications using email matching (via auth.users)
 UPDATE public.seller_applications sa
-SET user_id = p.id
-FROM public.profiles p
+SET user_id = au.id
+FROM auth.users au
 WHERE sa.user_id IS NULL
-  AND sa.campus_email = p.email;
+  AND sa.campus_email = au.email;
 
 -- 2. Force-update Profile Status for ALL Approved Applications that have a user_id
 --    This ensures that even if the API failed to update the profile earlier, it gets fixed now.
