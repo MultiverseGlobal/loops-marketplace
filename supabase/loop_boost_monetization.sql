@@ -6,7 +6,7 @@ ALTER TABLE public.listings
 ADD COLUMN IF NOT EXISTS boosted_until TIMESTAMPTZ DEFAULT NULL;
 
 -- 2. Index for performance on the Feed / Buzz
-CREATE INDEX IF NOT EXISTS idx_listings_boosted_until ON public.listings (boosted_until) WHERE boosted_until > now();
+CREATE INDEX IF NOT EXISTS idx_listings_boosted_until ON public.listings (boosted_until);
 
 -- 3. Update the Activity Buzz View to prioritize boosted items
 -- We'll recreate the view to include the boost priority
