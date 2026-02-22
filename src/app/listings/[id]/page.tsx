@@ -95,7 +95,7 @@ export default function ListingDetailPage() {
 
     const handleStartLoop = async () => {
         if (!currentUser) {
-            router.push('/login');
+            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
             return;
         }
 
@@ -162,7 +162,7 @@ export default function ListingDetailPage() {
     const handleWhatsApp = async () => {
         setIsInteracting(true);
         if (!currentUser) {
-            router.push('/login');
+            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
             return;
         }
 
@@ -202,7 +202,7 @@ export default function ListingDetailPage() {
     const handleInteraction = async () => {
         setIsInteracting(true);
         if (!currentUser) {
-            router.push('/login');
+            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
             return;
         }
 
@@ -289,7 +289,7 @@ export default function ListingDetailPage() {
 
     const handleReport = async () => {
         if (!currentUser) {
-            router.push('/login');
+            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
             return;
         }
 
@@ -320,7 +320,7 @@ export default function ListingDetailPage() {
 
     const handleMakeOffer = async () => {
         if (!currentUser) {
-            router.push('/login');
+            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
             return;
         }
 
@@ -357,7 +357,7 @@ export default function ListingDetailPage() {
 
     const handleFollow = async () => {
         if (!currentUser) {
-            router.push('/login');
+            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
             return;
         }
 

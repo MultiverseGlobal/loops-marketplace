@@ -129,7 +129,7 @@ export default function MarketplacePage() {
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
 
-            {hasUser && (
+            {hasUser && userEmail && (
                 <div className="pt-4 md:pt-20">
                     <VerificationBanner email={userEmail} isVerified={isVerified} />
                 </div>
