@@ -237,11 +237,11 @@ export default function AdminDashboard() {
                     supabase.from('reports').select('*', { count: 'exact', head: true })
                 ]);
 
-                // 2. Applications
-                const { data: pendingApplications } = await supabase
+                // 2. Applications (Fetch both pending and approved for history)
+                const { data: allApplications } = await supabase
                     .from('seller_applications')
                     .select('*')
-                    .eq('status', 'pending')
+                    .in('status', ['pending', 'approved'])
                     .order('created_at', { ascending: false });
 
                 // 3. Analytics
@@ -280,9 +280,9 @@ export default function AdminDashboard() {
                     products: products.count || 0,
                     services: servicesCount.count || 0,
                     reports: reportsCount.count || 0,
-                    pendingApps: pendingApplications?.length || 0
+                    pendingApps: allApplications?.filter(a => a.status === 'pending').length || 0
                 });
-                setApplications(pendingApplications || []);
+                setApplications(allApplications || []);
                 setAnalytics(analyticsData);
                 setCampuses(campusesData.data || []);
                 setCampusRequests(requestsData.data || []);
@@ -329,7 +329,7 @@ export default function AdminDashboard() {
                 toast.success("Plug Approved! 🔌");
             }
 
-            setApplications((prev: any[]) => prev.filter(a => a.id !== app.id));
+            setApplications((prev: any[]) => prev.map(a => a.id === app.id ? { ...a, status: action } : a));
             toast.success(`Application ${action}`);
         } catch (err: any) {
             toast.error("Action failed");
@@ -510,10 +510,16 @@ export default function AdminDashboard() {
 
     const UserView = () => {
         const [showUserManager, setShowUserManager] = useState(false);
-        const [applicationSubTab, setApplicationSubTab] = useState<'product' | 'service' | 'review'>('product');
+        const [applicationSubTab, setApplicationSubTab] = useState<'product' | 'service' | 'review' | 'approved'>('product');
 
         // Filter applications based on tab
         const tabFilteredApps = applications.filter(a => {
+            if (applicationSubTab === 'approved') {
+                return a.status === 'approved';
+            }
+            // For other tabs, only show pending
+            if (a.status !== 'pending') return false;
+
             if (applicationSubTab === 'review') {
                 return a.offering_type !== 'product' && a.offering_type !== 'service';
             }
@@ -583,7 +589,7 @@ export default function AdminDashboard() {
                     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {/* Sub-tabs for Applications */}
                         <div className="flex gap-2 p-1.5 bg-loops-subtle rounded-2xl border border-loops-border w-fit">
-                            {(['product', 'service', 'review'] as const).map((tab) => (
+                            {(['product', 'service', 'review', 'approved'] as const).map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setApplicationSubTab(tab)}
@@ -592,7 +598,7 @@ export default function AdminDashboard() {
                                         applicationSubTab === tab ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted hover:text-loops-main"
                                     )}
                                 >
-                                    {tab}s
+                                    {tab === 'approved' ? 'Approval History 👑' : `${tab}s`}
                                 </button>
                             ))}
                         </div>
