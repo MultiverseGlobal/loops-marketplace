@@ -47,6 +47,7 @@ interface AdminProfile {
     reputation: number;
     avatar_url?: string | null;
     created_at: string;
+    referral_code?: string | null;
 }
 
 export default function AdminDashboard() {
