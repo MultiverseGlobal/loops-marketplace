@@ -45,6 +45,8 @@ export default function ProfilePage() {
     const [submittingReview, setSubmittingReview] = useState(false);
     const [reviews, setReviews] = useState<any[]>([]);
     const [isStandalone, setIsStandalone] = useState(false);
+    const [referralCount, setReferralCount] = useState(0);
+    const [referralCopied, setReferralCopied] = useState(false);
     const router = useRouter();
 
 
@@ -113,6 +115,16 @@ export default function ProfilePage() {
                 // Set default tab only for the owner
                 if (!targetUserId && profileRes.data?.primary_role) {
                     setActiveTab(profileRes.data.primary_role as 'selling' | 'buying');
+                }
+
+                // Fetch referral count for the owner
+                if (!targetUserId && profileRes.data?.referral_code) {
+                    const { count } = await supabase
+                        .from('seller_applications')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('referred_by_code', profileRes.data.referral_code)
+                        .eq('status', 'approved');
+                    setReferralCount(count || 0);
                 }
             }
             setLoading(false);
@@ -451,19 +463,91 @@ export default function ProfilePage() {
                             )}
 
                             {user?.id === profile?.id && (profile?.is_plug || profile?.primary_role === 'plug') && (
-                                <div className="pt-6 border-t border-loops-border">
+                                <div className="space-y-6 pt-6 border-t border-loops-border">
+                                    {/* Launch Readiness Card */}
+                                    <div className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-xs font-black uppercase tracking-widest text-loops-main italic">Launch Readiness</h3>
+                                            <span className={cn(
+                                                "text-[9px] font-black uppercase px-2 py-0.5 rounded-full border",
+                                                listings.length >= 3 ? "bg-loops-success/10 text-loops-success border-loops-success/20" : "bg-loops-primary/10 text-loops-primary border-loops-primary/20"
+                                            )}>
+                                                {listings.length >= 3 ? 'Ready for Launch' : 'Initializing...'}
+                                            </span>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between text-[10px] font-bold">
+                                                <span className="text-loops-muted">Inventory Depth</span>
+                                                <span className={listings.length >= 3 ? "text-loops-success" : "text-loops-primary"}>{listings.length}/3 Items</span>
+                                            </div>
+                                            <div className="h-1.5 w-full bg-loops-subtle rounded-full overflow-hidden">
+                                                <motion.div
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${Math.min((listings.length / 3) * 100, 100)}%` }}
+                                                    className={cn("h-full transition-all", listings.length >= 3 ? "bg-loops-success" : "bg-loops-primary")}
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-1 gap-2 pt-2">
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
+                                                    <CheckCircle className={cn("w-3.5 h-3.5", profile?.is_verified ? "text-loops-success" : "text-loops-border")} />
+                                                    <span>Account Verified</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
+                                                    <CheckCircle className={cn("w-3.5 h-3.5", listings.length >= 3 ? "text-loops-success" : "text-loops-border")} />
+                                                    <span>Minimum 3 Listings</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
+                                                    <CheckCircle className={cn("w-3.5 h-3.5", profile?.store_name ? "text-loops-success" : "text-loops-border")} />
+                                                    <span>Storefront Branded</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Referral Card */}
+                                    <div className="p-6 rounded-3xl bg-loops-main text-white space-y-4 relative overflow-hidden shadow-xl">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
+                                        <div className="relative z-10 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Users className="w-4 h-4 text-loops-primary" />
+                                                <h3 className="text-xs font-black uppercase tracking-widest italic">Growth Engine</h3>
+                                            </div>
+                                            <div className="text-[10px] font-black">{referralCount} Joined</div>
+                                        </div>
+
+                                        <div className="relative z-10 space-y-3">
+                                            <p className="text-[10px] text-white/60 font-medium leading-relaxed">Refer 3 other quality vendors to earn a <span className="text-white font-bold">Founding Legend</span> badge.</p>
+
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex-1 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-3 font-mono text-xs font-bold tracking-widest">
+                                                    {profile?.referral_code || '------'}
+                                                </div>
+                                                <Button
+                                                    size="icon"
+                                                    className={cn("h-11 w-11 rounded-xl transition-all", referralCopied ? "bg-loops-success" : "bg-white text-loops-main")}
+                                                    onClick={() => {
+                                                        const link = `https://loops-marketplace.vercel.app/founding-plugs?ref=${profile.referral_code}`;
+                                                        navigator.clipboard.writeText(link);
+                                                        setReferralCopied(true);
+                                                        toast.success("Ready to send! 🔗");
+                                                        setTimeout(() => setReferralCopied(false), 2000);
+                                                    }}
+                                                >
+                                                    {referralCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <button
                                         disabled
                                         className="w-full bg-gradient-to-r from-loops-primary/10 to-loops-secondary/10 text-loops-primary border-2 border-dashed border-loops-primary/30 h-12 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[10px] relative overflow-hidden group cursor-not-allowed"
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-r from-loops-primary/5 to-loops-secondary/5 animate-pulse" />
                                         <Sparkles className="w-4 h-4 relative z-10" />
-                                        <span className="relative z-10">LoopBot AI - Coming Soon</span>
+                                        <span className="relative z-10">LoopBot AI - Tuning...</span>
                                     </button>
-                                    <div className="mt-3 p-3 bg-loops-primary/5 rounded-xl border border-loops-primary/10">
-                                        <p className="text-[9px] text-loops-primary font-black uppercase tracking-[0.1em] mb-1">🚀 What's LoopBot?</p>
-                                        <p className="text-[9px] text-loops-muted leading-tight">An AI assistant that lets you create listings, check karma, and manage your store via WhatsApp. Stay tuned!</p>
-                                    </div>
                                 </div>
                             )}
                         </div>

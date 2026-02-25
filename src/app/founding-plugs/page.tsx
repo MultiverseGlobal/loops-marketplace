@@ -53,7 +53,7 @@ export default function FoundingPlugsCarousel() {
         storeLogoUrl: "",
         brandingTier: 'founding' as 'basic' | 'founding' | 'premium',
         estimatedItemCount: "",
-        referralCode: ""
+        referralCode: searchParams.get('ref') || ""
     });
 
 
