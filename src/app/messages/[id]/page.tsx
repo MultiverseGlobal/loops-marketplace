@@ -153,6 +153,15 @@ export default function ChatPage() {
                     if (prev.some(m => m.id === msgData.id)) return prev;
                     return [...prev, msgData];
                 });
+
+                // Trigger Notification for Receiver
+                await supabase.from('notifications').insert({
+                    user_id: otherUser.id,
+                    title: `New Message from ${currentUser.full_name || 'Anonymous'}`,
+                    message: newMessage.trim().substring(0, 50) + (newMessage.trim().length > 50 ? '...' : ''),
+                    type: 'message',
+                    link: `/messages/${listingId}?u=${currentUser.id === listing.seller_id ? otherUser.id : currentUser.id}`
+                });
             }
         } else {
             toast.error(`Send failed: ${error.message}`);

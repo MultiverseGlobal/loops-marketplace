@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart } from "lucide-react";
+import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart, Bell } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useCampus } from "@/context/campus-context";
 import { useCart } from "@/context/cart-context";
+import { useToast } from "@/context/toast-context";
 import { CartDrawer } from "./cart-drawer";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
@@ -24,31 +25,79 @@ export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
     const supabase = createClient();
     const router = useRouter();
     const { campus, getTerm } = useCampus();
+    const toast = useToast();
 
     useEffect(() => {
         const getUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
             if (user) {
+                // Fetch Profile
                 const { data } = await supabase
                     .from('profiles')
-                    .select('avatar_url, full_name')
+                    .select('avatar_url, full_name, is_admin')
                     .eq('id', user.id)
                     .single();
                 setProfile(data);
+
+                // Fetch Notifications
+                const { data: notifs } = await supabase
+                    .from('notifications')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (notifs) {
+                    setNotifications(notifs);
+                    setUnreadCount(notifs.filter(n => !n.read).length);
+                }
+
+                // Subscribe to Real-time Notifications
+                const channel = supabase
+                    .channel(`user-notifications-${user.id}`)
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: 'INSERT',
+                            schema: 'public',
+                            table: 'notifications',
+                            filter: `user_id=eq.${user.id}`
+                        },
+                        (payload) => {
+                            const newNotif = payload.new;
+                            setNotifications(prev => [newNotif, ...prev]);
+                            setUnreadCount(prev => prev + 1);
+
+                            // Show Toast
+                            toast.success(`${newNotif.title}: ${newNotif.message}`);
+                        }
+                    )
+                    .subscribe();
+
+                return () => {
+                    supabase.removeChannel(channel);
+                };
             }
         };
         getUser();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
+            if (!session?.user) {
+                setProfile(null);
+                setNotifications([]);
+                setUnreadCount(0);
+            }
         });
 
         return () => subscription.unsubscribe();
-    }, [supabase.auth]);
+    }, [supabase, toast]);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -160,6 +209,22 @@ export function Navbar() {
                                     <Heart className="w-5 h-5" />
                                     {wishlistCount > 0 && (
                                         <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white" />
+                                    )}
+                                </Button>
+                            </Link>
+
+                            <Link href="/messages">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
+                                    title="Notifications"
+                                >
+                                    <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary animate-pulse")} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in">
+                                            {unreadCount}
+                                        </span>
                                     )}
                                 </Button>
                             </Link>

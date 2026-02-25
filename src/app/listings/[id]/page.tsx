@@ -344,6 +344,15 @@ export default function ListingDetailPage() {
 
             if (error) throw error;
 
+            // Trigger Notification for Seller
+            await supabase.from('notifications').insert({
+                user_id: listing.seller_id,
+                title: "New Offer! 🤝",
+                message: `${currentUser.full_name || 'Someone'} made an offer of ₦${offerAmount} for ${listing.title}`,
+                type: 'offer',
+                link: `/messages/${id}?u=${currentUser.id}`
+            });
+
             toast.success("Offer sent! The seller will be notified. 🤝");
             setOfferModalOpen(false);
             setOfferAmount("");
