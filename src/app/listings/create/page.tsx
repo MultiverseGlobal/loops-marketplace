@@ -97,7 +97,7 @@ export default function CreateListingPage() {
             }
             if (!error) {
                 toast.success("Listing created! Your Item is now live in the Loop.");
-                router.push('/browse');
+                router.push(`/browse?view=${type}`);
             } else {
                 throw error;
             }

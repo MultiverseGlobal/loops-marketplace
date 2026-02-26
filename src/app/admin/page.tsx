@@ -190,6 +190,22 @@ export default function AdminDashboard() {
 
             if (!res.ok) throw new Error('Broadcast failed');
 
+            // --- Notification Blast Integration ---
+            const notificationEntries = recipients
+                .filter(r => r.id && r.type === 'Plug') // Only notify registered users
+                .map(r => ({
+                    user_id: r.id,
+                    title: "Admin Announcement 📣",
+                    message: broadcastMessage,
+                    type: 'system',
+                    link: '/dashboard'
+                }));
+
+            if (notificationEntries.length > 0) {
+                await supabase.from('notifications').insert(notificationEntries);
+            }
+            // --------------------------------------
+
             toast.success(`Broadcast sent to ${targetIds.length} recipients! 📣`);
             setSelectedApps([]);
             setSelectedUsers([]);
@@ -331,6 +347,17 @@ export default function AdminDashboard() {
 
             if (action === 'approved' && app.user_id) {
                 await supabase.from('profiles').update({ is_plug: true, reputation: 100 }).eq('id', app.user_id);
+
+                // --- Plug Approval Notification ---
+                await supabase.from('notifications').insert({
+                    user_id: app.user_id,
+                    title: "Status Update: Approved! 👑",
+                    message: `Welcome to the elite Founding ${stats.foundingPlugs + 1}. Your store "${app.store_name}" is now live!`,
+                    type: 'referral',
+                    link: '/profile'
+                });
+                // ----------------------------------
+
                 toast.success("Plug Approved! 🔌");
             }
 

@@ -12,6 +12,7 @@ import { useCampus } from "@/context/campus-context";
 import { useCart } from "@/context/cart-context";
 import { useToast } from "@/context/toast-context";
 import { CartDrawer } from "./cart-drawer";
+import { cn } from "@/lib/utils";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (

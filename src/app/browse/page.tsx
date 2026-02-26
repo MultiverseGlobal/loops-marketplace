@@ -66,8 +66,8 @@ export default function MarketplacePage() {
             if (sortBy === 'newest') {
                 // Priority placement: Boosted items first, then Plugs, then newest
                 query = query
-                    .order('boosted_until', { ascending: false, nullsFirst: false })
-                    .order('is_plug_priority', { ascending: false, foreignTable: 'profiles' })
+                    .order('boosted_until', { ascending: false })
+                    .order('is_plug', { ascending: false, referencedTable: 'profiles' })
                     .order('created_at', { ascending: false });
             } else if (sortBy === 'oldest') {
                 query = query.order('created_at', { ascending: true });
@@ -98,9 +98,18 @@ export default function MarketplacePage() {
                 query = query.lte('price', parseFloat(maxPrice));
             }
 
-            const { data } = await query;
+            console.log("Feed Query Debug:", { campusId, activeType, sortBy });
 
-            if (data) setListings(data);
+            const { data, error } = await query;
+
+            if (error) {
+                console.error("Marketplace Fetch Error:", error);
+                setListings([]);
+            } else {
+                console.log("Feed Data Success:", data?.length, "items found.");
+                setListings(data || []);
+            }
+
             setLoading(false);
         };
 

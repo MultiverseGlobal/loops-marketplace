@@ -79,15 +79,15 @@ export function ActivityBuzz() {
                             </span>
                             <div className="flex items-center gap-1.5">
                                 <span className="font-bold text-loops-primary">
-                                    {current.buyer_name?.split(' ')[0]}
+                                    {(current as any).buyer_name?.split(' ')[0] || (current as any).seller_name?.split(' ')[0] || 'Someone'}
                                 </span>
                                 <span className="text-loops-muted italic">secured</span>
                                 <span className="font-bold underline decoration-loops-primary/30 decoration-2 underline-offset-2">
-                                    {current.listing_title}
+                                    {(current as any).listing_title || (current as any).title || 'something'}
                                 </span>
                                 <span className="text-loops-muted italic">from</span>
                                 <span className="font-bold">
-                                    {current.seller_name?.split(' ')[0]}
+                                    {(current as any).seller_name?.split(' ')[0] || 'Peer'}
                                 </span>
                             </div>
                         </motion.div>

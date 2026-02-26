@@ -1,0 +1,85 @@
+--- Latest Listings ---
+[
+  {
+    "id": "4badf71d-2ec5-4e61-b87a-9e26eb4d4143",
+    "title": "iphone (testt)",
+    "status": "active",
+    "type": "product",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "seller_id": "6a0bd9c8-0511-4a04-9fd4-570fd1d0c93a",
+    "created_at": "2026-02-25T12:11:28.233192+00:00"
+  },
+  {
+    "id": "6b21c32d-fc9f-4935-ad4d-d9722761f258",
+    "title": "book ",
+    "status": "active",
+    "type": "product",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "seller_id": "6a0bd9c8-0511-4a04-9fd4-570fd1d0c93a",
+    "created_at": "2026-01-16T08:16:38.274555+00:00"
+  }
+]
+
+--- Profiles with Campus ID ---
+[
+  {
+    "id": "6a0bd9c8-0511-4a04-9fd4-570fd1d0c93a",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "full_name": "Theoonim",
+    "email_verified": true
+  },
+  {
+    "id": "ac41ec03-ff32-44e4-ad39-939ba32154df",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "full_name": "zolla ",
+    "email_verified": true
+  },
+  {
+    "id": "304a636a-8513-40c0-a609-0a3d041d8f89",
+    "campus_id": null,
+    "full_name": "Ben ABAh",
+    "email_verified": true
+  },
+  {
+    "id": "f56d7882-a2e7-4a23-ad52-3f0fda60186b",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "full_name": "Ben Abah",
+    "email_verified": true
+  },
+  {
+    "id": "e949c2f7-2a59-4ab7-a7d5-b919ca80ea4d",
+    "campus_id": null,
+    "full_name": "Ben Abah",
+    "email_verified": true
+  },
+  {
+    "id": "6331281d-28e3-43da-a4ce-ef76860e5c1a",
+    "campus_id": "e56934ee-eca9-4582-a258-b5475b76edef",
+    "full_name": "Blessed",
+    "email_verified": true
+  },
+  {
+    "id": "4ea9b241-bbc4-49bf-b30b-2ecb97bc4741",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "full_name": "Peniel Haruna",
+    "email_verified": true
+  },
+  {
+    "id": "c76dd175-a01f-43af-9f55-2ffb7c245c0b",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "full_name": "zolla haruyna",
+    "email_verified": true
+  },
+  {
+    "id": "ddd4c811-6a00-43b8-97ea-2ce009535864",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "full_name": "Benjamin ",
+    "email_verified": true
+  },
+  {
+    "id": "bcdfb395-9300-45d0-8d35-124a39d0e77f",
+    "campus_id": "00000000-0000-0000-0000-000000000001",
+    "full_name": "likey",
+    "email_verified": false
+  }
+]

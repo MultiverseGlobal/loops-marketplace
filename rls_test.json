@@ -1,0 +1,51 @@
+{
+  "data": [
+    {
+      "id": "6b21c32d-fc9f-4935-ad4d-d9722761f258",
+      "seller_id": "6a0bd9c8-0511-4a04-9fd4-570fd1d0c93a",
+      "campus_id": "00000000-0000-0000-0000-000000000001",
+      "category": "books",
+      "title": "book ",
+      "description": "as",
+      "price": 12,
+      "images": [
+        "https://auoyugxdgvvgwrldgudx.supabase.co/storage/v1/object/public/listings/6a0bd9c8-0511-4a04-9fd4-570fd1d0c93a/1768551397392-nigspad.jpeg"
+      ],
+      "status": "active",
+      "type": "product",
+      "created_at": "2026-01-16T08:16:38.274555+00:00",
+      "updated_at": "2026-01-16T08:16:38.274555+00:00",
+      "pickup_location": null,
+      "likes_count": 0,
+      "boosted_until": null,
+      "availability": null,
+      "meetup_locations": [],
+      "condition": null
+    },
+    {
+      "id": "4badf71d-2ec5-4e61-b87a-9e26eb4d4143",
+      "seller_id": "6a0bd9c8-0511-4a04-9fd4-570fd1d0c93a",
+      "campus_id": "00000000-0000-0000-0000-000000000001",
+      "category": "electronics",
+      "title": "iphone (testt)",
+      "description": "a new phione",
+      "price": 12222222,
+      "images": [
+        "https://auoyugxdgvvgwrldgudx.supabase.co/storage/v1/object/public/listings/6a0bd9c8-0511-4a04-9fd4-570fd1d0c93a/1772020727443-xmpb3.jpg"
+      ],
+      "status": "active",
+      "type": "product",
+      "created_at": "2026-02-25T12:11:28.233192+00:00",
+      "updated_at": "2026-02-25T12:11:28.233192+00:00",
+      "pickup_location": "",
+      "likes_count": 0,
+      "boosted_until": null,
+      "availability": null,
+      "meetup_locations": [
+        "Main Library"
+      ],
+      "condition": "New"
+    }
+  ],
+  "error": null
+}
