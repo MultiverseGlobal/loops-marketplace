@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { Check, ChevronRight, School, User, Sparkles, ShieldCheck, Search, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/context/toast-context";
@@ -91,6 +92,7 @@ export default function OnboardingPage() {
     const [requestLoading, setRequestLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [matricNumber, setMatricNumber] = useState("");
+    const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
 
     const filteredCampuses = campuses.filter(c =>
         c.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -708,7 +710,7 @@ export default function OnboardingPage() {
                                 </div>
                             )}
 
-                            <div className="grid gap-4 max-w-sm mx-auto pt-4">
+                            <div className="flex flex-col gap-4 max-w-sm mx-auto pt-4">
                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-loops-subtle border border-loops-border text-left shadow-sm">
                                     <Sparkles className="w-5 h-5 text-loops-accent" />
                                     <span className="text-sm font-bold text-loops-main">Plug Reputation activated</span>
@@ -717,6 +719,20 @@ export default function OnboardingPage() {
                                     <Check className="w-5 h-5 text-loops-success" />
                                     <span className="text-sm font-bold text-loops-main">Unlimited Listings enabled</span>
                                 </div>
+
+                                {/* Terms Checkbox */}
+                                <div className="pt-4 flex items-start gap-3 text-left">
+                                    <input
+                                        type="checkbox"
+                                        id="terms"
+                                        checked={hasAcceptedTerms}
+                                        onChange={(e) => setHasAcceptedTerms(e.target.checked)}
+                                        className="mt-1 w-5 h-5 rounded border-loops-border text-loops-success focus:ring-loops-success transition-all cursor-pointer"
+                                    />
+                                    <label htmlFor="terms" className="text-sm text-loops-muted leading-relaxed cursor-pointer select-none">
+                                        I agree to the <Link href="/terms" target="_blank" className="text-loops-primary font-bold hover:underline">Terms of Service</Link> and Community Guidelines for the Loop.
+                                    </label>
+                                </div>
                             </div>
 
                             <div className="flex gap-4">
@@ -724,9 +740,9 @@ export default function OnboardingPage() {
                                     Edit info
                                 </Button>
                                 <Button
-                                    className="h-14 flex-[2] text-lg font-bold bg-loops-success text-white shadow-xl shadow-loops-success/20 hover:bg-loops-success/90"
+                                    className="h-14 flex-[2] text-lg font-bold bg-loops-success text-white shadow-xl shadow-loops-success/20 hover:bg-loops-success/90 disabled:opacity-50 disabled:grayscale"
                                     onClick={handleSubmit}
-                                    disabled={loading}
+                                    disabled={loading || !hasAcceptedTerms}
                                 >
                                     {loading ? "Finalizing..." : "Enter the Loop"}
                                 </Button>
