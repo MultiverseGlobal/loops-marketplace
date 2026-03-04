@@ -158,7 +158,7 @@ export default function ListingDetailPage() {
                 setShowSuccessModal(true);
             } else {
                 toast.warning("Loop created! Note: This seller hasn't connected WhatsApp, please use the in-app chat.");
-                router.push(`/messages/${listingId}?u=${currentUser.id}`);
+                router.push(`/messages/${id}?u=${currentUser.id}`);
             }
         }
     };
@@ -882,7 +882,7 @@ export default function ListingDetailPage() {
                                             toast.success('Opening WhatsApp... 🚀');
                                         }
                                         setShowSuccessModal(false);
-                                        router.push(`/messages/${listingId}?u=${currentUser.id}`);
+                                        router.push(`/messages/${id}?u=${currentUser.id}`);
                                     }}
                                     className="w-full h-16 bg-loops-success text-white font-bold rounded-2xl shadow-xl shadow-loops-success/20 hover:scale-[102%] active:scale-[98%] transition-all flex items-center justify-center gap-3"
                                 >
@@ -893,7 +893,7 @@ export default function ListingDetailPage() {
                                     variant="ghost"
                                     onClick={() => {
                                         setShowSuccessModal(false);
-                                        router.push(`/messages/${listingId}?u=${currentUser.id}`);
+                                        router.push(`/messages/${id}?u=${currentUser.id}`);
                                     }}
                                     className="w-full h-12 text-loops-muted font-bold uppercase tracking-widest text-[10px]"
                                 >
