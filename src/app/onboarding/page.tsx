@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Check, ChevronRight, School, User, Sparkles, ShieldCheck, Search, Phone } from "lucide-react";
+import { Check, ChevronRight, School, User, Sparkles, ShieldCheck, Search, Phone, Smartphone } from "lucide-react";
 import { cn, formatWhatsAppNumber, isValidWhatsApp } from "@/lib/utils";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
