@@ -127,14 +127,25 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
                         <Heart className={cn("w-4 h-4 md:w-5 h-5", isWishlisted && "fill-current")} />
                     </button>
 
-                    {/* Add to Cart Overlay */}
-                    <div className="absolute inset-0 bg-loops-main/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto">
+                    {/* Add to Cart - Desktop Overlay */}
+                    <div className="absolute inset-0 bg-loops-main/40 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center pointer-events-none md:group-hover:pointer-events-auto">
                         <Button
                             onClick={handleAddToCart}
                             className="bg-white text-loops-main hover:bg-loops-primary hover:text-white rounded-2xl p-4 font-bold h-auto shadow-2xl transition-all translate-y-4 group-hover:translate-y-0 duration-500 border-0"
                         >
                             <ShoppingCart className="w-5 h-5 mr-3" />
                             Add to Cart
+                        </Button>
+                    </div>
+
+                    {/* Add to Cart - Mobile Button */}
+                    <div className="md:hidden absolute bottom-2 right-2 pointer-events-auto">
+                        <Button
+                            onClick={handleAddToCart}
+                            size="icon"
+                            className="w-10 h-10 bg-white/90 backdrop-blur-md text-loops-main rounded-xl shadow-lg border border-loops-border active:scale-90 transition-transform"
+                        >
+                            <Plus className="w-5 h-5" />
                         </Button>
                     </div>
                 </div>

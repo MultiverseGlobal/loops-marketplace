@@ -3,7 +3,7 @@
 
 import { Navbar } from "../../../components/layout/navbar";
 import { Button } from "../../../components/ui/button";
-import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle, ArrowRight, Package, ShoppingCart } from "lucide-react";
+import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle, ArrowRight, Package, ShoppingCart, Infinity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -43,6 +43,9 @@ export default function ListingDetailPage() {
 
     const [isFollowing, setIsFollowing] = useState(false);
     const [followLoading, setFollowLoading] = useState(false);
+
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [pendingWhatsApp, setPendingWhatsApp] = useState<any>(null);
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -147,12 +150,15 @@ export default function ListingDetailPage() {
         // Retrieve and execute WhatsApp action
         const pending = localStorage.getItem('pendingWhatsAppMessage');
         if (pending) {
-            const { number, message } = JSON.parse(pending);
+            const data = JSON.parse(pending);
             localStorage.removeItem('pendingWhatsAppMessage');
 
-            if (number) {
-                window.open(`https://wa.me/${formatWhatsAppNumber(number)}?text=${encodeURIComponent(message)}`, '_blank');
-                toast.success('Loop created! Opening WhatsApp... 🎉');
+            if (data.number) {
+                setPendingWhatsApp(data);
+                setShowSuccessModal(true);
+            } else {
+                toast.warning("Loop created! Note: This seller hasn't connected WhatsApp, please use the in-app chat.");
+                router.push(`/messages/${listingId}?u=${currentUser.id}`);
             }
         }
     };
@@ -763,65 +769,140 @@ export default function ListingDetailPage() {
                                 initial={{ scale: 0.9, y: 20 }}
                                 animate={{ scale: 1, y: 0 }}
                                 exit={{ scale: 0.9, y: 20 }}
-                                className="bg-white rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl border border-loops-border space-y-8"
+                                className="bg-white rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 max-w-md w-full shadow-2xl border border-loops-border space-y-6 sm:space-y-8 relative"
                             >
+                                <button
+                                    onClick={() => setOfferModalOpen(false)}
+                                    className="absolute top-4 right-6 p-2 text-loops-muted hover:text-loops-main transition-colors"
+                                >
+                                    <ChevronDown className="w-6 h-6 rotate-180 sm:rotate-0 sm:hidden" />
+                                    <span className="hidden sm:inline font-bold text-xs uppercase tracking-widest">Close</span>
+                                </button>
+
                                 <div className="text-center space-y-2">
-                                    <div className="w-16 h-16 bg-loops-primary/10 rounded-2xl flex items-center justify-center mx-auto text-loops-primary mb-2">
-                                        <Zap className="w-8 h-8" />
+                                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-loops-primary/10 rounded-2xl flex items-center justify-center mx-auto text-loops-primary mb-2">
+                                        <Zap className="w-6 h-6 sm:w-8 sm:h-8" />
                                     </div>
-                                    <h3 className="text-2xl font-bold font-display italic">Bargain with respect.</h3>
-                                    <p className="text-loops-muted text-sm italic">Propose a fair price for "{listing.title}"</p>
+                                    <h3 className="text-xl sm:text-2xl font-bold font-display italic">Bargain with respect.</h3>
+                                    <p className="text-loops-muted text-[10px] sm:text-sm italic px-4">Propose a fair price for "{listing.title}"</p>
                                 </div>
 
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Your Price Proposal</label>
+                                        <label className="text-[9px] sm:text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Your Price Proposal</label>
                                         <div className="relative">
-                                            <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-loops-primary">{CURRENCY}</span>
+                                            <span className="absolute left-5 sm:left-6 top-1/2 -translate-y-1/2 text-xl sm:text-2xl font-black text-loops-primary">{CURRENCY}</span>
                                             <input
                                                 type="number"
                                                 value={offerAmount}
                                                 onChange={(e) => setOfferAmount(e.target.value)}
                                                 placeholder={listing.price}
-                                                className="w-full pl-12 pr-6 py-5 bg-loops-subtle rounded-2xl border border-loops-border focus:border-loops-primary focus:outline-none text-2xl font-black tracking-tighter"
+                                                className="w-full pl-10 sm:pl-12 pr-6 py-4 sm:py-5 bg-loops-subtle rounded-xl sm:rounded-2xl border border-loops-border focus:border-loops-primary focus:outline-none text-xl sm:text-2xl font-black tracking-tighter"
                                             />
                                         </div>
-                                        <p className="text-[10px] text-loops-muted italic pl-1">Listed price: {CURRENCY}{listing.price}</p>
+                                        <p className="text-[9px] sm:text-[10px] text-loops-muted italic pl-1">Listed price: {CURRENCY}{listing.price}</p>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Message for Seller (Optional)</label>
+                                        <label className="text-[9px] sm:text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Message for Seller (Optional)</label>
                                         <textarea
                                             value={offerMessage}
                                             onChange={(e) => setOfferMessage(e.target.value)}
                                             placeholder="e.g. Can we meet at the library today?"
-                                            rows={3}
-                                            className="w-full p-6 rounded-2xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none transition-all resize-none text-sm"
+                                            rows={2}
+                                            className="w-full p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-loops-subtle border border-loops-border focus:border-loops-primary focus:outline-none transition-all resize-none text-xs sm:text-sm"
                                         />
                                     </div>
-                                </div>
 
-                                <div className="flex gap-4">
                                     <Button
-                                        variant="ghost"
-                                        className="flex-1 h-14 rounded-2xl text-loops-muted font-bold uppercase tracking-widest text-xs"
-                                        onClick={() => setOfferModalOpen(false)}
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button
-                                        disabled={isSubmittingOffer}
-                                        className="flex-2 h-14 rounded-2xl bg-loops-primary text-white font-bold uppercase tracking-widest text-xs shadow-xl shadow-loops-primary/20 group"
                                         onClick={handleMakeOffer}
+                                        disabled={isSubmittingOffer}
+                                        className="w-full h-14 sm:h-16 bg-loops-primary text-white font-bold rounded-xl sm:rounded-2xl shadow-xl shadow-loops-primary/20 hover:scale-[102%] active:scale-[98%] transition-all"
                                     >
-                                        {isSubmittingOffer ? "Sending..." : "Send Offer"}
-                                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                        {isSubmittingOffer ? "Sending Proposal..." : "Send Handshake Proposal"}
                                     </Button>
                                 </div>
                             </motion.div>
                         </motion.div>
                     )
                 }
+            </AnimatePresence>
+
+            {/* Loop Success Bridge Modal */}
+            <AnimatePresence>
+                {showSuccessModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-loops-main/60 backdrop-blur-md"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-white rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl border border-loops-border space-y-8 text-center"
+                        >
+                            <div className="w-20 h-20 bg-loops-primary/10 rounded-3xl flex items-center justify-center mx-auto text-loops-primary relative">
+                                <Infinity className="w-10 h-10 animate-pulse-subtle" />
+                                <div className="absolute -top-2 -right-2 w-8 h-8 bg-loops-success text-white rounded-full flex items-center justify-center shadow-lg">
+                                    <CheckCircle className="w-5 h-5" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <h3 className="text-3xl font-bold font-display italic tracking-tighter">Loop Started!</h3>
+                                <p className="text-loops-muted text-sm italic px-4">
+                                    We've registered your interest in "{listing.title}". Now, let's close the deal!
+                                </p>
+                            </div>
+
+                            <div className="space-y-4 text-left">
+                                <div className="p-4 rounded-2xl bg-loops-subtle border border-loops-border flex gap-4">
+                                    <div className="w-8 h-8 rounded-full bg-loops-success/20 flex items-center justify-center text-loops-success flex-shrink-0 font-bold text-xs">1</div>
+                                    <div className="space-y-1">
+                                        <p className="text-[13px] font-bold text-loops-main leading-tight">Send WhatsApp Message</p>
+                                        <p className="text-[11px] text-loops-muted leading-tight">We're opening WhatsApp—just hit send! This is the fastest way to arrange the meetup.</p>
+                                    </div>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-loops-subtle border border-loops-border flex gap-4 opacity-60">
+                                    <div className="w-8 h-8 rounded-full bg-loops-primary/20 flex items-center justify-center text-loops-primary flex-shrink-0 font-bold text-xs">2</div>
+                                    <div className="space-y-1">
+                                        <p className="text-[13px] font-bold text-loops-main leading-tight">Seller "Accepts" Offer</p>
+                                        <p className="text-[11px] text-loops-muted leading-tight">The seller will confirm your deal inside Loops to lock the price and earn reputation.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <Button
+                                    onClick={() => {
+                                        if (pendingWhatsApp) {
+                                            window.open(`https://wa.me/${formatWhatsAppNumber(pendingWhatsApp.number)}?text=${encodeURIComponent(pendingWhatsApp.message)}`, '_blank');
+                                            toast.success('Opening WhatsApp... 🚀');
+                                        }
+                                        setShowSuccessModal(false);
+                                        router.push(`/messages/${listingId}?u=${currentUser.id}`);
+                                    }}
+                                    className="w-full h-16 bg-loops-success text-white font-bold rounded-2xl shadow-xl shadow-loops-success/20 hover:scale-[102%] active:scale-[98%] transition-all flex items-center justify-center gap-3"
+                                >
+                                    <MessageSquare className="w-6 h-6" />
+                                    Move to WhatsApp
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setShowSuccessModal(false);
+                                        router.push(`/messages/${listingId}?u=${currentUser.id}`);
+                                    }}
+                                    className="w-full h-12 text-loops-muted font-bold uppercase tracking-widest text-[10px]"
+                                >
+                                    Just go to Loops Chat
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
             </AnimatePresence>
 
             {/* Loop Loading Overlay */}
