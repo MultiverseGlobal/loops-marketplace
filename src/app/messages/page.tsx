@@ -9,12 +9,14 @@ import { MessageSquare, ArrowRight, User, Package, Zap, Sparkles } from "lucide-
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useCampus } from "@/context/campus-context";
+import { useToast } from "@/context/toast-context";
 
 export default function MessagesPage() {
     const [conversations, setConversations] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
     const { campus, getTerm } = useCampus();
+    const toast = useToast();
 
     useEffect(() => {
         const fetchConversations = async () => {
@@ -31,8 +33,14 @@ export default function MessagesPage() {
                     receiver:receiver_id (id, full_name, avatar_url)
                 `)
                 .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: false })
+                .limit(50); // Optimization: avoid fetching everything at once
 
+
+            if (error) {
+                console.error("Error fetching conversations:", error);
+                toast.error("Failed to load some messages. Please refresh.");
+            }
 
             if (data) {
                 // Determine unique threads: (listing_id + buyer_id)

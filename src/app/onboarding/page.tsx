@@ -76,7 +76,7 @@ interface Campus {
 
 export default function OnboardingPage() {
     const [step, setStep] = useState(1);
-    const [selectedCampus, setSelectedCampus] = useState("");
+    const [selectedCampus, setSelectedCampus] = useState("00000000-0000-0000-0000-000000000001"); // Veritas University default
     const [fullName, setFullName] = useState("");
     const [bio, setBio] = useState("");
     const [storeName, setStoreName] = useState("");
@@ -344,7 +344,7 @@ export default function OnboardingPage() {
                                 <ChevronRight className="w-5 h-5 ml-2" />
                             </Button>
 
-                            <div className="pt-8 text-center space-y-4">
+                            <div className="pt-4 text-center space-y-4">
                                 <p className="text-sm text-loops-muted">Not from Veritas University?</p>
                                 <button
                                     onClick={() => setShowRequestForm(true)}
