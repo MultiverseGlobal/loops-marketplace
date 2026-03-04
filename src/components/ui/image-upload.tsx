@@ -93,7 +93,7 @@ export function ImageUpload({ onUpload, maxFiles = 4, value = [] }: ImageUploadP
                         />
                         <button
                             onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/70 z-10"
                         >
                             <X className="w-3 h-3" />
                         </button>

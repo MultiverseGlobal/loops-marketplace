@@ -55,6 +55,7 @@ import { BottomNav } from "../components/layout/bottom-nav";
 import { Analytics } from "@vercel/analytics/next";
 import { PWALogic } from "../components/pwa-logic";
 import { CartProvider } from "../context/cart-context";
+import { NotificationProvider } from "../context/notification-context";
 
 export default function RootLayout({
     children,
@@ -73,8 +74,10 @@ export default function RootLayout({
                     <ToastProvider>
                         <ModalProvider>
                             <CartProvider>
-                                <PageTransition>{children}</PageTransition>
-                                <BottomNav />
+                                <NotificationProvider>
+                                    <PageTransition>{children}</PageTransition>
+                                    <BottomNav />
+                                </NotificationProvider>
                             </CartProvider>
                             <Analytics />
                         </ModalProvider>

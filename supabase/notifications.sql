@@ -22,6 +22,15 @@ CREATE POLICY "Users can update their own notifications (mark as read)"
 ON public.notifications FOR UPDATE
 USING (auth.uid() = user_id);
 
+CREATE POLICY "Admins can insert notifications for any user"
+ON public.notifications FOR INSERT
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND is_admin = true
+  )
+);
+
 -- Create a function to auto-delete old notifications (optional but good practice)
 -- This keeps the database lean.
 CREATE OR REPLACE FUNCTION delete_old_notifications() RETURNS trigger AS $$

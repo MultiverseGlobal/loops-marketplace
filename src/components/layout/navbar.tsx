@@ -13,6 +13,7 @@ import { useCart } from "@/context/cart-context";
 import { useToast } from "@/context/toast-context";
 import { CartDrawer } from "./cart-drawer";
 import { cn } from "@/lib/utils";
+import { useNotifications } from "@/context/notification-context";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (
@@ -26,12 +27,11 @@ export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
-    const [notifications, setNotifications] = useState<any[]>([]);
-    const [unreadCount, setUnreadCount] = useState(0);
     const supabase = createClient();
     const router = useRouter();
     const { campus, getTerm } = useCampus();
     const toast = useToast();
+    const { unreadCount } = useNotifications();
 
     useEffect(() => {
         const getUser = async () => {
@@ -45,45 +45,6 @@ export function Navbar() {
                     .eq('id', user.id)
                     .single();
                 setProfile(data);
-
-                // Fetch Notifications
-                const { data: notifs } = await supabase
-                    .from('notifications')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-
-                if (notifs) {
-                    setNotifications(notifs);
-                    setUnreadCount(notifs.filter(n => !n.read).length);
-                }
-
-                // Subscribe to Real-time Notifications
-                const channel = supabase
-                    .channel(`user-notifications-${user.id}`)
-                    .on(
-                        'postgres_changes',
-                        {
-                            event: 'INSERT',
-                            schema: 'public',
-                            table: 'notifications',
-                            filter: `user_id=eq.${user.id}`
-                        },
-                        (payload) => {
-                            const newNotif = payload.new;
-                            setNotifications(prev => [newNotif, ...prev]);
-                            setUnreadCount(prev => prev + 1);
-
-                            // Show Toast
-                            toast.success(`${newNotif.title}: ${newNotif.message}`);
-                        }
-                    )
-                    .subscribe();
-
-                return () => {
-                    supabase.removeChannel(channel);
-                };
             }
         };
         getUser();
@@ -92,13 +53,11 @@ export function Navbar() {
             setUser(session?.user ?? null);
             if (!session?.user) {
                 setProfile(null);
-                setNotifications([]);
-                setUnreadCount(0);
             }
         });
 
         return () => subscription.unsubscribe();
-    }, [supabase, toast]);
+    }, [supabase]);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();

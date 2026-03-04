@@ -13,37 +13,61 @@ export function InstallPrompt() {
     const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+
+        // If already in PWA mode, don't do anything
+        if (isStandalone) {
+            setIsVisible(false);
+            return;
+        }
+
         // Check if it's iOS
         const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
         setIsIOS(isIOSDevice);
+
+        // Check if dismissed recently (within 14 days)
+        const dismissedAt = localStorage.getItem('pwa-prompt-dismissed');
+        const isRecentlyDismissed = dismissedAt && (Date.now() - parseInt(dismissedAt)) < 14 * 24 * 60 * 60 * 1000;
 
         // Listen for beforeinstallprompt event
         const handleBeforeInstallPrompt = (e: any) => {
             e.preventDefault();
             setDeferredPrompt(e);
-            // Show prompt after a short delay or based on logic
-            setTimeout(() => setIsVisible(true), 3000);
+
+            // Show prompt after a short delay if not dismissed and not in standalone
+            if (!isRecentlyDismissed && !isStandalone) {
+                const timer = setTimeout(() => setIsVisible(true), 5000);
+                return () => clearTimeout(timer);
+            }
         };
 
         const handleShowPrompt = () => {
-            if (deferredPrompt || isIOS) {
+            if ((deferredPrompt || isIOSDevice) && !isStandalone) {
                 setIsVisible(true);
             }
         };
 
+        const handleAppInstalled = () => {
+            setIsVisible(false);
+            setDeferredPrompt(null);
+            console.log('PWA was installed');
+        };
+
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         window.addEventListener('show-pwa-install', handleShowPrompt);
-
-        // Check if already installed
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            setIsVisible(false);
-        }
+        window.addEventListener('appinstalled', handleAppInstalled);
 
         return () => {
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
             window.removeEventListener('show-pwa-install', handleShowPrompt);
+            window.removeEventListener('appinstalled', handleAppInstalled);
         };
-    }, []);
+    }, [deferredPrompt]);
+
+    const handleDismiss = () => {
+        setIsVisible(false);
+        localStorage.setItem('pwa-prompt-dismissed', Date.now().toString());
+    };
 
     const handleInstall = async () => {
         if (!deferredPrompt) return;
@@ -71,7 +95,7 @@ export function InstallPrompt() {
                         <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-loops-primary/5 rounded-full blur-3xl group-hover:bg-loops-primary/10 transition-colors" />
 
                         <button
-                            onClick={() => setIsVisible(false)}
+                            onClick={handleDismiss}
                             className="absolute top-4 right-4 text-loops-muted hover:text-loops-main transition-colors"
                         >
                             <X className="w-5 h-5" />
@@ -107,7 +131,7 @@ export function InstallPrompt() {
                                 <Button
                                     variant="outline"
                                     className="h-12 px-6 border-loops-border text-loops-muted hover:bg-loops-subtle rounded-xl"
-                                    onClick={() => setIsVisible(false)}
+                                    onClick={handleDismiss}
                                 >
                                     Maybe Later
                                 </Button>

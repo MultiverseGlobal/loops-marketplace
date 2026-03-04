@@ -25,6 +25,7 @@ export default function ListingDetailPage() {
     const [listing, setListing] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [activeAccordion, setActiveAccordion] = useState<string | null>("details");
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [isInteracting, setIsInteracting] = useState(false);
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [offerModalOpen, setOfferModalOpen] = useState(false);
@@ -403,18 +404,79 @@ export default function ListingDetailPage() {
                 <div className="lg:grid lg:grid-cols-2 lg:gap-x-16">
                     {/* Gallery (Sticky) */}
                     <div className="space-y-4 lg:sticky lg:top-32 lg:h-fit">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="relative aspect-square overflow-hidden rounded-3xl bg-loops-subtle border border-loops-border shadow-2xl shadow-loops-primary/5"
-                        >
-                            <Image
-                                src={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
-                                alt={listing.title}
-                                fill
-                                className="object-cover"
-                            />
-                        </motion.div>
+                        <div className="relative group">
+                            <motion.div
+                                key={listing.images?.[activeImageIndex] || listing.image_url}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="relative aspect-square overflow-hidden rounded-3xl bg-loops-subtle border border-loops-border shadow-2xl shadow-loops-primary/5"
+                            >
+                                <Image
+                                    src={listing.images?.[activeImageIndex] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
+                                    alt={listing.title}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </motion.div>
+
+                            {/* Carousel Controls */}
+                            {listing.images && listing.images.length > 1 && (
+                                <>
+                                    <div className="absolute inset-y-0 left-2 flex items-center">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => setActiveImageIndex(prev => (prev > 0 ? prev - 1 : listing.images.length - 1))}
+                                            className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <ChevronDown className="w-6 h-6 rotate-90" />
+                                        </Button>
+                                    </div>
+                                    <div className="absolute inset-y-0 right-2 flex items-center">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => setActiveImageIndex(prev => (prev < listing.images.length - 1 ? prev + 1 : 0))}
+                                            className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <ChevronDown className="w-6 h-6 -rotate-90" />
+                                        </Button>
+                                    </div>
+
+                                    {/* Dots */}
+                                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                                        {listing.images.map((_: any, i: number) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => setActiveImageIndex(i)}
+                                                className={cn(
+                                                    "w-2 h-2 rounded-full transition-all",
+                                                    i === activeImageIndex ? "bg-loops-primary w-6" : "bg-white/40 hover:bg-white/60"
+                                                )}
+                                            />
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Thumbnails */}
+                        {listing.images && listing.images.length > 1 && (
+                            <div className="grid grid-cols-4 gap-4">
+                                {listing.images.map((img: string, i: number) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setActiveImageIndex(i)}
+                                        className={cn(
+                                            "relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
+                                            i === activeImageIndex ? "border-loops-primary shadow-lg shadow-loops-primary/20 scale-105" : "border-loops-border opacity-70 hover:opacity-100"
+                                        )}
+                                    >
+                                        <Image src={img} alt="" fill className="object-cover" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Listing Info */}

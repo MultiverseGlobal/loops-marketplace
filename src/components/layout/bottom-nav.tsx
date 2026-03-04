@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useCart } from "@/context/cart-context";
 import { CartDrawer } from "./cart-drawer";
+import { useNotifications } from "@/context/notification-context";
 
 export function BottomNav() {
     const pathname = usePathname();
@@ -18,6 +19,7 @@ export function BottomNav() {
     const supabase = createClient();
     const { cartItems, wishlistCount } = useCart();
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const { unreadCount } = useNotifications();
 
     const cartCount = (cartItems || []).reduce((sum, item) => sum + (item?.quantity || 0), 0);
 
@@ -45,7 +47,7 @@ export function BottomNav() {
 
     const navItems = [
         { label: "Feed", href: "/browse", icon: Home },
-        { label: "Inbox", href: "/messages", icon: MessageSquare },
+        { label: "Inbox", href: "/messages", icon: MessageSquare, badge: unreadCount },
         { label: "Post", href: "/listings/create", icon: PlusSquare, primary: true },
         { label: "Cart", icon: ShoppingCart, badge: cartCount, isCart: true },
         { label: "Profile", href: user ? "/profile" : "/login", icon: User },

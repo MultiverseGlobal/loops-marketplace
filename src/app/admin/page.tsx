@@ -154,6 +154,47 @@ export default function AdminDashboard() {
         );
     };
 
+    const handleLaunchNode = async (req: any) => {
+        setProcessingId(req.id);
+        try {
+            // 1. Create the new campus
+            const { error: campusError } = await supabase
+                .from('campuses')
+                .insert({
+                    name: req.university_name,
+                    domain: req.school_email.split('@')[1],
+                    is_active: true,
+                    type: 'Standard',
+                    location: 'Campus Hub'
+                });
+
+            if (campusError) throw campusError;
+
+            // 2. Update request status
+            await supabase
+                .from('campus_requests')
+                .update({ status: 'approved' })
+                .eq('id', req.id);
+
+            // 3. Notify the requester
+            await supabase.from('notifications').insert({
+                user_id: req.user_id,
+                title: "Node Launched! 🚀",
+                message: `Congratulations! Your request for ${req.university_name} has been bridged. The Loop is now live on your campus.`,
+                type: 'system',
+                link: '/browse'
+            });
+
+            setCampusRequests(prev => prev.filter(r => r.id !== req.id));
+            setCampuses(prev => [...prev, { name: req.university_name, is_active: true, type: 'Standard' }]);
+            toast.success(`${req.university_name} has been bridged to the Loop! 🚀`);
+        } catch (err: any) {
+            toast.error(`Launch failed: ${err.message}`);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
     const executeBroadcast = async () => {
         const isFromApps = selectedApps.length > 0;
         const targetIds = isFromApps ? selectedApps : selectedUsers;
@@ -175,7 +216,7 @@ export default function AdminDashboard() {
             if (selectedUsers.length > 0) {
                 const userRecipients = allUsers
                     .filter(u => selectedUsers.includes(u.id))
-                    .map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name, type: 'Plug' }));
+                    .map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name, type: 'User' }));
                 recipients = [...recipients, ...userRecipients];
             }
 
@@ -192,16 +233,17 @@ export default function AdminDashboard() {
 
             // --- Notification Blast Integration ---
             const notificationEntries = recipients
-                .filter(r => r.id && r.type === 'Plug') // Only notify registered users
+                .filter(r => r.id && (r.type === 'Plug' || r.type === 'User')) // Notify all registered types
                 .map(r => ({
                     user_id: r.id,
-                    title: "Admin Announcement 📣",
+                    title: broadcastMessage.toLowerCase().includes('launch') ? "Veritas Grand Launch 🚀" : "Admin Announcement 📣",
                     message: broadcastMessage,
                     type: 'system',
-                    link: '/dashboard'
+                    link: '/browse'
                 }));
 
             if (notificationEntries.length > 0) {
+                // Batch insert into notifications
                 await supabase.from('notifications').insert(notificationEntries);
             }
             // --------------------------------------
@@ -683,13 +725,13 @@ export default function AdminDashboard() {
 
                     <Button
                         onClick={() => {
-                            // Select ALL Pending
+                            // Select ALL visible users (Students + Plugs)
+                            const allVisibleIds = allUsers.map(u => u.id);
+                            setSelectedUsers(allVisibleIds);
+
+                            // Select ALL Pending Applicants
                             const allPendingIds = applications.map(a => a.id);
                             setSelectedApps(allPendingIds);
-
-                            // Select ALL Plugs
-                            const allPlugIds = allUsers.filter(u => u.is_plug).map(u => u.id);
-                            setSelectedUsers(allPlugIds);
 
                             setShowBroadcastModal(true);
                             setBroadcastMessage("");
@@ -697,7 +739,7 @@ export default function AdminDashboard() {
                         className="bg-black text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2"
                     >
                         <MessageCircle className="w-4 h-4" />
-                        Broadcast to All ({applications.length + allUsers.filter(u => u.is_plug).length})
+                        Broadcast to All ({allUsers.length + applications.length})
                     </Button>
                 </div>
 
@@ -1047,7 +1089,13 @@ export default function AdminDashboard() {
                                     <span className="text-[10px] font-bold text-loops-primary uppercase tracking-widest bg-loops-primary/5 px-2 py-0.5 rounded-full border border-loops-primary/10">Priority Node</span>
                                 </div>
                             </div>
-                            <Button className="bg-loops-primary text-white font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-2xl shadow-xl shadow-loops-primary/20 hover:scale-105 transition-all">Launch Node 🚀</Button>
+                            <Button
+                                onClick={() => handleLaunchNode(req)}
+                                disabled={processingId === req.id}
+                                className="bg-loops-primary text-white font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-2xl shadow-xl shadow-loops-primary/20 hover:scale-105 transition-all"
+                            >
+                                {processingId === req.id ? 'Bridging Node...' : 'Launch Node 🚀'}
+                            </Button>
                         </div>
                     ))}
                     {campusRequests.length === 0 && (
