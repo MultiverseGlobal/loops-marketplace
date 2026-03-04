@@ -14,6 +14,8 @@ import { useCampus } from "@/context/campus-context";
 import { useModal } from "@/context/modal-context";
 
 import { ReviewForm } from "@/components/reviews/review-form";
+import { QRCodeSVG } from "qrcode.react";
+import { Clock, CheckCircle2, QrCode, Shield } from "lucide-react";
 
 export default function ChatPage() {
     const { id: listingId } = useParams();
@@ -24,6 +26,7 @@ export default function ChatPage() {
     const [listing, setListing] = useState<any>(null);
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [otherUser, setOtherUser] = useState<any>(null);
+    const [transaction, setTransaction] = useState<any>(null);
     const [showReview, setShowReview] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
@@ -89,6 +92,17 @@ export default function ChatPage() {
                         setMessages(filtered);
                     }
 
+                    // Fetch associated transaction
+                    const buyerId = user.id === listingData.seller_id ? targetThreadPartnerId : user.id;
+                    const { data: txData } = await supabase
+                        .from('transactions')
+                        .select('*')
+                        .eq('listing_id', listingId)
+                        .eq('buyer_id', buyerId)
+                        .maybeSingle();
+
+                    if (txData) setTransaction(txData);
+
                     // Realtime subscription
                     const channel = supabase
                         .channel(`listing-${listingId}-${user.id}`)
@@ -100,6 +114,21 @@ export default function ChatPage() {
                                 if ((m.sender_id === user.id && m.receiver_id === targetThreadPartnerId) ||
                                     (m.sender_id === targetThreadPartnerId && m.receiver_id === user.id)) {
                                     setMessages((prev) => [...prev, m]);
+                                }
+                            }
+                        )
+                        .on(
+                            'postgres_changes',
+                            {
+                                event: '*',
+                                schema: 'public',
+                                table: 'transactions',
+                                filter: `listing_id=eq.${listingId}`
+                            },
+                            (payload) => {
+                                const newTx = payload.new as any;
+                                if (newTx && newTx.buyer_id === buyerId) {
+                                    setTransaction(newTx);
                                 }
                             }
                         )
@@ -272,8 +301,134 @@ export default function ChatPage() {
             </header>
 
             {/* Chat Area */}
-            <main ref={scrollRef} className="flex-1 overflow-y-auto px-4 pt-40 pb-32 bg-loops-bg">
+            <main ref={scrollRef} className="flex-1 overflow-y-auto px-4 pt-44 pb-32 bg-loops-bg">
                 <div className="max-w-4xl mx-auto space-y-6">
+                    {/* Loop Sequence Progress Bar */}
+                    {transaction && (
+                        <div className="bg-white/50 backdrop-blur-sm border border-loops-border rounded-3xl p-6 mb-8 shadow-sm">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-loops-primary flex items-center gap-2">
+                                    <Sparkles className="w-3 h-3" />
+                                    Loop Sequence
+                                </h3>
+                                <div className="text-[10px] font-bold text-loops-muted uppercase">
+                                    Status: <span className="text-loops-main">{transaction.status.replace('_', ' ')}</span>
+                                </div>
+                            </div>
+
+                            <div className="relative">
+                                {/* Connection Line */}
+                                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-loops-border -translate-y-1/2" />
+                                <div
+                                    className="absolute top-1/2 left-0 h-0.5 bg-loops-primary -translate-y-1/2 transition-all duration-1000"
+                                    style={{
+                                        width: transaction.status === 'pending' ? '0%' :
+                                            transaction.status === 'vendor_confirmed' ? '50%' : '100%'
+                                    }}
+                                />
+
+                                <div className="relative flex justify-between items-center">
+                                    {[
+                                        { key: 'pending', label: 'Requested', icon: Clock },
+                                        { key: 'vendor_confirmed', label: 'Handoff', icon: QrCode },
+                                        { key: 'completed', label: 'Verified', icon: CheckCircle2 }
+                                    ].map((step, idx) => {
+                                        const isActive = transaction.status === step.key ||
+                                            (step.key === 'pending' && transaction.status !== 'cancelled') ||
+                                            (step.key === 'vendor_confirmed' && transaction.status === 'completed');
+                                        const isCurrent = transaction.status === step.key;
+
+                                        return (
+                                            <div key={step.key} className="flex flex-col items-center gap-2">
+                                                <div className={cn(
+                                                    "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 z-10",
+                                                    isCurrent ? "bg-white border-loops-primary text-loops-primary scale-110 shadow-lg shadow-loops-primary/20" :
+                                                        isActive ? "bg-loops-primary border-loops-primary text-white" :
+                                                            "bg-white border-loops-border text-loops-muted"
+                                                )}>
+                                                    <step.icon className="w-5 h-5" />
+                                                </div>
+                                                <span className={cn(
+                                                    "text-[10px] font-black uppercase tracking-widest",
+                                                    isCurrent ? "text-loops-primary" : isActive ? "text-loops-main" : "text-loops-muted"
+                                                )}>
+                                                    {step.label}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* QR Handshake Area */}
+                            {transaction.status === 'vendor_confirmed' && (
+                                <div className="mt-8 p-6 bg-loops-primary/5 rounded-2xl border border-loops-primary/20 animate-in fade-in slide-in-from-top-4">
+                                    {currentUser?.id === listing?.seller_id ? (
+                                        <div className="flex flex-col items-center text-center gap-4">
+                                            <div className="bg-white p-4 rounded-3xl shadow-xl border border-loops-primary/20">
+                                                <QRCodeSVG
+                                                    value={transaction.verification_token}
+                                                    size={160}
+                                                    fgColor="#1E1E1E"
+                                                    level="H"
+                                                />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-loops-main">Show this to the buyer</h4>
+                                                <p className="text-xs text-loops-muted mt-1">They will scan this to verify the physical handoff.</p>
+                                                <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-loops-border font-mono font-bold text-loops-primary">
+                                                    {transaction.verification_token}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center text-center gap-4">
+                                            <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-loops-primary shadow-sm border border-loops-border">
+                                                <QrCode className="w-8 h-8 animate-pulse" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-loops-main">Scan Seller's QR Code</h4>
+                                                <p className="text-xs text-loops-muted mt-1">Once you have the item, scan their code or enter the token below to finalize.</p>
+                                                <div className="mt-4 flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Enter Token"
+                                                        className="w-32 h-10 px-4 rounded-xl border border-loops-border text-center font-mono font-bold uppercase focus:border-loops-primary outline-none"
+                                                        maxLength={8}
+                                                        onChange={async (e) => {
+                                                            if (e.target.value.length === 8) {
+                                                                const res = await fetch(`/api/loops/${transaction.id}/verify`, {
+                                                                    method: 'POST',
+                                                                    body: JSON.stringify({ token: e.target.value.toLowerCase() })
+                                                                });
+                                                                if (res.ok) {
+                                                                    toast.success("Handshake verified! Loop complete.");
+                                                                } else {
+                                                                    toast.error("Invalid verification token.");
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {transaction.status === 'completed' && (
+                                <div className="mt-8 p-4 bg-loops-success/5 rounded-2xl border border-loops-success/20 flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-loops-success shadow-sm border border-loops-border">
+                                        <Shield className="w-5 h-5" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-loops-success">Verified Secure</div>
+                                        <div className="text-xs font-bold text-loops-main">Handshake completed successfully at {new Date(transaction.verified_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                     <div className="text-center py-16 opacity-50">
                         <div className="w-20 h-20 rounded-3xl bg-loops-subtle border border-loops-border mx-auto mb-6 flex items-center justify-center text-loops-primary/20 shadow-inner">
                             {listing?.type === 'product' ? <Package className="w-10 h-10" /> : <Zap className="w-10 h-10" />}

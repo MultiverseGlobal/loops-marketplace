@@ -8,6 +8,8 @@ import { User } from '@supabase/supabase-js';
 type NotificationContextType = {
     notifications: any[];
     unreadCount: number;
+    unreadMessagesCount: number;
+    pendingLoopsCount: number;
     markAsRead: (id: string) => Promise<void>;
     refreshNotifications: () => Promise<void>;
 };
@@ -17,6 +19,8 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
     const [notifications, setNotifications] = useState<any[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+    const [pendingLoopsCount, setPendingLoopsCount] = useState(0);
     const [user, setUser] = useState<User | null>(null);
     const supabase = createClient();
     const toast = useToast();
@@ -31,7 +35,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         if (data && !error) {
             setNotifications(data);
-            setUnreadCount(data.filter(n => !n.read).length);
+            const unread = data.filter(n => !n.read);
+            setUnreadCount(unread.length);
+            setUnreadMessagesCount(unread.filter(n => n.type === 'message').length);
+            setPendingLoopsCount(unread.filter(n => n.type === 'loop' || n.type === 'transaction').length);
         }
     }, [supabase]);
 
@@ -73,6 +80,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                     const newNotif = payload.new;
                     setNotifications(prev => [newNotif, ...prev]);
                     setUnreadCount(prev => prev + 1);
+                    if (newNotif.type === 'message') setUnreadMessagesCount(prev => prev + 1);
+                    if (newNotif.type === 'loop' || newNotif.type === 'transaction') setPendingLoopsCount(prev => prev + 1);
                     toast.success(`${newNotif.title}: ${newNotif.message}`);
                 }
             )
@@ -90,8 +99,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             .eq('id', id);
 
         if (!error) {
+            const markedNotif = notifications.find(n => n.id === id);
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
             setUnreadCount(prev => Math.max(0, prev - 1));
+            if (markedNotif?.type === 'message') setUnreadMessagesCount(prev => Math.max(0, prev - 1));
+            if (markedNotif?.type === 'loop' || markedNotif?.type === 'transaction') setPendingLoopsCount(prev => Math.max(0, prev - 1));
         }
     };
 
@@ -102,6 +114,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const value = {
         notifications,
         unreadCount,
+        unreadMessagesCount,
+        pendingLoopsCount,
         markAsRead,
         refreshNotifications
     };

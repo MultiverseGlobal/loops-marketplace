@@ -31,7 +31,7 @@ export function Navbar() {
     const router = useRouter();
     const { campus, getTerm } = useCampus();
     const toast = useToast();
-    const { unreadCount } = useNotifications();
+    const { unreadCount, unreadMessagesCount, pendingLoopsCount } = useNotifications();
 
     useEffect(() => {
         const getUser = async () => {
@@ -90,7 +90,16 @@ export function Navbar() {
                             <NavLink href="/browse?view=product">{getTerm('marketplaceName') || 'Marketplace'}</NavLink>
                             <NavLink href="/browse?view=service">Services</NavLink>
                             <NavLink href="/requests">Requests</NavLink>
-                            {user && <NavLink href="/messages">Messages</NavLink>}
+                            {user && (
+                                <Link href="/messages" className="relative">
+                                    <NavLink href="/messages">Messages</NavLink>
+                                    {unreadMessagesCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
+                                            {unreadMessagesCount}
+                                        </span>
+                                    )}
+                                </Link>
+                            )}
                         </nav>
                     </div>
 
@@ -172,10 +181,10 @@ export function Navbar() {
                                         className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
                                         title="Notifications"
                                     >
-                                        <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary animate-pulse")} />
-                                        {unreadCount > 0 && (
+                                        <Bell className={cn("w-5 h-5", pendingLoopsCount > 0 && "text-loops-primary animate-pulse")} />
+                                        {pendingLoopsCount > 0 && (
                                             <span className="absolute -top-1 -right-1 w-5 h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in">
-                                                {unreadCount}
+                                                {pendingLoopsCount}
                                             </span>
                                         )}
                                     </Button>
@@ -214,8 +223,8 @@ export function Navbar() {
                     <div className="flex items-center gap-3">
                         {user && (
                             <Link href="/messages" className="relative p-2 text-loops-muted hover:text-loops-primary">
-                                <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary")} />
-                                {unreadCount > 0 && (
+                                <Bell className={cn("w-5 h-5", pendingLoopsCount > 0 && "text-loops-primary")} />
+                                {pendingLoopsCount > 0 && (
                                     <span className="absolute top-1 right-1 w-2 h-2 bg-loops-primary rounded-full border border-white" />
                                 )}
                             </Link>

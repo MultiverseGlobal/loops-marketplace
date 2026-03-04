@@ -34,7 +34,13 @@ export default function MessagesPage() {
                 `)
                 .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
                 .order('created_at', { ascending: false })
-                .limit(50); // Optimization: avoid fetching everything at once
+                .limit(100);
+
+            // Fetch transactions for status indicators
+            const { data: txs } = await supabase
+                .from('transactions')
+                .select('id, listing_id, buyer_id, status')
+                .or(`seller_id.eq.${user.id},buyer_id.eq.${user.id}`);
 
 
             if (error) {
@@ -63,10 +69,13 @@ export default function MessagesPage() {
                     const threadKey = `${listing.id}-${buyerId}`;
 
                     if (!threadsMap.has(threadKey)) {
+                        const tx = txs?.find(t => t.listing_id === listing.id && t.buyer_id === buyerId);
                         threadsMap.set(threadKey, {
                             ...msg,
                             partner,
-                            buyerId
+                            buyerId,
+                            transaction: tx,
+                            isSeller: isMeSeller
                         });
                     }
                 });
@@ -118,7 +127,22 @@ export default function MessagesPage() {
                                     <h3 className="font-bold text-xl truncate group-hover:text-loops-primary transition-colors text-loops-main tracking-tight">
                                         {conv.listings?.title}
                                     </h3>
-                                    <p className="text-loops-muted text-sm truncate opacity-80 italic">
+                                    <div className="flex items-center gap-2 mt-1">
+                                        {conv.transaction && (
+                                            <span className={cn(
+                                                "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
+                                                conv.transaction.status === 'pending' ? "bg-loops-primary/10 border-loops-primary/20 text-loops-primary animate-pulse" :
+                                                    conv.transaction.status === 'vendor_confirmed' ? "bg-loops-accent/10 border-loops-accent/20 text-loops-accent" :
+                                                        "bg-loops-success/10 border-loops-success/20 text-loops-success"
+                                            )}>
+                                                {conv.transaction.status === 'pending' ? 'Loop Request' : conv.transaction.status.replace('_', ' ')}
+                                            </span>
+                                        )}
+                                        {conv.isSeller && (
+                                            <span className="text-[9px] font-bold text-loops-muted uppercase tracking-widest opacity-40">Selling</span>
+                                        )}
+                                    </div>
+                                    <p className="text-loops-muted text-sm truncate opacity-60 italic mt-2">
                                         "{conv.content}"
                                     </p>
                                 </div>
