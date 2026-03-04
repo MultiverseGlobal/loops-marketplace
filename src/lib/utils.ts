@@ -16,6 +16,17 @@ export function formatWhatsAppNumber(phone: string): string {
         return "234" + cleaned.substring(1);
     }
 
+    // If it starts with 234 and has 13 digits, it's already correct
+    if (cleaned.startsWith("234") && cleaned.length === 13) {
+        return cleaned;
+    }
+
     // Default: just return cleaned digits (WhatsApp API takes numbers with country codes)
     return cleaned;
+}
+
+export function isValidWhatsApp(phone: string): boolean {
+    const cleaned = (phone || "").replace(/\D/g, "");
+    // Basic length check for international numbers, usually 10-15 digits
+    return cleaned.length >= 10 && cleaned.length <= 15;
 }

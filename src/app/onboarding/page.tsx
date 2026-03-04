@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Check, ChevronRight, School, User, Sparkles, ShieldCheck, Search, Phone } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatWhatsAppNumber, isValidWhatsApp } from "@/lib/utils";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
 
@@ -167,6 +167,12 @@ export default function OnboardingPage() {
 
             if (!user) throw new Error("Session expired. Please sign in again.");
 
+            if (primaryRole === 'plug' && !isValidWhatsApp(whatsappNumber)) {
+                toast.error("Verified Plugs must have a valid WhatsApp number for the Handshake flow.");
+                setLoading(false);
+                return;
+            }
+
             console.error("Onboarding Payload:", { id: user.id, campus_id: selectedCampus, primary_role: primaryRole });
             const { error: upsertError } = await supabase
                 .from('profiles')
@@ -178,7 +184,7 @@ export default function OnboardingPage() {
                     store_name: storeName,
                     store_category: storeCategory,
                     store_banner_color: storeBannerColor,
-                    whatsapp_number: whatsappNumber,
+                    whatsapp_number: formatWhatsAppNumber(whatsappNumber),
                     primary_role: primaryRole,
                     is_plug: primaryRole === 'plug',
                     updated_at: new Date().toISOString(),
@@ -475,19 +481,37 @@ export default function OnboardingPage() {
                                     <p className="text-[10px] text-loops-muted italic">Used to verify your student status at {campuses.find(c => c.id === selectedCampus)?.name || 'your campus'}.</p>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">WhatsApp Number (Optional)</label>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">WhatsApp Number</label>
+                                        {whatsappNumber && isValidWhatsApp(whatsappNumber) && (
+                                            <button
+                                                onClick={() => {
+                                                    const formatted = formatWhatsAppNumber(whatsappNumber);
+                                                    window.open(`https://wa.me/${formatted}?text=${encodeURIComponent("Testing my Loops connection! ⚡")}`, '_blank');
+                                                    toast.success("Opening WhatsApp test...");
+                                                }}
+                                                className="text-[10px] font-black uppercase text-loops-primary hover:underline flex items-center gap-1"
+                                            >
+                                                <Smartphone className="w-3 h-3" />
+                                                Test Connection
+                                            </button>
+                                        )}
+                                    </div>
                                     <div className="relative group">
                                         <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-loops-muted group-focus-within:text-loops-primary transition-colors" />
                                         <input
                                             type="tel"
                                             value={whatsappNumber}
                                             onChange={(e) => setWhatsappNumber(e.target.value)}
-                                            placeholder="2348123456789"
-                                            className="w-full h-14 pl-12 pr-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm font-bold"
+                                            placeholder="e.g. 08123456789 or 234..."
+                                            className={cn(
+                                                "w-full h-14 pl-12 pr-4 rounded-xl bg-loops-subtle border text-loops-main focus:outline-none focus:ring-1 transition-all shadow-sm font-bold",
+                                                whatsappNumber && !isValidWhatsApp(whatsappNumber) ? "border-red-400 focus:ring-red-400" : "border-loops-border focus:border-loops-primary focus:ring-loops-primary"
+                                            )}
                                         />
                                     </div>
-                                    <p className="text-[10px] text-loops-muted italic">Connect with buyers and sellers directly via WhatsApp.</p>
+                                    <p className="text-[10px] text-loops-muted italic">Essential for the Handshake. Use your local number (e.g. 080...) or international format.</p>
                                 </div>
 
                                 <div className="space-y-2">
