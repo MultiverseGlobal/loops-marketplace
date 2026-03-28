@@ -94,6 +94,7 @@ export default function Home() {
                     .limit(20);
 
                 if (data) {
+                    const now = new Date();
                     const scoredListings = data.map(listing => {
                         const reviews = listing.reviews || [];
                         const transactions = listing.transactions || [];
@@ -102,9 +103,14 @@ export default function Home() {
                             : 0;
                         const reviewCount = reviews.length;
                         const completedPurchases = transactions.filter((t: any) => t.status === 'completed').length;
+                        
+                        // Boost logic: listings with active boost get a massive score increase
+                        const isBoosted = listing.boosted_until && new Date(listing.boosted_until) > now;
+                        const boostBonus = isBoosted ? 1000 : 0;
+
                         return {
                             ...listing,
-                            trendingScore: (avgRating * 20) + (reviewCount * 10) + (completedPurchases * 15)
+                            trendingScore: boostBonus + (avgRating * 20) + (reviewCount * 10) + (completedPurchases * 15)
                         };
                     });
                     scoredListings.sort((a, b) => b.trendingScore - a.trendingScore);

@@ -13,36 +13,36 @@ export function InstallPrompt() {
     const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+        const checkStandalone = () => {
+             return window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone || document.referrer.includes('android-app://');
+        };
 
-        // If already in PWA mode, don't do anything
+        const isStandalone = checkStandalone();
+
+        // If already in PWA mode, NEVER show the prompt
         if (isStandalone) {
             setIsVisible(false);
             return;
         }
 
-        // Check if it's iOS
         const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
         setIsIOS(isIOSDevice);
 
-        // Check if dismissed recently (within 14 days)
         const dismissedAt = localStorage.getItem('pwa-prompt-dismissed');
         const isRecentlyDismissed = dismissedAt && (Date.now() - parseInt(dismissedAt)) < 14 * 24 * 60 * 60 * 1000;
 
-        // Listen for beforeinstallprompt event
         const handleBeforeInstallPrompt = (e: any) => {
             e.preventDefault();
             setDeferredPrompt(e);
 
-            // Show prompt after a short delay if not dismissed and not in standalone
-            if (!isRecentlyDismissed && !isStandalone) {
+            if (!isRecentlyDismissed && !checkStandalone()) {
                 const timer = setTimeout(() => setIsVisible(true), 5000);
                 return () => clearTimeout(timer);
             }
         };
 
         const handleShowPrompt = () => {
-            if ((deferredPrompt || isIOSDevice) && !isStandalone) {
+            if (!checkStandalone() && (deferredPrompt || isIOSDevice)) {
                 setIsVisible(true);
             }
         };

@@ -47,6 +47,14 @@ export default function ProfilePage() {
     const [isStandalone, setIsStandalone] = useState(false);
     const [referralCount, setReferralCount] = useState(0);
     const [referralCopied, setReferralCopied] = useState(false);
+    
+    // Withdrawal State
+    const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+    const [withdrawAmount, setWithdrawAmount] = useState("");
+    const [accountNumber, setAccountNumber] = useState("");
+    const [bankCode, setBankCode] = useState("");
+    const [isWithdrawing, setIsWithdrawing] = useState(false);
+
     const router = useRouter();
 
 
@@ -59,7 +67,7 @@ export default function ProfilePage() {
 
             if (userIdToFetch) {
                 // Fetch Profile, Listings, and Reviews
-                const [profileRes, listingsRes, followRes, reviewsRes, wishlistRes, myOffersRes] = await Promise.all([
+                const results = await Promise.all([
                     supabase.from('profiles').select('*, campuses(*)').eq('id', userIdToFetch).single(),
                     supabase.from('listings').select('*').eq('seller_id', userIdToFetch).order('created_at', { ascending: false }),
                     getFollowCounts(userIdToFetch),
@@ -84,18 +92,20 @@ export default function ProfilePage() {
                         .order('created_at', { ascending: false }),
                 ]);
 
+                const [profileRes, listingsRes, followRes, reviewsRes, wishlistRes, myOffersRes, myTxRes, soldTxRes] = results;
+
                 if (profileRes.data) setProfile(profileRes.data);
                 if (listingsRes.data) setListings(listingsRes.data);
                 if (reviewsRes.data) setReviews(reviewsRes.data);
 
                 // followRes is { followers: number, following: number } returned directly from getFollowCounts
-                setFollowersCount(followRes.followers);
-                setFollowingCount(followRes.following);
+                setFollowersCount((followRes as any).followers);
+                setFollowingCount((followRes as any).following);
 
                 if (wishlistRes.data) setWishlistItems(wishlistRes.data.map((w: any) => w.listing));
                 if (myOffersRes.data) setMyOffers(myOffersRes.data);
-                if ((myOffersRes as any)[4]?.data) setMyTransactions((myOffersRes as any)[4].data);
-                if ((myOffersRes as any)[5]?.data) setSoldTransactions((myOffersRes as any)[5].data);
+                if (myTxRes.data) setMyTransactions(myTxRes.data);
+                if (soldTxRes.data) setSoldTransactions(soldTxRes.data);
 
                 // Fetching received offers requires a bit more logic because of the join structure
                 const { data: recOffers } = await supabase
@@ -163,6 +173,44 @@ export default function ProfilePage() {
             toast.error("Failed to update follow status.");
         } finally {
             setFollowLoading(false);
+        }
+    };
+
+    const handleWithdraw = async () => {
+        if (!withdrawAmount || Number(withdrawAmount) < 500) {
+            toast.error("Minimum withdrawal is ₦500");
+            return;
+        }
+        if (!accountNumber || !bankCode) {
+            toast.error("Please provide your bank details");
+            return;
+        }
+
+        setIsWithdrawing(true);
+        try {
+            const res = await fetch('/api/referrals/withdraw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: Number(withdrawAmount),
+                    accountNumber,
+                    bankCode
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                toast.success("Withdrawal initiated! Funds will arrive shortly. 💸");
+                setWithdrawModalOpen(false);
+                // Refresh balance
+                setProfile({ ...profile, available_balance: profile.available_balance - Number(withdrawAmount) });
+            } else {
+                throw new Error(data.error || "Withdrawal failed");
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Failed to process withdrawal");
+        } finally {
+            setIsWithdrawing(false);
         }
     };
 
@@ -493,6 +541,37 @@ export default function ProfilePage() {
                                                     <CheckCircle className={cn("w-3.5 h-3.5", profile?.is_verified ? "text-loops-success" : "text-loops-border")} />
                                                     <span>Account Verified</span>
                                                 </div>
+
+                                    {/* Wallet & Earnings Card - Only for Owner */}
+                                    {(!targetUserId || targetUserId === user?.id) && (
+                                        <div className="p-6 rounded-3xl bg-gradient-to-br from-loops-primary to-loops-secondary text-white space-y-6 relative overflow-hidden shadow-2xl shadow-loops-primary/20">
+                                            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl" />
+                                            
+                                            <div className="relative z-10 flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Zap className="w-5 h-5 text-white fill-white" />
+                                                    <h3 className="text-sm font-black uppercase tracking-widest italic">Available Loop Balance</h3>
+                                                </div>
+                                                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
+                                                    <Sparkles className="w-4 h-4 text-white" />
+                                                </div>
+                                            </div>
+
+                                            <div className="relative z-10 space-y-1">
+                                                <p className="text-4xl font-black tracking-tighter italic">
+                                                    {CURRENCY}{profile?.available_balance || '0.00'}
+                                                </p>
+                                                <p className="text-[10px] text-white/70 font-bold uppercase tracking-[0.2em]">Total Earnings: {CURRENCY}{profile?.lifetime_earnings || '0.00'}</p>
+                                            </div>
+
+                                            <Button 
+                                                onClick={() => setWithdrawModalOpen(true)}
+                                                className="w-full h-12 bg-white text-loops-primary font-bold rounded-2xl shadow-lg hover:scale-105 transition-all text-sm uppercase tracking-widest relative z-10"
+                                            >
+                                                Withdraw Funds
+                                            </Button>
+                                        </div>
+                                    )}
                                                 <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
                                                     <CheckCircle className={cn("w-3.5 h-3.5", listings.length >= 3 ? "text-loops-success" : "text-loops-border")} />
                                                     <span>Minimum 3 Listings</span>
@@ -505,19 +584,19 @@ export default function ProfilePage() {
                                         </div>
                                     </div>
 
-                                    {/* Referral Card */}
+                                    {/* Referral Card - Universal for All Users */}
                                     <div className="p-6 rounded-3xl bg-loops-main text-white space-y-4 relative overflow-hidden shadow-xl">
                                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
                                         <div className="relative z-10 flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <Users className="w-4 h-4 text-loops-primary" />
-                                                <h3 className="text-xs font-black uppercase tracking-widest italic">Growth Engine</h3>
+                                                <h3 className="text-xs font-black uppercase tracking-widest italic">Invite Friends</h3>
                                             </div>
-                                            <div className="text-[10px] font-black">{referralCount} Joined</div>
+                                            <div className="text-[10px] font-black">{referralCount} Referred</div>
                                         </div>
 
                                         <div className="relative z-10 space-y-3">
-                                            <p className="text-[10px] text-white/60 font-medium leading-relaxed">Refer 3 other quality vendors to earn a <span className="text-white font-bold">Founding Legend</span> badge.</p>
+                                            <p className="text-[10px] text-white/60 font-medium leading-relaxed">Share your code to grow the campus network. Earn <span className="text-white font-bold">Karma Points</span> for every verified peer you bring in.</p>
 
                                             <div className="flex items-center gap-2">
                                                 <div className="flex-1 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-3 font-mono text-xs font-bold tracking-widest">
@@ -527,10 +606,10 @@ export default function ProfilePage() {
                                                     size="icon"
                                                     className={cn("h-11 w-11 rounded-xl transition-all", referralCopied ? "bg-loops-success" : "bg-white text-loops-main")}
                                                     onClick={() => {
-                                                        const link = `https://loops-marketplace.vercel.app/founding-plugs?ref=${profile.referral_code}`;
+                                                        const link = `${window.location.origin}/login?view=signup&ref=${profile.referral_code}`;
                                                         navigator.clipboard.writeText(link);
                                                         setReferralCopied(true);
-                                                        toast.success("Ready to send! 🔗");
+                                                        toast.success("Referral link copied! 🔗");
                                                         setTimeout(() => setReferralCopied(false), 2000);
                                                     }}
                                                 >
@@ -1022,7 +1101,97 @@ export default function ProfilePage() {
                         </AnimatePresence>
                     </div>
                 </div>
-            </main >
-        </div >
+            </main>
+
+            {/* Withdrawal Modal */}
+            <AnimatePresence>
+                {withdrawModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-loops-main/40 backdrop-blur-md"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl border border-loops-border space-y-6 relative text-loops-main"
+                        >
+                            <button
+                                onClick={() => setWithdrawModalOpen(false)}
+                                className="absolute top-6 right-6 p-2 text-loops-muted hover:text-loops-main"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <div className="text-center space-y-2">
+                                <div className="w-16 h-16 bg-loops-success/10 rounded-2xl flex items-center justify-center mx-auto text-loops-success">
+                                    <Smartphone className="w-8 h-8" />
+                                </div>
+                                <h3 className="text-2xl font-bold font-display italic">Cash Out Your Gains</h3>
+                                <p className="text-loops-muted text-xs italic">Available: {CURRENCY}{profile?.available_balance || '0.00'}</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Amount to Withdraw</label>
+                                    <input
+                                        type="number"
+                                        value={withdrawAmount}
+                                        onChange={(e) => setWithdrawAmount(e.target.value)}
+                                        placeholder="500"
+                                        className="w-full px-5 py-4 bg-loops-subtle rounded-xl border border-loops-border focus:border-loops-primary outline-none font-bold"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="col-span-2">
+                                        <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Select Bank</label>
+                                        <div className="relative">
+                                            <select
+                                                value={bankCode}
+                                                onChange={(e) => setBankCode(e.target.value)}
+                                                className="w-full px-5 py-4 bg-loops-subtle rounded-xl border border-loops-border focus:border-loops-primary outline-none font-bold appearance-none pr-10"
+                                            >
+                                                <option value="">Choose your bank</option>
+                                                <option value="058">Guaranty Trust Bank</option>
+                                                <option value="011">First Bank of Nigeria</option>
+                                                <option value="057">Zenith Bank</option>
+                                                <option value="044">Access Bank</option>
+                                                <option value="033">United Bank for Africa</option>
+                                                <option value="50211">Kuda Bank</option>
+                                                <option value="999992">OPay Digital Services</option>
+                                                <option value="100004">Palmpay</option>
+                                            </select>
+                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-loops-muted" />
+                                        </div>
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Account Number</label>
+                                        <input
+                                            type="text"
+                                            value={accountNumber}
+                                            onChange={(e) => setAccountNumber(e.target.value)}
+                                            placeholder="0123456789"
+                                            maxLength={10}
+                                            className="w-full px-5 py-4 bg-loops-subtle rounded-xl border border-loops-border focus:border-loops-primary outline-none font-bold"
+                                        />
+                                    </div>
+                                </div>
+
+                                <Button
+                                    onClick={handleWithdraw}
+                                    disabled={isWithdrawing}
+                                    className="w-full h-14 bg-loops-primary text-white font-bold rounded-xl shadow-xl shadow-loops-primary/20"
+                                >
+                                    {isWithdrawing ? "Processing..." : "Withdraw to Bank"}
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }

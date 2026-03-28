@@ -204,14 +204,14 @@ export default function LoginPage() {
                         <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white border border-loops-border flex items-center justify-center mb-4 sm:mb-6 shadow-sm rotate-3 hover:rotate-0 transition-transform duration-500 overflow-hidden">
                             <InfinityLogo className="w-8 h-8 sm:w-12 sm:h-12" />
                         </div>
-                        <p className="text-sm font-bold text-loops-primary uppercase tracking-widest leading-none">Nigerian Campus Network</p>
+                        <p className="text-sm font-bold text-loops-primary uppercase tracking-widest leading-none">The Pulse of Every Campus</p>
                         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter italic text-loops-main">
-                            {view === 'signup' ? "Join the Loop." : "Welcome back."}
+                            {view === 'signup' ? "Start your Loop." : "Welcome back."}
                         </h1>
                         <p className="text-loops-muted text-sm font-medium pt-2">
                             {view === 'signup'
-                                ? "Create your account to start trading."
-                                : "Sign in to access your dashboard."}
+                                ? "Join Nigeria's fastest growing student network."
+                                : "Sign in to your campus dashboard."}
                         </p>
                     </div>
 

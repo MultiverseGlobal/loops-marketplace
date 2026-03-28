@@ -19,6 +19,7 @@ import { followUser, unfollowUser, getFollowStatus } from "../../../lib/follows"
 import { UserPlus, UserMinus } from "lucide-react";
 import { Rating } from "../../../components/ui/rating";
 import { LoopLoading } from "../../../components/ui/loop-loading";
+import { initializeTransaction } from "@/lib/paystack";
 
 export default function ListingDetailPage() {
     const { id } = useParams();
@@ -61,7 +62,11 @@ export default function ListingDetailPage() {
                             store_banner_color,
                             reputation,
                             rating,
-                            email_verified
+                            email_verified,
+                            whatsapp_number,
+                            avatar_url,
+                            store_logo_url,
+                            bio
                         )
                     `)
                     .eq('id', id)
@@ -371,6 +376,70 @@ export default function ListingDetailPage() {
         }
     };
 
+    const handleBoost = async (plan: string) => {
+        if (!currentUser) return;
+        setIsInteracting(true);
+        try {
+            const data = await initializeTransaction(currentUser.email, 0, { // Amount is handled in API
+                listingId: id,
+                plan
+            });
+            
+            // For this implementation, we fetch the config from API
+            const res = await fetch('/api/payments/paystack/initialize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listingId: id, plan })
+            });
+            const payData = await res.json();
+            
+            if (payData.authorization_url) {
+                window.location.href = payData.authorization_url;
+            } else {
+                throw new Error("Failed to initialize payment");
+            }
+        } catch (err: any) {
+            setIsInteracting(false);
+        }
+    };
+
+    const handleBuyNow = async () => {
+        if (!currentUser) {
+            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
+            return;
+        }
+
+        if (!currentUser.email_verified) {
+            toast.warning("Verification Required: Please verify your university email first.");
+            return;
+        }
+
+        setIsInteracting(true);
+        try {
+            const res = await fetch('/api/payments/paystack/initialize-escrow', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    listingId: id, 
+                    amount: listing.price, 
+                    sellerId: listing.seller_id 
+                })
+            });
+            const payData = await res.json();
+            
+            if (payData.authorization_url) {
+                toast.info("Opening secure Paystack gateway...");
+                window.location.href = payData.authorization_url;
+            } else {
+                throw new Error("Failed to initialize escrow payment");
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Failed to start escrow payment");
+        } finally {
+            setIsInteracting(false);
+        }
+    };
+
     const handleFollow = async () => {
         if (!currentUser) {
             router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
@@ -604,6 +673,27 @@ export default function ListingDetailPage() {
                                     </div>
                                     <div className="text-[10px] font-bold text-loops-muted uppercase">Status: {listing.status}</div>
                                 </div>
+                                
+                                {/* NEW: Boost Listing Section */}
+                                <div className="p-6 rounded-2xl bg-gradient-to-r from-loops-primary/10 to-loops-secondary/10 border border-loops-primary/20 space-y-4">
+                                    <div className="flex items-center gap-2 text-loops-primary font-bold text-xs uppercase tracking-widest">
+                                        <Zap className="w-5 h-5 fill-loops-primary" />
+                                        Boost your visibility
+                                    </div>
+                                    <p className="text-xs text-loops-muted leading-relaxed">Boosted items appear at the top of the campus feed and get <span className="text-loops-main font-bold">5x more views</span>.</p>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <Button onClick={() => handleBoost('basic')} variant="outline" className="h-12 text-[10px] font-bold border-loops-primary/30 text-loops-primary hover:bg-loops-primary hover:text-white transition-all">
+                                            3 Days (₦500)
+                                        </Button>
+                                        <Button onClick={() => handleBoost('premium')} variant="outline" className="h-12 text-[10px] font-bold border-loops-primary/30 text-loops-primary hover:bg-loops-primary hover:text-white transition-all">
+                                            10 Days (₦1500)
+                                        </Button>
+                                        <Button onClick={() => handleBoost('boost')} className="h-12 text-[10px] font-bold bg-loops-primary text-white shadow-lg shadow-loops-primary/20">
+                                            30 Days (₦3000)
+                                        </Button>
+                                    </div>
+                                </div>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <Link href={`/listings/${id}/edit`} className="flex-1">
                                         <Button className="w-full h-16 text-lg font-bold bg-white border border-loops-border hover:bg-loops-subtle text-loops-main shadow-sm transition-all">
@@ -633,23 +723,14 @@ export default function ListingDetailPage() {
                         ) : (
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {/* Primary Action: Buy / Start a Loop */}
+                                    {/* Primary Action: Secure Buy Now (Escrow) */}
                                     <Button
-                                        onClick={handleStartLoop}
-                                        disabled={loopLoading}
+                                        onClick={handleBuyNow}
+                                        disabled={isInteracting}
                                         className="h-16 text-xl font-bold bg-loops-primary text-white shadow-2xl shadow-loops-primary/20 transition-all font-display group hover:scale-105 sm:col-span-2"
                                     >
-                                        {listing.type === 'product' ? (
-                                            <>
-                                                <ShoppingCart className="w-6 h-6 mr-3 group-hover:animate-bounce" />
-                                                Buy Now
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Zap className="w-6 h-6 mr-3 group-hover:animate-pulse" />
-                                                Start a Loop
-                                            </>
-                                        )}
+                                        <Package className="w-6 h-6 mr-3 group-hover:animate-bounce" />
+                                        Secure Buy Now
                                     </Button>
 
                                     {/* Secondary: WhatsApp Chat (No Loop) */}

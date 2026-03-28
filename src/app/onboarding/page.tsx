@@ -77,7 +77,8 @@ interface Campus {
 
 export default function OnboardingPage() {
     const [step, setStep] = useState(1);
-    const [selectedCampus, setSelectedCampus] = useState("00000000-0000-0000-0000-000000000001"); // Veritas University default
+    const [selectedCampus, setSelectedCampus] = useState(""); // No default, force selection
+    const [referralCode, setReferralCode] = useState("");
     const [fullName, setFullName] = useState("");
     const [bio, setBio] = useState("");
     const [storeName, setStoreName] = useState("");
@@ -187,6 +188,7 @@ export default function OnboardingPage() {
                     whatsapp_number: formatWhatsAppNumber(whatsappNumber),
                     primary_role: primaryRole,
                     is_plug: primaryRole === 'plug',
+                    referred_by_code: referralCode || null,
                     updated_at: new Date().toISOString(),
                 });
 
@@ -353,13 +355,13 @@ export default function OnboardingPage() {
                             </Button>
 
                             <div className="pt-4 text-center space-y-4">
-                                <p className="text-sm text-loops-muted">Not from Veritas University?</p>
+                                <p className="text-sm text-loops-muted font-bold italic">Can't find your school?</p>
                                 <button
                                     onClick={() => setShowRequestForm(true)}
                                     className="w-full h-14 rounded-2xl border border-dashed border-loops-primary/40 text-loops-primary font-bold hover:bg-loops-primary/5 transition-all flex items-center justify-center gap-2"
                                 >
                                     <Sparkles className="w-4 h-4" />
-                                    Nominate your Campus for the next Loop
+                                    Nominate your Campus
                                 </button>
                             </div>
 
@@ -523,6 +525,21 @@ export default function OnboardingPage() {
                                         rows={4}
                                         className="w-full p-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all resize-none shadow-sm"
                                     />
+                                </div>
+
+                                <div className="space-y-2 pt-4">
+                                    <label className="text-sm font-bold text-loops-primary uppercase tracking-widest flex items-center gap-2">
+                                        <Sparkles className="w-4 h-4" />
+                                        Referral Code (Optional)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={referralCode}
+                                        onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                                        placeholder="ENTER CODE"
+                                        className="w-full h-14 px-6 rounded-xl bg-loops-primary/5 border border-loops-primary/20 text-loops-primary focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all font-black tracking-[0.2em] shadow-sm uppercase placeholder:text-loops-primary/30"
+                                    />
+                                    <p className="text-[10px] text-loops-muted italic">If a friend referred you, enter their code here to give them a boost! ⚡</p>
                                 </div>
                             </div>
 
