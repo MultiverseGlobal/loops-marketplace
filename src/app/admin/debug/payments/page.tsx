@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Zap, ShieldCheck, Smartphone, CheckCircle, AlertTriangle, RefreshCw } from "lucide-react";
 import { useToast } from "@/context/toast-context";
+import { cn } from "@/lib/utils";
 
 export default function PaymentDebugPage() {
     const [transactions, setTransactions] = useState<any[]>([]);
