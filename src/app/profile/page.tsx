@@ -275,19 +275,19 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
 
-            <main className="pt-4 md:pt-20 sm:pt-24 pb-16 sm:pb-20 max-w-7xl mx-auto px-0 sm:px-6 relative">
+            <main className="pt-20 sm:pt-24 pb-32 max-w-7xl mx-auto px-0 sm:px-6 relative">
                 {/* Brand Banner / Store Header */}
                 {profile?.store_name && (
-                    <div className={cn("w-full h-40 sm:h-64 mb-12 sm:rounded-[2.5rem] relative overflow-hidden group shadow-2xl", profile.store_banner_color || "bg-loops-primary")}>
+                    <div className={cn("w-full h-48 sm:h-64 mb-8 sm:mb-12 sm:rounded-[2.5rem] relative overflow-hidden group shadow-2xl", profile.store_banner_color || "bg-loops-primary")}>
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-black/40 via-transparent to-transparent opacity-60" />
-                        <div className="absolute bottom-0 left-0 p-8 sm:p-12 space-y-2">
+                        <div className="absolute bottom-0 left-0 p-6 sm:p-12 space-y-1 sm:space-y-2">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
-                                    <Sparkles className="w-5 h-5 text-white" />
+                                <div className="p-1.5 sm:p-2 bg-white/10 backdrop-blur-md rounded-lg sm:rounded-xl border border-white/20">
+                                    <Sparkles className="w-4 h-4 sm:w-5 h-5 text-white" />
                                 </div>
-                                <span className="text-sm font-black text-white uppercase tracking-[0.3em]">Verified Storefront</span>
+                                <span className="text-[10px] sm:text-sm font-black text-white uppercase tracking-[0.3em]">Verified Storefront</span>
                             </div>
-                            <h1 className="text-4xl sm:text-6xl font-display font-bold text-white tracking-tighter italic">{profile.store_name}</h1>
+                            <h1 className="text-3xl sm:text-6xl font-display font-bold text-white tracking-tighter italic leading-none">{profile.store_name}</h1>
                         </div>
                         {/* Abstract shapes for texture */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl" />

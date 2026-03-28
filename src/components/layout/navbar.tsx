@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart, Bell } from "lucide-react";
+import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart, Bell, Home, Search, PlusSquare, Package } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
@@ -247,6 +247,33 @@ export function Navbar() {
             </nav>
 
             <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+
+            {/* Mobile Bottom Navigation */}
+            <nav className="md:hidden fixed bottom-0 w-full z-50 border-t border-loops-border bg-white/90 backdrop-blur-xl safe-padding-bottom">
+                <div className="flex items-center justify-around h-16">
+                    <Link href="/" className="flex flex-col items-center gap-1 group">
+                        <Home className={cn("w-5 h-5", router.hasOwnProperty('pathname') && (router as any).pathname === "/" ? "text-loops-primary" : "text-loops-muted")} />
+                        <span className="text-[10px] font-bold uppercase tracking-widest scale-90">Home</span>
+                    </Link>
+                    <Link href="/browse?view=product" className="flex flex-col items-center gap-1 group">
+                        <Search className="w-5 h-5 text-loops-muted group-active:text-loops-primary" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest scale-90 text-loops-muted">Market</span>
+                    </Link>
+                    <Link href="/listings/create" className="flex flex-col items-center gap-1 relative -top-3">
+                        <div className="w-12 h-12 bg-loops-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-loops-primary/30 active:scale-90 transition-transform">
+                            <PlusSquare className="w-6 h-6" />
+                        </div>
+                    </Link>
+                    <Link href="/requests" className="flex flex-col items-center gap-1 group">
+                        <Package className="w-5 h-5 text-loops-muted group-active:text-loops-primary" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest scale-90 text-loops-muted">Requests</span>
+                    </Link>
+                    <Link href="/profile" className="flex flex-col items-center gap-1 group">
+                        <UserCircle className="w-5 h-5 text-loops-muted group-active:text-loops-primary" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest scale-90 text-loops-muted">Profile</span>
+                    </Link>
+                </div>
+            </nav>
         </>
     );
 }

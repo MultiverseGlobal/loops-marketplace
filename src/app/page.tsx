@@ -161,7 +161,7 @@ export default function Home() {
                 <ActivityBuzz />
 
                 {/* Hero Section: The "Wow" Factor */}
-                <section className="relative min-h-[70vh] flex items-center justify-center pt-24 pb-12 px-6 overflow-hidden">
+                <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-20 sm:pt-24 pb-12 px-4 sm:px-6 overflow-hidden">
                     {/* Dynamic Background Elements */}
                     <div className="absolute inset-0 z-0">
                         <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-loops-primary/10 blur-[120px] rounded-full animate-float" />
@@ -183,7 +183,7 @@ export default function Home() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.1 }}
-                            className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-[-0.04em] leading-[0.9] text-loops-main"
+                            className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-[-0.04em] leading-[0.85] sm:leading-[0.9] text-loops-main"
                         >
                             <div className="relative h-[1.1em] overflow-hidden">
                                 <AnimatePresence mode="wait">
@@ -217,17 +217,17 @@ export default function Home() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="flex flex-col sm:flex-row gap-4 justify-center pt-6"
+                            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-4 sm:pt-6"
                         >
                             <Link href="/login?view=signup">
-                                <Button size="lg" className="h-14 px-10 text-lg font-bold bg-loops-primary text-white hover:bg-loops-primary/90 transition-all shadow-2xl shadow-loops-primary/25 rounded-2xl group">
+                                <Button size="lg" className="h-14 sm:h-16 px-8 sm:px-10 text-base sm:text-lg font-bold bg-loops-primary text-white hover:bg-loops-primary/90 transition-all shadow-2xl shadow-loops-primary/25 rounded-2xl group w-full sm:w-auto">
                                     Join the Loop
-                                    <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="w-5 h-5 ml-2 sm:ml-3 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </Link>
                             <Link href="/login">
-                                <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-bold border-loops-border bg-white text-loops-main rounded-2xl hover:bg-loops-subtle transition-all">
-                                    Sign In
+                                <Button size="lg" variant="outline" className="h-14 sm:h-16 px-8 sm:px-10 text-base sm:text-lg font-bold border-loops-border bg-white text-loops-main rounded-2xl hover:bg-loops-subtle transition-all w-full sm:w-auto">
+                                     Sign In
                                 </Button>
                             </Link>
                         </motion.div>

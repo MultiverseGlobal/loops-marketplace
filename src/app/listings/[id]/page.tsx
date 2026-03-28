@@ -562,9 +562,9 @@ export default function ListingDetailPage() {
                                 <span>Verified {campus?.name || 'Campus'} Plug</span>
                             </div>
                             <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-loops-main leading-tight sm:leading-none">{listing.title}</h1>
-                            <div className="flex items-center gap-6">
+                            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                                 <p className="text-3xl sm:text-4xl font-bold text-loops-primary tracking-tighter">{CURRENCY}{listing.price}</p>
-                                <div className="h-8 w-px bg-loops-border" />
+                                <div className="hidden sm:block h-8 w-px bg-loops-border" />
                                 <div className="flex items-center gap-1.5 px-3 py-1 bg-loops-primary/5 rounded-full border border-loops-primary/10">
                                     <span className="text-[10px] text-loops-primary uppercase font-bold tracking-widest leading-none">Type: {listing.type}</span>
                                 </div>
@@ -727,7 +727,7 @@ export default function ListingDetailPage() {
                                     <Button
                                         onClick={handleBuyNow}
                                         disabled={isInteracting}
-                                        className="h-16 text-xl font-bold bg-loops-primary text-white shadow-2xl shadow-loops-primary/20 transition-all font-display group hover:scale-105 sm:col-span-2"
+                                        className="h-16 text-lg sm:text-xl font-bold bg-loops-primary text-white shadow-2xl shadow-loops-primary/20 transition-all font-display group hover:scale-105 sm:col-span-2"
                                     >
                                         <Package className="w-6 h-6 mr-3 group-hover:animate-bounce" />
                                         Secure Buy Now
