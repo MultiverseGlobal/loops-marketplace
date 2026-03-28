@@ -1,6 +1,6 @@
-import { createClient } from "../../../../lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { initiateTransfer, createTransferRecipient } from "../../../../lib/paystack";
+import { initiateTransfer, createTransferRecipient } from "@/lib/paystack";
 
 export async function POST(req: Request) {
   try {
