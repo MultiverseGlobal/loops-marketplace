@@ -35,14 +35,24 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         className="fixed inset-0 bg-loops-main/60 backdrop-blur-md z-[60]"
                     />
 
-                    {/* Drawer */}
+                    {/* Drawer / Bottom Sheet */}
                     <motion.div
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
-                        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                        className="fixed right-0 top-0 h-full w-full max-w-md bg-white/95 backdrop-blur-2xl shadow-[-20px_0_50px_-10px_rgba(0,0,0,0.3)] z-[70] flex flex-col"
+                        // We will use dynamic classes for the actual positioning
+                        className={cn(
+                            "fixed z-[70] flex flex-col bg-white/95 backdrop-blur-2xl shadow-2xl transition-all duration-300",
+                            // Mobile: Bottom Sheet
+                            "bottom-0 left-0 right-0 h-auto max-h-[85vh] rounded-t-[2.5rem] border-t border-loops-border",
+                            // Desktop: Side Drawer
+                            "md:top-0 md:right-0 md:left-auto md:h-full md:w-full md:max-w-md md:rounded-l-[2.5rem] md:rounded-t-none md:border-t-0 md:border-l"
+                        )}
+                        initial={{ y: '100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '100%' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     >
+                        {/* Mobile Handle */}
+                        <div className="w-12 h-1.5 bg-loops-muted/20 rounded-full mx-auto mt-4 mb-2 md:hidden" />
+
                         {/* Header */}
                         <div className="p-6 border-b border-loops-border flex items-center justify-between bg-white/50">
                             <div className="flex items-center gap-3">
@@ -59,7 +69,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         {/* Content */}
                         <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-6">
                             {cartItems.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
+                                <div className="h-48 md:h-full flex flex-col items-center justify-center text-center space-y-4">
                                     <div className="w-20 h-20 bg-loops-subtle rounded-full flex items-center justify-center text-loops-muted">
                                         <ShoppingCart className="w-10 h-10" />
                                     </div>
@@ -79,8 +89,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                                 <Image
                                                     src={item.listing?.images?.[0] || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000'}
                                                     alt={item.listing?.title || 'Unknown Item'}
-                                                    fill
-                                                    className="object-cover"
+                                                    width={96}
+                                                    height={96}
+                                                    className="object-cover w-full h-full"
                                                 />
                                             </div>
                                             <div className="flex-1 flex flex-col justify-between py-1">
@@ -130,12 +141,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                         {/* Footer */}
                         {cartItems.length > 0 && (
-                            <div className="p-6 border-t border-loops-border bg-loops-subtle/30 space-y-4 mt-auto">
+                            <div className="p-6 border-t border-loops-border bg-loops-subtle/30 space-y-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-loops-muted font-bold uppercase tracking-widest text-xs">Total Estimated</span>
                                     <span className="text-2xl font-black text-loops-main tracking-tighter">{CURRENCY}{totalPrice}</span>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-3 pb-safe">
                                     <p className="text-[10px] text-loops-muted text-center italic">Final price and meeting details will be confirmed with the Plug.</p>
                                     <Link href="/checkout" onClick={onClose} className="block">
                                         <Button className="w-full h-14 rounded-2xl bg-loops-primary text-white font-bold text-lg shadow-xl shadow-loops-primary/20 group">

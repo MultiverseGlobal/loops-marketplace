@@ -10,6 +10,17 @@
 
 body {
   @apply bg-loops-bg text-loops-main;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Re-enable selection for specific areas where needed */
+.selectable {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 /* Custom Scrollbar for Light Mode */

@@ -11,6 +11,7 @@ import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useCart } from "@/context/cart-context";
 import { CartDrawer } from "./cart-drawer";
 import { useNotifications } from "@/context/notification-context";
+import { motion } from "framer-motion";
 
 export function BottomNav() {
     const pathname = usePathname();
@@ -53,10 +54,16 @@ export function BottomNav() {
         { label: "Profile", href: user ? "/profile" : "/login", icon: User },
     ];
 
+    const handleNavClick = () => {
+        if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(10); // Subtle haptic tap
+        }
+    };
+
     return (
         <>
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2 pointer-events-none">
-                <nav className="bg-white/90 backdrop-blur-2xl border border-loops-border/40 shadow-[0_-8px_40px_-12px_rgba(0,0,0,0.15)] rounded-2xl flex items-center justify-around h-14 pointer-events-auto">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-6 pb-6 pt-2 pointer-events-none">
+                <nav className="bg-white/80 backdrop-blur-3xl border border-white/20 shadow-[0_-12px_40px_-15px_rgba(0,0,0,0.2)] rounded-[2.5rem] flex items-center justify-around h-16 pointer-events-auto px-2">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = item.href && (pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)));
@@ -66,13 +73,14 @@ export function BottomNav() {
                                 <Link
                                     key={item.label}
                                     href={item.href!}
-                                    className="relative -top-2.5"
+                                    onClick={handleNavClick}
+                                    className="relative -top-3"
                                 >
                                     <div className={cn(
-                                        "w-12 h-12 rounded-xl flex items-center justify-center shadow-2xl transition-all active:scale-95",
+                                        "w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all active:scale-90",
                                         isActive ? "bg-loops-primary text-white" : "bg-loops-main text-white"
                                     )}>
-                                        <Icon className="w-6 h-6" />
+                                        <Icon className="w-7 h-7" />
                                     </div>
                                 </Link>
                             );
@@ -83,20 +91,20 @@ export function BottomNav() {
                             return (
                                 <button
                                     key={item.label}
-                                    onClick={() => setIsCartOpen(true)}
+                                    onClick={() => {
+                                        handleNavClick();
+                                        setIsCartOpen(true);
+                                    }}
                                     className="flex flex-col items-center justify-center gap-1 group relative flex-1"
                                 >
-                                    <div className="relative p-1.5 rounded-lg transition-all duration-300 group-active:scale-90 text-loops-muted group-hover:text-loops-main">
+                                    <div className="relative p-2 rounded-xl transition-all duration-300 group-active:scale-90 text-loops-muted group-hover:text-loops-main">
                                         <Icon className="w-5 h-5" />
                                         {item.badge! > 0 && (
-                                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
+                                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-loops-primary text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-lg">
                                                 {item.badge}
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-loops-muted opacity-0 scale-75 translate-y-1">
-                                        {item.label}
-                                    </span>
                                 </button>
                             );
                         }
@@ -105,27 +113,25 @@ export function BottomNav() {
                             <Link
                                 key={item.label}
                                 href={item.href!}
+                                onClick={handleNavClick}
                                 className="flex flex-col items-center justify-center gap-1 group relative flex-1"
                             >
                                 <div className={cn(
-                                    "relative p-1.5 rounded-lg transition-all duration-300 group-active:scale-90",
-                                    isActive ? "bg-loops-primary/10 text-loops-primary" : "text-loops-muted group-hover:text-loops-main"
+                                    "relative p-2 rounded-xl transition-all duration-300 group-active:scale-90",
+                                    isActive ? "bg-loops-primary/10 text-loops-primary scale-110" : "text-loops-muted group-hover:text-loops-main"
                                 )}>
                                     <Icon className={cn("w-5 h-5", isActive && "animate-pulse-subtle")} />
                                     {item.badge! > 0 && (
-                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
+                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-loops-primary text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-lg">
                                             {item.badge}
                                         </span>
                                     )}
                                 </div>
-                                <span className={cn(
-                                    "text-[10px] font-bold uppercase tracking-widest transition-all",
-                                    isActive ? "text-loops-primary opacity-100 scale-100" : "text-loops-muted opacity-0 scale-75 translate-y-1"
-                                )}>
-                                    {item.label}
-                                </span>
                                 {isActive && (
-                                    <span className="absolute -top-1 w-1 h-1 bg-loops-primary rounded-full" />
+                                    <motion.span 
+                                        layoutId="navIndicator"
+                                        className="absolute -top-1.5 w-1 h-1 bg-loops-primary rounded-full shadow-lg shadow-loops-primary/50" 
+                                    />
                                 )}
                             </Link>
                         );
