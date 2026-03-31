@@ -32,7 +32,7 @@ export function AdminSidebar({ currentView, onViewChange }: AdminSidebarProps) {
         { id: 'universities' as const, label: 'Universities', icon: School },
         { id: 'marketplace' as const, label: 'Marketplace', icon: ShoppingBag },
         { id: 'safety' as const, label: 'Safety Hub', icon: ShieldAlert },
-        { id: 'disputes' as const, label: 'Disputes', icon: ShieldAlert }, -- Using ShieldAlert or specialized icon
+        { id: 'disputes' as const, label: 'Disputes', icon: ShieldAlert }, // Using ShieldAlert or specialized icon
         { id: 'onboarding' as const, label: 'Blitz Kit', icon: Zap },
         { id: 'settings' as const, label: 'Settings', icon: Settings },
     ];
