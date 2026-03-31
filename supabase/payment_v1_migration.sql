@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS public.payout_requests (
 );
 
 -- 5. RPC: Verify Handoff Handshake
+DROP FUNCTION IF EXISTS public.verify_handoff_handshake(p_transaction_id UUID, p_token TEXT);
+DROP FUNCTION IF EXISTS public.verify_handoff_handshake(UUID, TEXT);
 CREATE OR REPLACE FUNCTION public.verify_handoff_handshake(
     p_transaction_id UUID,
     p_token TEXT
@@ -97,6 +99,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 7. RPC: Process Payout Request
 -- Safely deducts the balance and creates a payout request log.
+DROP FUNCTION IF EXISTS public.process_payout_request(p_user_id UUID, p_amount DECIMAL, p_transfer_code TEXT);
+DROP FUNCTION IF EXISTS public.process_payout_request(UUID, DECIMAL, TEXT);
 CREATE OR REPLACE FUNCTION public.process_payout_request(
     p_user_id UUID,
     p_amount DECIMAL,
