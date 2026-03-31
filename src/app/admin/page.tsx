@@ -80,6 +80,7 @@ export default function AdminDashboard() {
 
     // Safety Hub States
     const [reports, setReports] = useState<any[]>([]);
+    const [disputes, setDisputes] = useState<any[]>([]);
 
     // Universities States
     const [campuses, setCampuses] = useState<any[]>([]);
@@ -294,7 +295,8 @@ export default function AdminDashboard() {
                     supabase.from('seller_applications').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
                     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'product'),
                     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'service'),
-                    supabase.from('reports').select('*', { count: 'exact', head: true })
+                    supabase.from('reports').select('*', { count: 'exact', head: true }),
+                    supabase.from('disputes').select('*', { count: 'exact', head: true }).eq('status', 'open')
                 ]);
 
                 // 2. Applications (Fetch both pending and approved for history)
@@ -326,7 +328,13 @@ export default function AdminDashboard() {
                     .select('*, profiles(full_name, avatar_url)')
                     .order('created_at', { ascending: false });
 
-                // 7. All Users for Directory
+                // 7. Disputes
+                const { data: disputesData } = await supabase
+                    .from('disputes')
+                    .select('*, transactions(*, profiles!transactions_buyer_id_fkey(full_name, email), sellers:profiles!transactions_seller_id_fkey(full_name, email))')
+                    .order('created_at', { ascending: false });
+
+                // 8. All Users for Directory
                 const { data: usersData } = await supabase
                     .from('profiles')
                     .select('*')
@@ -350,6 +358,7 @@ export default function AdminDashboard() {
                 setCampuses(campusesData.data || []);
                 setCampusRequests(requestsData.data || []);
                 setReports(reportsData || []);
+                setDisputes(disputesData || []);
                 setAllListings(listingsData || []);
                 setAllUsers(usersData || []);
 
@@ -427,6 +436,34 @@ export default function AdminDashboard() {
         if (!userSearch) return;
         const { data } = await supabase.from('profiles').select('*').or(`email.ilike.%${userSearch}%,id.eq.${userSearch}`).single();
         setFoundUser(data);
+    };
+
+    const handleResolveDispute = async (disputeId: string, decision: 'REFUND' | 'RELEASE', notes: string) => {
+        setProcessingId(disputeId);
+        try {
+            const res = await fetch('/api/admin/disputes/resolve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ disputeId, decision, adminNotes: notes })
+            });
+
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || 'Resolution failed');
+            }
+
+            toast.success(`Dispute resolved: ${decision}`);
+            // Force refresh data
+            const { data: updatedDisputes } = await supabase
+                .from('disputes')
+                .select('*, transactions(*, profiles!transactions_buyer_id_fkey(full_name, email), sellers:profiles!transactions_seller_id_fkey(full_name, email))')
+                .order('created_at', { ascending: false });
+            setDisputes(updatedDisputes || []);
+        } catch (err: any) {
+            toast.error(err.message);
+        } finally {
+            setProcessingId(null);
+        }
     };
 
     const groupApplications = (apps: any[]) => {
@@ -1135,6 +1172,158 @@ export default function AdminDashboard() {
         </div>
     );
 
+    const DisputesView = () => (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Disputes Header Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-8 bg-white border border-loops-border rounded-[2rem] shadow-sm">
+                    <p className="text-[10px] font-black text-loops-muted uppercase tracking-[0.2em] mb-1">Open Cases</p>
+                    <p className="text-4xl font-black font-display italic text-loops-primary tracking-tight">
+                        {disputes.filter(d => d.status === 'open' || d.status === 'under_review').length}
+                    </p>
+                </div>
+                <div className="p-8 bg-white border border-loops-border rounded-[2rem] shadow-sm">
+                    <p className="text-[10px] font-black text-loops-muted uppercase tracking-[0.2em] mb-1">Resolved (Released)</p>
+                    <p className="text-4xl font-black font-display italic text-loops-success tracking-tight">
+                        {disputes.filter(d => d.status === 'resolved_released').length}
+                    </p>
+                </div>
+                <div className="p-8 bg-white border border-loops-border rounded-[2rem] shadow-sm">
+                    <p className="text-[10px] font-black text-loops-muted uppercase tracking-[0.2em] mb-1">Resolved (Refunded)</p>
+                    <p className="text-4xl font-black font-display italic text-loops-muted tracking-tight">
+                        {disputes.filter(d => d.status === 'resolved_refunded').length}
+                    </p>
+                </div>
+            </div>
+
+            {/* Disputes List */}
+            <div className="space-y-6">
+                {disputes.map(dispute => (
+                    <div key={dispute.id} className="bg-white border border-loops-border rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
+                        <div className="flex flex-col lg:flex-row gap-12">
+                            {/* Left: Metadata & Evidence */}
+                            <div className="flex-1 space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="px-3 py-1 bg-loops-primary/10 text-loops-primary rounded-full text-[10px] font-black uppercase tracking-widest border border-loops-primary/20">
+                                        TX: {dispute.transactions?.id.slice(0, 8)}...
+                                    </div>
+                                    <span className={cn(
+                                        "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                        dispute.status === 'open' ? "bg-amber-50 text-amber-600 border-amber-200" :
+                                        dispute.status.includes('resolved') ? "bg-loops-success/10 text-loops-success border-loops-success/20" :
+                                        "bg-loops-subtle text-loops-muted border-loops-border"
+                                    )}>
+                                        {dispute.status.replace('_', ' ')}
+                                    </span>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <h3 className="text-2xl font-black italic tracking-tight capitalize">{dispute.reason.replace('_', ' ')}</h3>
+                                    <p className="text-loops-muted text-sm font-medium leading-relaxed">{dispute.description || "No additional details provided."}</p>
+                                </div>
+
+                                {/* Participants */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-loops-subtle rounded-2xl border border-loops-border">
+                                        <p className="text-[9px] font-black text-loops-muted uppercase tracking-widest mb-1">Buyer</p>
+                                        <p className="text-xs font-bold text-loops-main">{dispute.transactions?.profiles?.full_name}</p>
+                                        <p className="text-[10px] text-loops-muted font-medium">{dispute.transactions?.profiles?.email}</p>
+                                    </div>
+                                    <div className="p-4 bg-loops-subtle rounded-2xl border border-loops-border">
+                                        <p className="text-[9px] font-black text-loops-muted uppercase tracking-widest mb-1">Seller</p>
+                                        <p className="text-xs font-bold text-loops-main">{dispute.transactions?.sellers?.full_name}</p>
+                                        <p className="text-[10px] text-loops-muted font-medium">{dispute.transactions?.sellers?.email}</p>
+                                    </div>
+                                </div>
+
+                                {/* Evidence Gallery */}
+                                {dispute.evidence_urls && dispute.evidence_urls.length > 0 && (
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] font-black text-loops-muted uppercase tracking-widest ml-1">Evidence Captured</p>
+                                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                            {dispute.evidence_urls.map((url: string, i: number) => (
+                                                <div key={i} className="relative w-32 h-32 rounded-2xl overflow-hidden border border-loops-border flex-shrink-0 cursor-zoom-in hover:scale-105 transition-transform">
+                                                    <img src={url} alt="Evidence" className="w-full h-full object-cover" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Right: Resolution Control */}
+                            <div className="w-full lg:w-80 space-y-6 lg:border-l lg:pl-12 border-loops-border">
+                                <div className="text-center p-6 bg-loops-subtle rounded-3xl border border-loops-border space-y-2">
+                                    <p className="text-[10px] font-black text-loops-muted uppercase tracking-widest">In Escrow</p>
+                                    <p className="text-3xl font-black italic text-loops-primary tracking-tight">₦{dispute.transactions?.amount.toLocaleString()}</p>
+                                </div>
+
+                                {dispute.status === 'open' || dispute.status === 'under_review' ? (
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted ml-1">Admin Notes</label>
+                                            <textarea 
+                                                id={`notes-${dispute.id}`}
+                                                placeholder="Document your findings..."
+                                                className="w-full h-24 p-4 rounded-2xl bg-loops-subtle border border-loops-border outline-none focus:border-loops-primary text-sm font-medium resize-none transition-all"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-3">
+                                            <Button 
+                                                onClick={() => {
+                                                    const notes = (document.getElementById(`notes-${dispute.id}`) as HTMLTextAreaElement)?.value;
+                                                    handleResolveDispute(dispute.id, 'RELEASE', notes);
+                                                }}
+                                                disabled={processingId === dispute.id}
+                                                className="w-full h-12 bg-loops-success text-white font-black uppercase tracking-widest text-[10px] rounded-xl shadow-lg shadow-loops-success/20 transition-all hover:translate-y-[-2px] active:translate-y-0"
+                                            >
+                                                {processingId === dispute.id ? "Syncing..." : "Release to Seller ✅"}
+                                            </Button>
+                                            <Button 
+                                                onClick={() => {
+                                                    const notes = (document.getElementById(`notes-${dispute.id}`) as HTMLTextAreaElement)?.value;
+                                                    handleResolveDispute(dispute.id, 'REFUND', notes);
+                                                }}
+                                                disabled={processingId === dispute.id}
+                                                variant="outline"
+                                                className="w-full h-12 border-red-500 text-red-500 hover:bg-red-50 font-black uppercase tracking-widest text-[10px] rounded-xl transition-all"
+                                            >
+                                                Refund Buyer 💸
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="p-6 rounded-3xl border border-dashed border-loops-border text-center space-y-3">
+                                        <CheckCircle className="w-8 h-8 text-loops-success/40 mx-auto" />
+                                        <div>
+                                            <p className="text-[10px] font-black text-loops-muted uppercase tracking-widest">Resolved By</p>
+                                            <p className="text-xs font-bold text-loops-main">Founding Node</p>
+                                        </div>
+                                        {dispute.admin_notes && (
+                                            <p className="text-[10px] text-loops-muted italic font-medium leading-relaxed">"{dispute.admin_notes}"</p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Background Decor */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-loops-primary/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                    </div>
+                ))}
+
+                {disputes.length === 0 && (
+                    <div className="py-24 text-center space-y-4">
+                        <div className="w-20 h-20 bg-loops-subtle rounded-full flex items-center justify-center mx-auto text-loops-muted/20">
+                            <ShieldAlert className="w-10 h-10" />
+                        </div>
+                        <p className="text-loops-muted font-bold italic">No disputes active. The marketplace is harmonious.</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
     if (!isPasskeyVerified) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-loops-bg px-6">
@@ -1194,6 +1383,7 @@ export default function AdminDashboard() {
                         {currentView === 'users' && <UserView />}
                         {currentView === 'universities' && <UniversityView />}
                         {currentView === 'safety' && <SafetyView />}
+                        {currentView === 'disputes' && <DisputesView />}
                         {currentView === 'marketplace' && (
                             <div className="space-y-8">
                                 {/* Marketplace Search & Filter */}

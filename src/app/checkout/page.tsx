@@ -8,10 +8,11 @@ import { ShieldCheck, ArrowLeft, Lock, Info, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { useToast } from '@/context/toast-context';
 
 export default function CheckoutPage() {
     const { cartItems, loading } = useCart();
+    const toast = useToast();
     const [agreed, setAgreed] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const router = useRouter();

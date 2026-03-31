@@ -66,6 +66,10 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'message', 'Transaction is already completed.');
     END IF;
 
+    IF v_transaction.status = 'disputed' THEN
+        RETURN jsonb_build_object('success', false, 'message', 'Transaction is under dispute. Handshake blocked.');
+    END IF;
+
     -- 2. Update Transaction Status
     UPDATE public.transactions
     SET 
