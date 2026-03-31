@@ -41,7 +41,7 @@ export async function POST(req: Request) {
         .update({
           status: "resolved_refunded",
           admin_id: user.id,
-          admin_notes,
+          admin_notes: adminNotes,
           updated_at: new Date().toISOString(),
         })
         .eq("id", disputeId);
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
         .update({
           status: "resolved_released",
           admin_id: user.id,
-          admin_notes,
+          admin_notes: adminNotes,
           updated_at: new Date().toISOString(),
         })
         .eq("id", disputeId);
