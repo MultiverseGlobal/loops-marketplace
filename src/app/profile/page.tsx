@@ -389,12 +389,16 @@ export default function ProfilePage() {
                                         <MapPin className="w-4 h-4 text-loops-primary" />
                                         <span>{profile?.campuses?.name || 'Campus Member'}</span>
                                     </div>
-                                    <div className="flex items-center gap-3 py-1">
-                                        <Rating value={profile?.rating || 0} size="sm" />
-                                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">
-                                            {profile?.rating ? Number(profile.rating).toFixed(1) : 'No ratings'}
-                                        </span>
-                                    </div>
+                                    <motion.div 
+                                        initial={{ x: -10, opacity: 0 }}
+                                        animate={{ x: 0, opacity: 1 }}
+                                        className="flex items-center gap-3 py-1 bg-loops-primary/5 rounded-xl px-3 w-fit border border-loops-primary/10 shadow-inner"
+                                     >
+                                         <Rating value={profile?.rating || 0} size="sm" />
+                                         <span className="text-[10px] font-black text-loops-primary uppercase tracking-widest">
+                                             {profile?.rating ? Number(profile.rating).toFixed(1) : '0.0'} Karma
+                                         </span>
+                                     </motion.div>
                                     <div className="flex items-center gap-2 text-loops-muted text-[10px] font-bold uppercase tracking-widest">
                                         <Calendar className="w-4 h-4" />
                                         <span>Joined {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Today'}</span>
@@ -407,14 +411,36 @@ export default function ProfilePage() {
 
                                 <div className="h-px bg-loops-border" />
 
-                                <div className="p-4 rounded-2xl bg-white border border-loops-border text-center shadow-sm">
-                                    <div className="text-2xl font-bold font-display text-loops-primary tracking-tighter">{followersCount}</div>
-                                    <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Followers</div>
-                                </div>
-                                <div className="p-4 rounded-2xl bg-white border border-loops-border text-center shadow-sm">
-                                    <div className="text-2xl font-bold font-display text-loops-success tracking-tighter">{followingCount}</div>
-                                    <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Following</div>
-                                </div>
+                                <div className="grid grid-cols-2 gap-4 w-full">
+                                    <motion.div 
+                                        whileHover={{ scale: 1.05 }}
+                                        className="p-4 rounded-2xl bg-white border border-loops-border text-center shadow-sm"
+                                    >
+                                        <motion.div 
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: "spring", stiffness: 200, delay: 0.5 }}
+                                            className="text-2xl font-bold font-display text-loops-primary tracking-tighter"
+                                        >
+                                            {followersCount}
+                                        </motion.div>
+                                        <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Followers</div>
+                                    </motion.div>
+                                    <motion.div 
+                                        whileHover={{ scale: 1.05 }}
+                                        className="p-4 rounded-2xl bg-white border border-loops-border text-center shadow-sm"
+                                    >
+                                        <motion.div 
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: "spring", stiffness: 200, delay: 0.6 }}
+                                            className="text-2xl font-bold font-display text-loops-success tracking-tighter"
+                                        >
+                                            {followingCount}
+                                        </motion.div>
+                                        <div className="text-[10px] uppercase tracking-widest text-loops-muted font-bold">Following</div>
+                                    </motion.div>
+                                 </div>
 
                                 {(!targetUserId || targetUserId === user?.id) && !isStandalone && (
 

@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../lib/constants";
 import { cn } from "../lib/utils"; // Relative import fix
+import { FloatingShapes } from "../components/ui/floating-shapes";
 // Redundant import removed as it's now global via PWALogic in layout.tsx
 
 // FORCE REDEPLOY: Build resolution fix
@@ -159,6 +160,7 @@ export default function Home() {
             <div className="bg-loops-bg">
                 <Navbar />
                 <ActivityBuzz />
+                <FloatingShapes />
 
                 {/* Hero Section: The "Wow" Factor */}
                 <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-20 sm:pt-24 pb-12 px-4 sm:px-6 overflow-hidden">

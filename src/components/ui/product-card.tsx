@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import Image from "next/image";
 import { User, ShieldCheck, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,35 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
     const { addToCart, refreshWishlist } = useCart();
     const supabase = createClient();
     const toast = useToast();
+
+    // 3D Tilt State
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseXSpring = useSpring(x);
+    const mouseYSpring = useSpring(y);
+
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const xPct = mouseX / width - 0.5;
+        const yPct = mouseY / height - 0.5;
+
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
 
     useEffect(() => {
         const checkWishlistStatus = async () => {
@@ -93,7 +122,14 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay }}
-            className="group"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{
+                rotateX,
+                rotateY,
+                transformStyle: "preserve-3d",
+            }}
+            className="group perspective-1000"
         >
             <Link href={`/listings/${id}`}>
                 <div className="relative aspect-square overflow-hidden rounded-2xl md:rounded-3xl bg-loops-subtle border border-loops-border group-hover:border-loops-primary/30 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-loops-primary/10">

@@ -16,6 +16,7 @@ import { SearchBar } from "../../components/ui/search-bar";
 import { cn } from "../../lib/utils";
 import { useCampus } from "../../context/campus-context";
 import { PRODUCT_CATEGORIES, SERVICE_CATEGORIES, FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../lib/constants";
+import { FloatingShapes } from "../../components/ui/floating-shapes";
 
 export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);
@@ -137,6 +138,7 @@ export default function MarketplacePage() {
     return (
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
+            <FloatingShapes />
 
             {hasUser && userEmail && (
                 <div className="pt-4 md:pt-20">
