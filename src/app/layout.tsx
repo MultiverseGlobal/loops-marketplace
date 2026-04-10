@@ -16,29 +16,40 @@ export const metadata: Metadata = {
         apple: "/logo.png",
     },
     description: "The economic nervous system of Nigerian student life. Buy, sell, and connect safely within your verified university network.",
-    keywords: ["campus marketplace", "nigerian university", "student commerce", "loops", "university marketplace"],
+    keywords: ["campus marketplace", "nigerian university", "student commerce", "loops", "university marketplace", "unilag marketplace", "uniabuja marketplace"],
+    authors: [{ name: "Loops Team" }],
+    metadataBase: new URL("https://loops-marketplace.vercel.app"),
     openGraph: {
         title: "Loops | The Campus Marketplace",
-        description: "The economic nervous system of Nigerian student life.",
+        description: "The economic nervous system of Nigerian student life. Buy, sell, and connect safely on campus.",
         type: "website",
         locale: "en_NG",
-        siteName: "Loops"
+        siteName: "Loops",
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Loops Marketplace"
+            }
+        ]
     },
     twitter: {
         card: "summary_large_image",
         title: "Loops | The Campus Marketplace",
         description: "The economic nervous system of Nigerian student life.",
+        images: ["/og-image.png"],
     },
     robots: {
         index: true,
-        follow: true
-    },
-    themeColor: '#3b82f6', // Universal Blue
-    viewport: {
-        width: 'device-width',
-        initialScale: 1,
-        maximumScale: 1,
-        userScalable: false,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
     },
     appleWebApp: {
         capable: true,
@@ -56,6 +67,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { PWALogic } from "../components/pwa-logic";
 import { CartProvider } from "../context/cart-context";
 import { NotificationProvider } from "../context/notification-context";
+import { CookieConsent } from "../components/layout/cookie-consent";
 
 export default function RootLayout({
     children,
@@ -77,6 +89,7 @@ export default function RootLayout({
                                 <NotificationProvider>
                                     <PageTransition>{children}</PageTransition>
                                     <BottomNav />
+                                    <CookieConsent />
                                 </NotificationProvider>
                             </CartProvider>
                             <Analytics />

@@ -2,44 +2,72 @@
 
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { motion } from "framer-motion";
 
 export default function TermsPage() {
     return (
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
             <main className="pt-32 pb-20 max-w-4xl mx-auto px-6">
-                <h1 className="text-4xl font-bold font-display mb-8">Terms of Service & Community Guidelines</h1>
-                <div className="prose prose-loops max-w-none space-y-6">
-                    <section>
-                        <h2 className="text-xl font-bold border-b border-loops-border pb-2 mb-4">1. Acceptance of Terms</h2>
-                        <p>By accessing or using Loops, you agree to be bound by these Terms. Loops is a student-exclusive marketplace. Providing false information during verification (e.g., incorrect matric number) will result in immediate termination of access.</p>
-                    </section>
-                    <section>
-                        <h2 className="text-xl font-bold border-b border-loops-border pb-2 mb-4">2. Marketplace Conduct & Safety</h2>
-                        <ul className="list-disc pl-5 space-y-2">
-                            <li><strong>Public Meetups:</strong> For your safety, all physical exchanges must take place in high-traffic, well-lit campus areas (e.g., libraries, student union hubs, or cafeterias).</li>
-                            <li><strong>Daylight Hours:</strong> We strongly recommend completing transactions during daylight hours.</li>
-                            <li><strong>Personal Responsibility:</strong> Loops facilitates connections but is not a party to the transactions. Trust your instincts; if a deal feels unsafe, do not proceed.</li>
-                        </ul>
-                    </section>
-                    <section>
-                        <h2 className="text-xl font-bold border-b border-loops-border pb-2 mb-4">3. Prohibited Items & Academic Integrity</h2>
-                        <p>The following are strictly prohibited on Loops:</p>
-                        <ul className="list-disc pl-5 mt-2">
-                            <li><strong>Academic Dishonesty:</strong> Selling or buying exam scripts, solved assignments, or providing services that violate university academic integrity policies.</li>
-                            <li><strong>Illegal Substances:</strong> Drugs, alcohol, or any regulated substances.</li>
-                            <li><strong>Dangerous Goods:</strong> Weapons, explosives, or hazardous materials.</li>
-                        </ul>
-                    </section>
-                    <section>
-                        <h2 className="text-xl font-bold border-b border-loops-border pb-2 mb-4">4. The "Plug" Reputation</h2>
-                        <p>Being a "Campus Plug" is a position of trust. Fraudulent listings, selling misrepresented items, or intentional "ghosting" of buyers will result in permanent suspension of your Plug status and potential removal from the platform.</p>
-                    </section>
-                    <section>
-                        <h2 className="text-xl font-bold border-b border-loops-border pb-2 mb-4">5. Limitation of Liability</h2>
-                        <p>Loops is not responsible for the quality, safety, or legality of the items or services listed. Users interact at their own risk. Always verify the item before making payment.</p>
-                    </section>
-                </div>
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="space-y-8"
+                >
+                    <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter mb-12">Terms of Service & Escrow Agreement</h1>
+                    
+                    <div className="prose prose-loops max-w-none space-y-12">
+                        <section className="space-y-4">
+                            <h2 className="text-2xl font-black italic border-b border-loops-border pb-2 uppercase tracking-tight">1. The "Loop" Community Trust</h2>
+                            <p className="text-loops-muted leading-relaxed">
+                                Loops is a student-exclusive marketplace. By accessing the platform, you represent that you are a verified student of your university node. Any attempt to use the platform with a fake institutional identity or matriculation number will result in an immediate and permanent ban.
+                            </p>
+                        </section>
+
+                        <section className="space-y-4">
+                            <h2 className="text-2xl font-black italic border-b border-loops-border pb-2 uppercase tracking-tight">2. The Escrow Handshake</h2>
+                            <p className="text-loops-muted leading-relaxed font-bold">
+                                All financial transactions on Loops are protected by our Escrow Handshake system.
+                            </p>
+                            <ul className="list-disc pl-5 space-y-3 text-loops-muted">
+                                <li><strong>Fund Hold:</strong> When a buyer pays for a "Drop," the money is held by Loops. The seller is notified but cannot withdraw the funds yet.</li>
+                                <li><strong>Verification:</strong> Funds are only released to the seller once the buyer scans the seller's Handshake QR code.</li>
+                                <li><strong>Finality:</strong> Scanning the QR code represents a "Safe Handshake." By scanning, the buyer confirms they have inspected and accepted the item. <strong>Handshakes are non-reversible and non-refundable.</strong></li>
+                            </ul>
+                        </section>
+
+                        <section className="space-y-4">
+                            <h2 className="text-2xl font-black italic border-b border-loops-border pb-2 uppercase tracking-tight">3. Platform Fees & Payouts</h2>
+                            <p className="text-loops-muted leading-relaxed">
+                                To maintain the security and speed of the campus economy, Loops charges a 5% platform fee on all successful transactions. This fee is automatically deducted at the time of the Handshake release. Payouts to sellers are processed via Paystack to their verified Nigerian bank accounts.
+                            </p>
+                        </section>
+
+                        <section className="space-y-4">
+                            <h2 className="text-2xl font-black italic border-b border-loops-border pb-2 uppercase tracking-tight">4. Prohibited Content</h2>
+                            <p className="text-loops-muted leading-relaxed">
+                                Users are strictly prohibited from listing:
+                            </p>
+                            <ul className="list-disc pl-5 space-y-2 text-loops-muted">
+                                <li>Academic dishonesty materials (Exam scripts, pre-solved assignments).</li>
+                                <li>Alcohol, drugs, or illegal substances.</li>
+                                <li>Firearms or dangerous goods.</li>
+                                <li>Adult content or services.</li>
+                            </ul>
+                        </section>
+
+                        <section className="space-y-4">
+                            <h2 className="text-2xl font-black italic border-b border-loops-border pb-2 uppercase tracking-tight">5. Dispute Resolution</h2>
+                            <p className="text-loops-muted leading-relaxed">
+                                If an item is not as described, or a party fails to meet at the agreed campus spot, a user may open a <strong>Dispute</strong>. Once a dispute is opened, funds are frozen until a Loops Admin reviews the case. Admin decisions on fund release or refunds are final.
+                            </p>
+                        </section>
+                    </div>
+
+                    <div className="pt-12 text-xs text-loops-muted font-bold uppercase tracking-widest opacity-50">
+                        Last Updated: April 10, 2026
+                    </div>
+                </motion.div>
             </main>
             <Footer />
         </div>
