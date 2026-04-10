@@ -17,15 +17,14 @@ export async function POST(req: Request) {
 
     if (error) throw error;
 
-    if (!data.success) {
-      return NextResponse.json({ error: data.message }, { status: 400 });
+    if (!data) {
+      return NextResponse.json({ error: "Invalid token or transaction state." }, { status: 400 });
     }
 
     // Return success response with details
     return NextResponse.json({
       success: true,
-      message: data.message,
-      seller_credited: data.seller_credited,
+      message: "Handoff verified and funds released to seller.",
     });
 
   } catch (error: any) {

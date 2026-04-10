@@ -53,7 +53,9 @@ export default function ProfilePage() {
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [accountNumber, setAccountNumber] = useState("");
     const [bankCode, setBankCode] = useState("");
+    const [accountName, setAccountName] = useState("");
     const [isWithdrawing, setIsWithdrawing] = useState(false);
+    const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
 
     const router = useRouter();
 
@@ -176,25 +178,55 @@ export default function ProfilePage() {
         }
     };
 
+
+    const handleVerifyAccount = async (number: string, code: string) => {
+        if (number.length !== 10 || !code) {
+            setAccountName("");
+            return;
+        }
+        
+        setIsVerifyingAccount(true);
+            setAccountName("");
+            try {
+                const res = await fetch('/api/payments/paystack/verify-account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accountNumber: number, bankCode: code })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    setAccountName(data.accountName);
+                } else {
+                    toast.error("Could not verify account. Please check details.");
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setIsVerifyingAccount(false);
+            }
+        }
+    };
+
     const handleWithdraw = async () => {
         if (!withdrawAmount || Number(withdrawAmount) < 500) {
             toast.error("Minimum withdrawal is ₦500");
             return;
         }
-        if (!accountNumber || !bankCode) {
-            toast.error("Please provide your bank details");
+        if (!accountNumber || !bankCode || !accountName) {
+            toast.error("Please provide valid bank details");
             return;
         }
 
         setIsWithdrawing(true);
         try {
-            const res = await fetch('/api/referrals/withdraw', {
+            const res = await fetch('/api/payments/paystack/withdraw', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     amount: Number(withdrawAmount),
                     accountNumber,
-                    bankCode
+                    bankCode,
+                    accountName
                 })
             });
             const data = await res.json();
@@ -204,6 +236,7 @@ export default function ProfilePage() {
                 setWithdrawModalOpen(false);
                 // Refresh balance
                 setProfile({ ...profile, available_balance: profile.available_balance - Number(withdrawAmount) });
+                setWithdrawAmount("");
             } else {
                 throw new Error(data.error || "Withdrawal failed");
             }
@@ -1147,38 +1180,85 @@ export default function ProfilePage() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="col-span-2">
-                                        <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Select Bank</label>
-                                        <div className="relative">
-                                            <select
-                                                value={bankCode}
-                                                onChange={(e) => setBankCode(e.target.value)}
-                                                className="w-full px-5 py-4 bg-loops-subtle rounded-xl border border-loops-border focus:border-loops-primary outline-none font-bold appearance-none pr-10"
-                                            >
-                                                <option value="">Choose your bank</option>
-                                                <option value="058">Guaranty Trust Bank</option>
-                                                <option value="011">First Bank of Nigeria</option>
-                                                <option value="057">Zenith Bank</option>
-                                                <option value="044">Access Bank</option>
-                                                <option value="033">United Bank for Africa</option>
-                                                <option value="50211">Kuda Bank</option>
-                                                <option value="999992">OPay Digital Services</option>
-                                                <option value="100004">Palmpay</option>
-                                            </select>
-                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-loops-muted" />
-                                        </div>
-                                    </div>
-                                    <div className="col-span-2">
-                                        <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Account Number</label>
-                                        <input
-                                            type="text"
-                                            value={accountNumber}
-                                            onChange={(e) => setAccountNumber(e.target.value)}
-                                            placeholder="0123456789"
-                                            maxLength={10}
-                                            className="w-full px-5 py-4 bg-loops-subtle rounded-xl border border-loops-border focus:border-loops-primary outline-none font-bold"
-                                        />
-                                    </div>
-                                </div>
+                                         <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Select Bank</label>
+                                         <div className="relative">
+                                             <select
+                                                 value={bankCode}
+                                                 onChange={(e) => {
+                                                     setBankCode(e.target.value);
+                                                     setAccountName(""); // Clear old verification
+                                                     handleVerifyAccount(accountNumber, e.target.value);
+                                                 }}
+                                                 className="w-full px-5 py-4 bg-loops-subtle rounded-xl border border-loops-border focus:border-loops-primary outline-none font-bold appearance-none pr-10"
+                                             >
+                                                 <option value="">Choose your bank</option>
+                                                 <option value="058">Guaranty Trust Bank</option>
+                                                 <option value="011">First Bank of Nigeria</option>
+                                                 <option value="057">Zenith Bank</option>
+                                                 <option value="044">Access Bank</option>
+                                                 <option value="033">United Bank for Africa</option>
+                                                 <option value="050">Ecobank Nigeria</option>
+                                                 <option value="070">Fidelity Bank</option>
+                                                 <option value="030">Heritage Bank</option>
+                                                 <option value="082">Keystone Bank</option>
+                                                 <option value="221">Stanbic IBTC Bank</option>
+                                                 <option value="068">Standard Chartered Bank</option>
+                                                 <option value="232">Sterling Bank</option>
+                                                 <option value="032">Union Bank of Nigeria</option>
+                                                 <option value="035">Wema Bank</option>
+                                                 <option value="50211">Kuda Bank</option>
+                                                 <option value="999992">OPay Digital Services</option>
+                                                 <option value="100004">Palmpay</option>
+                                                 <option value="100002">Paga</option>
+                                             </select>
+                                             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-loops-muted" />
+                                         </div>
+                                     </div>
+                                     <div className="col-span-2">
+                                         <label className="text-[10px] font-bold text-loops-muted uppercase tracking-widest pl-1">Account Number</label>
+                                         <div className="relative">
+                                             <input
+                                                 type="text"
+                                                 value={accountNumber}
+                                                 onChange={(e) => {
+                                                     const val = e.target.value.replace(/\D/g, '');
+                                                     if (val.length <= 10) {
+                                                         setAccountNumber(val);
+                                                         handleVerifyAccount(val, bankCode);
+                                                     }
+                                                 }}
+                                                 placeholder="0123456789"
+                                                 className="w-full px-5 py-4 bg-loops-subtle rounded-xl border border-loops-border focus:border-loops-primary outline-none font-bold"
+                                             />
+                                             {isVerifyingAccount && (
+                                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                                     <div className="w-4 h-4 border-2 border-loops-primary border-t-transparent rounded-full animate-spin" />
+                                                 </div>
+                                             )}
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <AnimatePresence>
+                                     {accountName && (
+                                         <motion.div
+                                             initial={{ opacity: 0, height: 0 }}
+                                             animate={{ opacity: 1, height: 'auto' }}
+                                             exit={{ opacity: 0, height: 0 }}
+                                             className="p-4 rounded-xl bg-loops-success/5 border border-loops-success/20"
+                                         >
+                                             <div className="text-[10px] font-black uppercase text-loops-success tracking-widest mb-1">Account Owner Verified</div>
+                                             <div className="font-bold text-sm text-loops-main">{accountName}</div>
+                                         </motion.div>
+                                     )}
+                                 </AnimatePresence>
+
+                                 <div className="h-px bg-loops-border" />
+
+                                 <div className="flex items-center justify-between text-[10px] font-bold text-loops-muted uppercase tracking-widest px-1">
+                                     <span>Estimated Fee</span>
+                                     <span>₦50.00</span>
+                                 </div>
 
                                 <Button
                                     onClick={handleWithdraw}

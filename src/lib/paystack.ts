@@ -95,3 +95,20 @@ export async function initiateTransfer(amount: number, recipientCode: string, re
 
   return data.data;
 }
+
+export async function resolveAccount(accountNumber: string, bankCode: string) {
+  const response = await fetch(`https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+    },
+  });
+
+  const data = await response.json();
+  if (!data.status) {
+    throw new Error(data.message || "Could not resolve account name. Please check details.");
+  }
+
+  return data.data; // Includes account_name
+}
+
