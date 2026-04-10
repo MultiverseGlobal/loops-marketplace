@@ -11,14 +11,14 @@ This document outlines the strategic development timeline for the **Loops Market
 
 | Month | Phase | Key Focus Areas |
 | :--- | :--- | :--- |
-| **April** | **Build & Ship** | 🛠️ Core Payment Integration. Internal testing only. Nothing public until payments are 100% verified. |
-| **Early May** | **Soft Launch** | 🤫 Quiet release to a restricted circle of vendors and buyers. Validate real-world payment flows. |
-| **Mid May** | **Exam Pause** | 📚 Holding development for exams. Background design work for Loops Mobile. |
-| **June** | **Full Launch** | 🔥 Marketing goes live. Vendor onboarding. Push for high transaction volume. |
-| **July** | **Mobile Start** | 📱 Begin building **Loops Mobile** (React Native + Expo). Buyer flow, listings, vendor dashboard. |
-| **August** | **Mobile Polish** | ✨ Mobile build completion. Payment integration on mobile. Play Store readiness. |
-| **September** | **App Store** | 🚀 Submission to Google Play. Controlled rollout at Veritas University. |
-| **October** | **Stable & Shift** | 🏁 Loops web + mobile stabilization. Kickoff **Quad**: Auth, Profiles, Architecture. |
+| **April** | **Build & Ship** | 🛠️ Fintech Integration & **Android Launch**. Deploying `com.loops.marketplace` using Capacitor. |
+| **Early May** | **Soft Launch** | 🤫 Quiet release to 50 Vendors via Android APK and Web. Validate real-world payment flows. |
+| **Mid May** | **Exam Pause** | 📚 Holding development for exams. Monitoring production node health. |
+| **June** | **Full Launch** | 🔥 Marketing goes live. Play Store submission. Push for high transaction volume. |
+| **July** | **Stabilize** | ⚖️ Performance tuning. Referral system expansion. Initial **Quad** platform design. |
+| **August** | **Feature Expansion** | ✨ Vendor dashboard v2. Mobile push notifications via Firebase. |
+| **September** | **Expansion** | 🌍 Controlled rollout at Veritas University. Play Store full release. |
+| **October** | **Project Quad** | 🏁 Kickoff **Quad**: Auth, Profiles, Architecture. |
 | **November** | **Quad MVP** | 🏗️ Feed, Opportunities board, Campus verification (Alpha users). |
 | **December** | **Launch & Plan** | 🌍 Quad soft launch at Veritas. 2026 metrics review. Path to 2027 expansion. |
 

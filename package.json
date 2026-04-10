@@ -30,6 +30,7 @@
     "tesseract.js": "^5.0.4"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",

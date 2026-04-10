@@ -186,24 +186,23 @@ export default function ProfilePage() {
         }
         
         setIsVerifyingAccount(true);
-            setAccountName("");
-            try {
-                const res = await fetch('/api/payments/paystack/verify-account', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ accountNumber: number, bankCode: code })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    setAccountName(data.accountName);
-                } else {
-                    toast.error("Could not verify account. Please check details.");
-                }
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setIsVerifyingAccount(false);
+        setAccountName("");
+        try {
+            const res = await fetch('/api/payments/paystack/verify-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accountNumber: number, bankCode: code })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setAccountName(data.accountName);
+            } else {
+                toast.error("Could not verify account. Please check details.");
             }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsVerifyingAccount(false);
         }
     };
 

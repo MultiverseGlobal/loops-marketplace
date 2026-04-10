@@ -94,6 +94,7 @@ export default function AdminDashboard() {
     // User Directory
     const [allUsers, setAllUsers] = useState<AdminProfile[]>([]);
     const [userTab, setUserTab] = useState<'requests' | 'directory'>('requests');
+    const [applicationSubTab, setApplicationSubTab] = useState<'product' | 'service' | 'review' | 'approved'>('product');
     const [directoryFilter, setDirectoryFilter] = useState<'all' | 'plug' | 'admin' | 'student'>('all');
 
     const supabase = createClient();
@@ -701,341 +702,6 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             )}
-        </div>
-    );
-
-    const UserView = () => {
-        const [showUserManager, setShowUserManager] = useState(false);
-        const [applicationSubTab, setApplicationSubTab] = useState<'product' | 'service' | 'review' | 'approved'>('product');
-
-        // Filter applications based on tab
-        const tabFilteredApps = applications.filter(a => {
-            if (applicationSubTab === 'approved') {
-                return a.status === 'approved';
-            }
-            // For other tabs, only show pending
-            if (a.status !== 'pending') return false;
-
-            if (applicationSubTab === 'review') {
-                return a.offering_type !== 'product' && a.offering_type !== 'service';
-            }
-            return a.offering_type === applicationSubTab;
-        });
-
-        const groups = groupApplications(tabFilteredApps);
-
-        const filteredUsers = allUsers.filter(u => {
-            const matchesSearch = u.full_name?.toLowerCase().includes(userSearch.toLowerCase()) ||
-                u.email?.toLowerCase().includes(userSearch.toLowerCase());
-            const matchesRole = directoryFilter === 'all' ||
-                (directoryFilter === 'plug' && u.is_plug) ||
-                (directoryFilter === 'admin' && u.is_admin) ||
-                (directoryFilter === 'student' && !u.is_plug && !u.is_admin);
-            return matchesSearch && matchesRole;
-        });
-
-        // Duplicate helper functions removed (now at top-level)
-        return (
-            <div className="space-y-8">
-                {/* View Switcher */}
-                <div className="flex gap-4 border-b border-loops-border pb-6 justify-between items-center">
-                    <div className="flex gap-4">
-                        <button
-                            onClick={() => setShowUserManager(false)}
-                            className={cn(
-                                "px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all",
-                                !showUserManager ? "bg-loops-primary text-white shadow-xl shadow-loops-primary/20" : "text-loops-muted hover:text-loops-main"
-                            )}
-                        >
-                            Join Requests ({stats.pendingApps})
-                        </button>
-                        <button
-                            onClick={() => setShowUserManager(true)}
-                            className={cn(
-                                "px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all",
-                                showUserManager ? "bg-loops-primary text-white shadow-xl shadow-loops-primary/20" : "text-loops-muted hover:text-loops-main"
-                            )}
-                        >
-                            Student Directory ({allUsers.length})
-                        </button>
-                    </div>
-
-                    <Button
-                        onClick={() => {
-                            // Select ALL visible users (Students + Plugs)
-                            const allVisibleIds = allUsers.map(u => u.id);
-                            setSelectedUsers(allVisibleIds);
-
-                            // Select ALL Pending Applicants
-                            const allPendingIds = applications.map(a => a.id);
-                            setSelectedApps(allPendingIds);
-
-                            setShowBroadcastModal(true);
-                            setBroadcastMessage("");
-                        }}
-                        className="bg-black text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2"
-                    >
-                        <MessageCircle className="w-4 h-4" />
-                        Broadcast to All ({allUsers.length + applications.length})
-                    </Button>
-                </div>
-
-                {!showUserManager ? (
-                    /* Applications View */
-                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {/* Sub-tabs for Applications */}
-                        <div className="flex gap-2 p-1.5 bg-loops-subtle rounded-2xl border border-loops-border w-fit">
-                            {(['product', 'service', 'review', 'approved'] as const).map((tab) => (
-                                <button
-                                    key={tab}
-                                    onClick={() => setApplicationSubTab(tab)}
-                                    className={cn(
-                                        "px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all",
-                                        applicationSubTab === tab ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted hover:text-loops-main"
-                                    )}
-                                >
-                                    {tab === 'approved' ? 'Approval History 👑' : tab === 'review' ? 'Manual Review' : `${tab}s`}
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-12">
-                            {Object.entries(groups).map(([name, groupApps]) => groupApps.length > 0 && (
-                                <div key={name} className="space-y-6">
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-loops-muted ml-2 flex items-center gap-4">
-                                        {name}
-                                        <div className="h-px flex-1 bg-loops-border" />
-                                    </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {groupApps.map((app: any) => (
-                                            <div key={app.id} className="bg-white border border-loops-border rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
-                                                <div className="flex items-center justify-between mb-8">
-                                                    <div className="w-12 h-12 rounded-3xl bg-loops-subtle border border-loops-border flex items-center justify-center font-bold text-loops-primary group-hover:scale-110 transition-transform">
-                                                        {app.full_name?.charAt(0)}
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); toggleAppSelection(app.id); }}
-                                                            className={cn(
-                                                                "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
-                                                                selectedApps.includes(app.id) ? "bg-loops-primary border-loops-primary text-white" : "border-loops-border hover:border-loops-primary"
-                                                            )}
-                                                        >
-                                                            {selectedApps.includes(app.id) && <Check className="w-3.2 h-3.2" />}
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <div className="space-y-4">
-                                                    <div>
-                                                        <h4 className="text-xl font-black italic tracking-tight">{app.store_name}</h4>
-                                                        <div className="flex flex-col">
-                                                            <p className="text-xs font-bold text-loops-muted">{app.full_name}</p>
-                                                            {app.referred_by_code && (
-                                                                <p className="text-[10px] font-bold text-loops-primary mt-1">
-                                                                    Ref: <span className="font-mono">{app.referred_by_code}</span>
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex flex-wrap gap-2 mt-2">
-                                                        <div className="flex items-center gap-2 text-[10px] font-black text-loops-primary/60 uppercase tracking-widest bg-loops-primary/5 px-3 py-1.5 rounded-full w-fit border border-loops-primary/10">
-                                                            <School className="w-3 h-3" />
-                                                            {app.university}
-                                                        </div>
-                                                        <a
-                                                            href={`https://wa.me/${app.whatsapp_number?.replace(/\+/g, '')}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            className="flex items-center gap-2 text-[10px] font-black text-green-600 uppercase tracking-widest bg-green-50 px-3 py-1.5 rounded-full w-fit border border-green-100 hover:bg-green-100 transition-colors"
-                                                        >
-                                                            <MessageCircle className="w-3 h-3" />
-                                                            Chat
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div className="mt-8 flex gap-3">
-                                                    <Button
-                                                        onClick={() => approveWithNotifications(app)}
-                                                        disabled={processingId === app.id}
-                                                        className="flex-1 bg-loops-primary text-white font-black uppercase tracking-widest text-[9px] h-11 rounded-xl shadow-lg shadow-loops-primary/20"
-                                                    >
-                                                        {processingId === app.id ? 'Approving...' : 'Approve 👑'}
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-
-                            {applications.length === 0 && (
-                                <div className="py-24 text-center space-y-4">
-                                    <div className="w-20 h-20 bg-loops-subtle rounded-3xl flex items-center justify-center mx-auto text-loops-muted opacity-20">
-                                        <Award className="w-10 h-10" />
-                                    </div>
-                                    <h3 className="text-xl font-bold font-display italic">Peace in the Loop.</h3>
-                                    <p className="text-loops-muted text-sm px-12">No pending applications to process. Your empire is stable.</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                ) : (
-                    /* Directory View */
-                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {/* Directory Search & Filter */}
-                        <div className="bg-white border border-loops-border rounded-[2rem] p-4 flex flex-col md:flex-row gap-4 items-center shadow-xl shadow-loops-primary/5">
-                            <div className="relative flex-1 w-full">
-                                <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-loops-muted" />
-                                <input
-                                    type="text"
-                                    value={userSearch}
-                                    onChange={e => setUserSearch(e.target.value)}
-                                    placeholder="Search student directory..."
-                                    className="w-full h-14 pl-12 pr-6 rounded-2xl bg-loops-subtle border border-transparent focus:border-loops-primary focus:bg-white outline-none transition-all font-bold"
-                                />
-                            </div>
-                            <div className="flex bg-loops-subtle p-1.5 rounded-2xl border border-loops-border">
-                                {(['all', 'plug', 'admin', 'student'] as const).map((role) => (
-                                    <button
-                                        key={role}
-                                        onClick={() => setDirectoryFilter(role)}
-                                        className={cn(
-                                            "px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all capitalize",
-                                            directoryFilter === role ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
-                                        )}
-                                    >
-                                        {role}s
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 relative">
-                            {/* Selection Bar for Directory */}
-                            {selectedUsers.length > 0 && (
-                                <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 bg-loops-main text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-8 animate-in slide-in-from-bottom-8 duration-500 border border-white/10 backdrop-blur-xl">
-                                    <div className="flex flex-col">
-                                        <span className="text-xl font-black italic">{selectedUsers.length} Users</span>
-                                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Selected for Broadcast</span>
-                                    </div>
-                                    <div className="h-10 w-px bg-white/20" />
-                                    <div className="flex gap-4">
-                                        <Button
-                                            onClick={() => setShowBroadcastModal(true)}
-                                            className="bg-white text-loops-main font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-2xl hover:bg-loops-subtle transition-all"
-                                        >
-                                            Broadcast Message 📣
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            onClick={() => setSelectedUsers([])}
-                                            className="text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] h-12 rounded-2xl"
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="col-span-full bg-white border border-loops-border rounded-[2.5rem] overflow-hidden shadow-sm">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="bg-loops-subtle/50 border-b border-loops-border">
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted w-12">
-                                                {/* Potential Select All Checkbox */}
-                                            </th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted">User</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted">Role</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted">WhatsApp</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-loops-border">
-                                        {filteredUsers.map(user => (
-                                            <tr
-                                                key={user.id}
-                                                onClick={() => toggleUserSelection(user.id)}
-                                                className={cn(
-                                                    "hover:bg-loops-subtle/30 transition-colors group cursor-pointer",
-                                                    selectedUsers.includes(user.id) && "bg-loops-primary/5"
-                                                )}
-                                            >
-                                                <td className="px-8 py-6">
-                                                    <div className={cn(
-                                                        "w-5 h-5 rounded border-2 flex items-center justify-center transition-all",
-                                                        selectedUsers.includes(user.id) ? "bg-loops-primary border-loops-primary text-white" : "border-loops-border bg-white"
-                                                    )}>
-                                                        {selectedUsers.includes(user.id) && <Check className="w-3 h-3" />}
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 rounded-full bg-loops-subtle flex items-center justify-center font-bold text-loops-primary border border-loops-border group-hover:scale-110 transition-transform shadow-sm">
-                                                            {user.full_name?.charAt(0)}
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-bold text-sm text-loops-main">{user.full_name || 'Anonymous User'}</div>
-                                                            <div className="text-[10px] font-bold text-loops-muted uppercase tracking-tight">{user.email || 'No email'}</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-6">
-                                                    <div className="flex gap-2">
-                                                        {user.is_admin && <span className="px-3 py-1 bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-red-100">Admin</span>}
-                                                        {user.is_plug && <span className="px-3 py-1 bg-loops-primary/5 text-loops-primary text-[9px] font-black uppercase tracking-widest rounded-full border border-loops-primary/10">Plug</span>}
-                                                        {!user.is_admin && !user.is_plug && <span className="px-3 py-1 bg-loops-subtle text-loops-muted text-[9px] font-black uppercase tracking-widest rounded-full border border-loops-border">Student</span>}
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-6 text-xs font-bold text-loops-muted">
-                                                    <div className="flex items-center gap-2">
-                                                        {user.whatsapp_number ? (
-                                                            <>
-                                                                <MessageCircle className="w-3 h-3 text-loops-success" />
-                                                                <span>{user.whatsapp_number}</span>
-                                                            </>
-                                                        ) : (
-                                                            <span className="opacity-30 italic">Not set</span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-6 text-right">
-                                                    <div className="flex gap-2 justify-end" onClick={e => e.stopPropagation()}>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            disabled={processingId === user.id}
-                                                            onClick={() => togglePlugStatus(user.id, user.is_plug)}
-                                                            className={cn(
-                                                                "h-9 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all",
-                                                                user.is_plug ? "text-red-500 border-red-100 hover:bg-red-50" : "text-loops-primary border-loops-primary/10 hover:bg-loops-primary/5"
-                                                            )}
-                                                        >
-                                                            {user.is_plug ? 'Revoke Plug' : 'Verify Plug'}
-                                                        </Button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        {filteredUsers.length === 0 && (
-                            <div className="py-20 text-center">
-                                <p className="text-loops-muted italic font-medium">No users found matching your search.</p>
-                            </div>
-                        )}
-                    </div>
-                )
-                }
-            </div >
-        );
-    };
 
     const UniversityView = () => (
         <div className="space-y-12">
@@ -1380,7 +1046,33 @@ export default function AdminDashboard() {
                         transition={{ duration: 0.2 }}
                     >
                         {currentView === 'dashboard' && <DashboardView />}
-                        {currentView === 'users' && <UserView />}
+                        {currentView === 'users' && (
+                            <UserView
+                                applications={applications}
+                                applicationSubTab={applicationSubTab}
+                                setApplicationSubTab={setApplicationSubTab}
+                                stats={stats}
+                                allUsers={allUsers}
+                                userSearch={userSearch}
+                                setUserSearch={setUserSearch}
+                                userTab={userTab}
+                                setUserTab={setUserTab}
+                                directoryFilter={directoryFilter}
+                                setDirectoryFilter={setDirectoryFilter}
+                                selectedUsers={selectedUsers}
+                                setSelectedUsers={setSelectedUsers}
+                                selectedApps={selectedApps}
+                                setSelectedApps={setSelectedApps}
+                                setShowBroadcastModal={setShowBroadcastModal}
+                                setBroadcastMessage={setBroadcastMessage}
+                                groupApplications={groupApplications}
+                                approveWithNotifications={approveWithNotifications}
+                                toggleAppSelection={toggleAppSelection}
+                                toggleUserSelection={toggleUserSelection}
+                                togglePlugStatus={togglePlugStatus}
+                                processingId={processingId}
+                            />
+                        )}
                         {currentView === 'universities' && <UniversityView />}
                         {currentView === 'safety' && <SafetyView />}
                         {currentView === 'disputes' && <DisputesView />}
@@ -1628,8 +1320,386 @@ export default function AdminDashboard() {
                 )}
             </AnimatePresence>
         </div>
-    );
 }
+
+interface UserViewProps {
+    applications: any[];
+    applicationSubTab: 'product' | 'service' | 'review' | 'approved';
+    setApplicationSubTab: (tab: 'product' | 'service' | 'review' | 'approved') => void;
+    stats: any;
+    allUsers: AdminProfile[];
+    userSearch: string;
+    setUserSearch: (s: string) => void;
+    userTab: 'requests' | 'directory';
+    setUserTab: (t: 'requests' | 'directory') => void;
+    directoryFilter: 'all' | 'plug' | 'admin' | 'student';
+    setDirectoryFilter: (f: 'all' | 'plug' | 'admin' | 'student') => void;
+    selectedUsers: string[];
+    setSelectedUsers: (ids: string[]) => void;
+    selectedApps: string[];
+    setSelectedApps: (ids: string[]) => void;
+    setShowBroadcastModal: (b: boolean) => void;
+    setBroadcastMessage: (s: string) => void;
+    groupApplications: (apps: any[]) => any;
+    approveWithNotifications: (app: any) => void;
+    toggleAppSelection: (id: string) => void;
+    toggleUserSelection: (id: string) => void;
+    togglePlugStatus: (userId: string, currentStatus: boolean) => void;
+    processingId: string | null;
+}
+
+const UserView = ({
+    applications,
+    applicationSubTab,
+    setApplicationSubTab,
+    stats,
+    allUsers,
+    userSearch,
+    setUserSearch,
+    userTab,
+    setUserTab,
+    directoryFilter,
+    setDirectoryFilter,
+    selectedUsers,
+    setSelectedUsers,
+    selectedApps,
+    setSelectedApps,
+    setShowBroadcastModal,
+    setBroadcastMessage,
+    groupApplications,
+    approveWithNotifications,
+    toggleAppSelection,
+    toggleUserSelection,
+    togglePlugStatus,
+    processingId
+}: UserViewProps) => {
+    // Filter applications based on tab
+    const tabFilteredApps = applications.filter(a => {
+        if (applicationSubTab === 'approved') {
+            return a.status === 'approved';
+        }
+        // For other tabs, only show pending
+        if (a.status !== 'pending') return false;
+
+        if (applicationSubTab === 'review') {
+            return a.offering_type !== 'product' && a.offering_type !== 'service';
+        }
+        return a.offering_type === applicationSubTab;
+    });
+
+    const groups = groupApplications(tabFilteredApps);
+
+    const filteredUsers = allUsers.filter(u => {
+        const matchesSearch = u.full_name?.toLowerCase().includes(userSearch.toLowerCase()) ||
+            u.email?.toLowerCase().includes(userSearch.toLowerCase());
+        const matchesRole = directoryFilter === 'all' ||
+            (directoryFilter === 'plug' && u.is_plug) ||
+            (directoryFilter === 'admin' && u.is_admin) ||
+            (directoryFilter === 'student' && !u.is_plug && !u.is_admin);
+        return matchesSearch && matchesRole;
+    });
+
+    return (
+        <div className="space-y-8">
+            {/* View Switcher */}
+            <div className="flex gap-4 border-b border-loops-border pb-6 justify-between items-center">
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => setUserTab('requests')}
+                        className={cn(
+                            "px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all",
+                            userTab === 'requests' ? "bg-loops-primary text-white shadow-xl shadow-loops-primary/20" : "text-loops-muted hover:text-loops-main"
+                        )}
+                    >
+                        Join Requests ({stats.pendingApps})
+                    </button>
+                    <button
+                        onClick={() => setUserTab('directory')}
+                        className={cn(
+                            "px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all",
+                            userTab === 'directory' ? "bg-loops-primary text-white shadow-xl shadow-loops-primary/20" : "text-loops-muted hover:text-loops-main"
+                        )}
+                    >
+                        Student Directory ({allUsers.length})
+                    </button>
+                </div>
+
+                <Button
+                    onClick={() => {
+                        // Select ALL visible users (Students + Plugs)
+                        const allVisibleIds = allUsers.map(u => u.id);
+                        setSelectedUsers(allVisibleIds);
+
+                        // Select ALL Pending Applicants
+                        const allPendingIds = applications.map(a => a.id);
+                        setSelectedApps(allPendingIds);
+
+                        setShowBroadcastModal(true);
+                        setBroadcastMessage("");
+                    }}
+                    className="bg-black text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2"
+                >
+                    <MessageCircle className="w-4 h-4" />
+                    Broadcast to All ({allUsers.length + applications.length})
+                </Button>
+            </div>
+
+            {userTab === 'requests' ? (
+                /* Applications View */
+                <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {/* Sub-tabs for Applications */}
+                    <div className="flex gap-2 p-1.5 bg-loops-subtle rounded-2xl border border-loops-border w-fit">
+                        {(['product', 'service', 'review', 'approved'] as const).map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setApplicationSubTab(tab)}
+                                className={cn(
+                                    "px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all",
+                                    applicationSubTab === tab ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted hover:text-loops-main"
+                                )}
+                            >
+                                {tab === 'approved' ? 'Approval History 👑' : tab === 'review' ? 'Manual Review' : `${tab}s`}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-12">
+                        {Object.entries(groups).map(([name, groupApps]) => (groupApps as any[]).length > 0 && (
+                            <div key={name} className="space-y-6">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-loops-muted ml-2 flex items-center gap-4">
+                                    {name}
+                                    <div className="h-px flex-1 bg-loops-border" />
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {(groupApps as any[]).map((app: any) => (
+                                        <div key={app.id} className="bg-white border border-loops-border rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                                            <div className="flex items-center justify-between mb-8">
+                                                <div className="w-12 h-12 rounded-3xl bg-loops-subtle border border-loops-border flex items-center justify-center font-bold text-loops-primary group-hover:scale-110 transition-transform">
+                                                    {app.full_name?.charAt(0)}
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); toggleAppSelection(app.id); }}
+                                                        className={cn(
+                                                            "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
+                                                            selectedApps.includes(app.id) ? "bg-loops-primary border-loops-primary text-white" : "border-loops-border hover:border-loops-primary"
+                                                        )}
+                                                    >
+                                                        {selectedApps.includes(app.id) && <Check className="w-3.2 h-3.2" />}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <h4 className="text-xl font-black italic tracking-tight">{app.store_name}</h4>
+                                                    <div className="flex flex-col">
+                                                        <p className="text-xs font-bold text-loops-muted">{app.full_name}</p>
+                                                        {app.referred_by_code && (
+                                                            <p className="text-[10px] font-bold text-loops-primary mt-1">
+                                                                Ref: <span className="font-mono">{app.referred_by_code}</span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    <div className="flex items-center gap-2 text-[10px] font-black text-loops-primary/60 uppercase tracking-widest bg-loops-primary/5 px-3 py-1.5 rounded-full w-fit border border-loops-primary/10">
+                                                        <School className="w-3 h-3" />
+                                                        {app.university}
+                                                    </div>
+                                                    <a
+                                                        href={`https://wa.me/${app.whatsapp_number?.replace(/\+/g, '')}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="flex items-center gap-2 text-[10px] font-black text-green-600 uppercase tracking-widest bg-green-50 px-3 py-1.5 rounded-full w-fit border border-green-100 hover:bg-green-100 transition-colors"
+                                                    >
+                                                        <MessageCircle className="w-3 h-3" />
+                                                        Chat
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-8 flex gap-3">
+                                                <Button
+                                                    onClick={() => approveWithNotifications(app)}
+                                                    disabled={processingId === app.id}
+                                                    className="flex-1 bg-loops-primary text-white font-black uppercase tracking-widest text-[9px] h-11 rounded-xl shadow-lg shadow-loops-primary/20"
+                                                >
+                                                    {processingId === app.id ? 'Approving...' : 'Approve 👑'}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+
+                        {applications.length === 0 && (
+                            <div className="py-24 text-center space-y-4">
+                                <div className="w-20 h-20 bg-loops-subtle rounded-3xl flex items-center justify-center mx-auto text-loops-muted opacity-20">
+                                    <Award className="w-10 h-10" />
+                                </div>
+                                <h3 className="text-xl font-bold font-display italic">Peace in the Loop.</h3>
+                                <p className="text-loops-muted text-sm px-12">No pending applications to process. Your empire is stable.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ) : (
+                /* Directory View */
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {/* Directory Search & Filter */}
+                    <div className="bg-white border border-loops-border rounded-[2rem] p-4 flex flex-col md:flex-row gap-4 items-center shadow-xl shadow-loops-primary/5">
+                        <div className="relative flex-1 w-full">
+                            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-loops-muted" />
+                            <input
+                                type="text"
+                                value={userSearch}
+                                onChange={e => setUserSearch(e.target.value)}
+                                placeholder="Search student directory..."
+                                className="w-full h-14 pl-12 pr-6 rounded-2xl bg-loops-subtle border border-transparent focus:border-loops-primary focus:bg-white outline-none transition-all font-bold"
+                            />
+                        </div>
+                        <div className="flex bg-loops-subtle p-1.5 rounded-2xl border border-loops-border">
+                            {(['all', 'plug', 'admin', 'student'] as const).map((role) => (
+                                <button
+                                    key={role}
+                                    onClick={() => setDirectoryFilter(role)}
+                                    className={cn(
+                                        "px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all capitalize",
+                                        directoryFilter === role ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
+                                    )}
+                                >
+                                    {role}s
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 relative">
+                        {/* Selection Bar for Directory */}
+                        {selectedUsers.length > 0 && (
+                            <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 bg-loops-main text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-8 animate-in slide-in-from-bottom-8 duration-500 border border-white/10 backdrop-blur-xl">
+                                <div className="flex flex-col">
+                                    <span className="text-xl font-black italic">{selectedUsers.length} Users</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Selected for Broadcast</span>
+                                </div>
+                                <div className="h-10 w-px bg-white/20" />
+                                <div className="flex gap-4">
+                                    <Button
+                                        onClick={() => setShowBroadcastModal(true)}
+                                        className="bg-white text-loops-main font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-2xl hover:bg-loops-subtle transition-all"
+                                    >
+                                        Broadcast Message 📣
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setSelectedUsers([])}
+                                        className="text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] h-12 rounded-2xl"
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="col-span-full bg-white border border-loops-border rounded-[2.5rem] overflow-hidden shadow-sm">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-loops-subtle/50 border-b border-loops-border">
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted w-12">
+                                            {/* Potential Select All Checkbox */}
+                                        </th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted">User</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted">Role</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted">WhatsApp</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-loops-muted text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-loops-border">
+                                    {filteredUsers.map(user => (
+                                        <tr
+                                            key={user.id}
+                                            onClick={() => toggleUserSelection(user.id)}
+                                            className={cn(
+                                                "hover:bg-loops-subtle/30 transition-colors group cursor-pointer",
+                                                selectedUsers.includes(user.id) && "bg-loops-primary/5"
+                                            )}
+                                        >
+                                            <td className="px-8 py-6">
+                                                <div className={cn(
+                                                    "w-5 h-5 rounded border-2 flex items-center justify-center transition-all",
+                                                    selectedUsers.includes(user.id) ? "bg-loops-primary border-loops-primary text-white" : "border-loops-border bg-white"
+                                                )}>
+                                                    {selectedUsers.includes(user.id) && <Check className="w-3 h-3" />}
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-full bg-loops-subtle flex items-center justify-center font-bold text-loops-primary border border-loops-border group-hover:scale-110 transition-transform shadow-sm">
+                                                        {user.full_name?.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-sm text-loops-main">{user.full_name || 'Anonymous User'}</div>
+                                                        <div className="text-[10px] font-bold text-loops-muted uppercase tracking-tight">{user.email || 'No email'}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <div className="flex gap-2">
+                                                    {user.is_admin && <span className="px-3 py-1 bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-red-100">Admin</span>}
+                                                    {user.is_plug && <span className="px-3 py-1 bg-loops-primary/5 text-loops-primary text-[9px] font-black uppercase tracking-widest rounded-full border border-loops-primary/10">Plug</span>}
+                                                    {!user.is_admin && !user.is_plug && <span className="px-3 py-1 bg-loops-subtle text-loops-muted text-[9px] font-black uppercase tracking-widest rounded-full border border-loops-border">Student</span>}
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6 text-xs font-bold text-loops-muted">
+                                                <div className="flex items-center gap-2">
+                                                    {user.whatsapp_number ? (
+                                                        <>
+                                                            <MessageCircle className="w-3 h-3 text-loops-success" />
+                                                            <span>{user.whatsapp_number}</span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="opacity-30 italic">Not set</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6 text-right">
+                                                <div className="flex gap-2 justify-end" onClick={e => e.stopPropagation()}>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        disabled={processingId === user.id}
+                                                        onClick={() => togglePlugStatus(user.id, user.is_plug)}
+                                                        className={cn(
+                                                            "h-9 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all",
+                                                            user.is_plug ? "text-red-500 border-red-100 hover:bg-red-50" : "text-loops-primary border-loops-primary/10 hover:bg-loops-primary/5"
+                                                        )}
+                                                    >
+                                                        {user.is_plug ? 'Revoke Plug' : 'Verify Plug'}
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {filteredUsers.length === 0 && (
+                        <div className="py-20 text-center">
+                            <p className="text-loops-muted italic font-medium">No users found matching your search.</p>
+                        </div>
+                    )}
+                </div>
+            )
+            }
+        </div >
+    );
+};
 
 function StatCard({ icon: Icon, label, value, description, color, onClick }: { icon: any, label: string, value: any, description?: string, color: string, onClick?: () => void }) {
     return (
