@@ -9,7 +9,6 @@ import * as Icons from "lucide-react";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createClient } from "../../lib/supabase/client";
 import { SkeletonCard } from "../../components/ui/skeleton-loader";
@@ -17,7 +16,6 @@ import { SearchBar } from "../../components/ui/search-bar";
 import { cn } from "../../lib/utils";
 import { useCampus } from "../../context/campus-context";
 import { PRODUCT_CATEGORIES, SERVICE_CATEGORIES, FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../lib/constants";
-import { FloatingShapes } from "../../components/ui/floating-shapes";
 
 export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);
@@ -139,7 +137,6 @@ export default function MarketplacePage() {
     return (
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
-            <FloatingShapes />
 
             {hasUser && userEmail && (
                 <div className="pt-4 md:pt-20">
@@ -254,39 +251,20 @@ export default function MarketplacePage() {
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
                                     className={cn(
-                                        "group relative flex flex-col items-center gap-3 min-w-[80px] md:min-w-[100px] transition-all duration-500",
-                                        isActive ? "scale-110" : "opacity-60 hover:opacity-100"
+                                        "group flex flex-col items-center gap-2 min-w-[70px] transition-all",
+                                        isActive ? "scale-105" : "opacity-60 hover:opacity-100"
                                     )}
                                 >
                                     <div className={cn(
-                                        "relative w-14 h-14 md:w-16 md:h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 overflow-hidden border",
+                                        "w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all border",
                                         isActive 
-                                            ? "bg-white shadow-[0_15px_35px_-10px_rgba(16,185,129,0.25)] border-loops-primary/20 scale-105" 
-                                            : "bg-loops-subtle border-loops-border hover:border-loops-primary/30"
+                                            ? "bg-loops-primary text-white border-loops-primary shadow-lg shadow-loops-primary/20" 
+                                            : "bg-white border-loops-border hover:border-loops-primary/30"
                                     )}>
-                                        {cat.image3d ? (
-                                            <div className="relative w-10 h-10 md:w-12 md:h-12 group-hover:rotate-12 transition-transform duration-500">
-                                                <Image 
-                                                    src={cat.image3d}
-                                                    alt={cat.label}
-                                                    fill
-                                                    className="object-contain"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <Icon className={cn("w-6 h-6", isActive ? "text-loops-primary" : "text-loops-muted")} />
-                                        )}
-                                        
-                                        {/* Active Indicator Glow */}
-                                        {isActive && (
-                                            <motion.div 
-                                                layoutId="activeCategoryGlow"
-                                                className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-loops-primary to-loops-accent"
-                                            />
-                                        )}
+                                        <Icon className="w-5 h-5 md:w-6 md:h-6" />
                                     </div>
                                     <span className={cn(
-                                        "text-[9px] md:text-[10px] font-black uppercase tracking-widest text-center",
+                                        "text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-center",
                                         isActive ? "text-loops-main" : "text-loops-muted"
                                     )}>
                                         {cat.label}
