@@ -44,7 +44,7 @@ export default function AdminLayout({
     }, [supabase, router]);
 
     if (loading) {
-        return <LoopLoading />;
+        return <LoopLoading type="admin" />;
     }
 
     if (!isAuthorized) {

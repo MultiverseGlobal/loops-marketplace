@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Infinity as InfinityIcon, Zap, Package, Sparkles } from 'lucide-react';
 
 interface LoopLoadingProps {
-    type: 'product' | 'service';
+    type: 'product' | 'service' | 'admin';
     onComplete?: () => void;
 }
 
@@ -27,9 +27,18 @@ const SERVICE_MESSAGES = [
     "Tuning service wavelength...",
 ];
 
+const ADMIN_MESSAGES = [
+    "Syncing Command Center...",
+    "Verifying Founding Credentials...",
+    "Authorizing Node Access...",
+    "Initializing Oversight Systems...",
+    "Opening Security Vault...",
+    "Establishing Secure Loop...",
+];
+
 export function LoopLoading({ type, onComplete }: LoopLoadingProps) {
     const [messageIndex, setMessageIndex] = useState(0);
-    const messages = type === 'product' ? PRODUCT_MESSAGES : SERVICE_MESSAGES;
+    const messages = type === 'product' ? PRODUCT_MESSAGES : type === 'service' ? SERVICE_MESSAGES : ADMIN_MESSAGES;
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -68,8 +77,10 @@ export function LoopLoading({ type, onComplete }: LoopLoadingProps) {
                 >
                     {type === 'product' ? (
                         <Package className="w-10 h-10 text-white" />
-                    ) : (
+                    ) : type === 'service' ? (
                         <Zap className="w-10 h-10 text-white" />
+                    ) : (
+                        <InfinityIcon className="w-10 h-10 text-white animate-pulse" />
                     )}
                 </motion.div>
 

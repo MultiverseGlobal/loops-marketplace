@@ -7,7 +7,7 @@ import { Navbar } from '@/components/layout/navbar';
 import { ProductCard } from '@/components/ui/product-card';
 import { Button } from '@/components/ui/button';
 import { Rating } from '@/components/ui/rating';
-import { Package, Zap, MapPin, Sparkles, ShieldCheck, Share2, ArrowLeft } from 'lucide-react';
+import { Package, Zap, MapPin, Sparkles, ShieldCheck, Share2, ArrowLeft, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CURRENCY, FALLBACK_PRODUCT_IMAGE } from '@/lib/constants';

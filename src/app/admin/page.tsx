@@ -780,8 +780,7 @@ export default function AdminDashboard() {
                     </div>
                 )}
             </AnimatePresence>
-        </main>
-    </div>
+        </div>
     );
 }
 
@@ -1203,6 +1202,7 @@ function StatTile({ label, value, icon: Icon }: { label: string, value: any, ico
             </div>
             <p className="text-2xl font-black font-display italic tracking-tight">{value}</p>
         </div>
+    );
 }
 
 const DashboardView = ({

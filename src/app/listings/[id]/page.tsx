@@ -3,7 +3,7 @@
 
 import { Navbar } from "../../../components/layout/navbar";
 import { Button } from "../../../components/ui/button";
-import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle, ArrowRight, Package, ShoppingCart, Infinity } from "lucide-react";
+import { ChevronDown, Star, ShieldCheck, Truck, ArrowLeft, MessageSquare, Sparkles, Edit3, Trash2, CheckCircle, Zap, MapPin, AlertTriangle, ArrowRight, Package, ShoppingCart, Infinity, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useEffect } from "react";

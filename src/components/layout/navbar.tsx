@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart, Bell, Home, Search, PlusSquare, Package } from "lucide-react";
+import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart, Bell, Home, Search, PlusSquare, Package, X } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
@@ -246,7 +246,7 @@ export function Navbar() {
                                 }}
                                 className="opacity-50 hover:opacity-100"
                             >
-                                <Icons.X className="w-4 h-4" />
+                                <X className="w-4 h-4" />
                             </button>
                         </div>
                     </div>
