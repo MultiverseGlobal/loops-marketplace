@@ -9,6 +9,7 @@ import * as Icons from "lucide-react";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createClient } from "../../lib/supabase/client";
 import { SkeletonCard } from "../../components/ui/skeleton-loader";
@@ -146,27 +147,70 @@ export default function MarketplacePage() {
                 </div>
             )}
 
-            <CampusBuzz />
+            {/* Pulse Header Section */}
+            <header className="relative pt-24 md:pt-36 pb-8 md:pb-16 px-6 overflow-hidden">
+                {/* Mesh Gradient Background */}
+                <div className="absolute inset-0 -z-10 bg-white">
+                    <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-loops-primary/10 rounded-full blur-[120px] animate-[pulse-subtle_8s_ease-in-out_infinite]" />
+                    <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-loops-energetic/5 rounded-full blur-[100px] animate-[pulse-subtle_12s_ease-in-out_infinite_reverse]" />
+                </div>
 
-            {/* App Header */}
-            <header className="bg-white/80 backdrop-blur-xl border-b border-loops-border pt-4 md:pt-32 pb-4 md:pb-8 px-4 sm:px-6 relative z-10">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8">
-                    <div className="space-y-1 sm:space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/10 text-loops-primary text-[9px] md:text-[10px] font-bold uppercase tracking-widest border border-loops-primary/20">
-                            <Sparkles className="w-3 h-3 text-loops-accent animate-[pulse-subtle_2s_ease-in-out_infinite]" /> Live Loop
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-12">
+                        <div className="space-y-4 max-w-2xl">
+                            <motion.div 
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/10 text-loops-primary text-[10px] font-bold uppercase tracking-[0.2em] border border-loops-primary/20 backdrop-blur-md"
+                            >
+                                <Sparkles className="w-3.5 h-3.5 text-loops-accent sm:animate-pulse" />
+                                <span className="opacity-80">The Campus Pulse</span>
+                                <div className="w-1 h-1 bg-loops-primary rounded-full animate-ping" />
+                            </motion.div>
+                            
+                            <motion.h1 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tighter text-loops-main leading-[0.9]"
+                            >
+                                <span className="bg-clip-text text-transparent bg-gradient-to-br from-loops-main via-loops-primary to-loops-secondary italic">
+                                    {getTerm('marketplaceName')}
+                                </span>
+                                <span className="text-loops-primary/30">.</span>
+                            </motion.h1>
+                            
+                            <motion.p 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="text-loops-muted text-sm md:text-lg font-medium max-w-md opacity-70 leading-relaxed"
+                            >
+                                Real-time student economy across <span className="text-loops-main font-bold">{campus?.name || 'the Loop'}</span>. Connect, trade, and scale.
+                            </motion.p>
                         </div>
-                        <h1 className="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter text-loops-main">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-loops-primary to-loops-energetic italic">{getTerm('marketplaceName')}</span>.
-                        </h1>
-                        <p className="text-loops-muted text-[12px] md:text-sm font-medium max-w-sm opacity-80">
-                            Real-time student economy across {campus?.name || 'the Loop'}.
-                        </p>
+
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="w-full md:max-w-md"
+                        >
+                            <div className="relative group">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-loops-primary/20 to-loops-accent/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition duration-500" />
+                                <SearchBar
+                                    onSearch={setSearchQuery}
+                                    placeholder={`Search the Loop...`}
+                                />
+                            </div>
+                        </motion.div>
                     </div>
-                    <div className="flex-1 max-w-xl">
-                        <SearchBar
-                            onSearch={setSearchQuery}
-                            placeholder={`Search the Loop...`}
-                        />
+
+                    {/* Integrated CampusBuzz */}
+                    <div className="mt-8 md:mt-12">
+                        <div className="inline-block px-4 py-2 bg-white/40 backdrop-blur-md rounded-2xl border border-loops-border/50">
+                            <CampusBuzz />
+                        </div>
                     </div>
                 </div>
             </header>
@@ -200,7 +244,7 @@ export default function MarketplacePage() {
                     </div>
 
                     {/* Category Quick Filter Chips */}
-                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2">
+                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-4 px-1">
                         {(activeType === 'product' ? PRODUCT_CATEGORIES : SERVICE_CATEGORIES).map((cat) => {
                             const Icon = (Icons as any)[cat.icon] || Icons.HelpCircle;
                             const isActive = (selectedCategory === cat.id) || (cat.id === 'all' && !selectedCategory);
@@ -210,15 +254,43 @@ export default function MarketplacePage() {
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
                                     className={cn(
-                                        "px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] border transition-all whitespace-nowrap flex items-center gap-2",
-                                        isActive
-                                            ? "bg-loops-main text-white border-loops-main shadow-lg"
-                                            : "bg-white text-loops-muted border-loops-border hover:border-loops-primary"
+                                        "group relative flex flex-col items-center gap-3 min-w-[80px] md:min-w-[100px] transition-all duration-500",
+                                        isActive ? "scale-110" : "opacity-60 hover:opacity-100"
                                     )}
-                                    style={isActive ? { backgroundColor: cat.color, borderColor: cat.color } : {}}
                                 >
-                                    <Icon className={cn("w-3.5 h-3.5", isActive ? "text-white" : "opacity-50")} style={!isActive ? { color: cat.color } : {}} />
-                                    {cat.label}
+                                    <div className={cn(
+                                        "relative w-14 h-14 md:w-16 md:h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 overflow-hidden border",
+                                        isActive 
+                                            ? "bg-white shadow-[0_15px_35px_-10px_rgba(16,185,129,0.25)] border-loops-primary/20 scale-105" 
+                                            : "bg-loops-subtle border-loops-border hover:border-loops-primary/30"
+                                    )}>
+                                        {cat.image3d ? (
+                                            <div className="relative w-10 h-10 md:w-12 md:h-12 group-hover:rotate-12 transition-transform duration-500">
+                                                <Image 
+                                                    src={cat.image3d}
+                                                    alt={cat.label}
+                                                    fill
+                                                    className="object-contain"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <Icon className={cn("w-6 h-6", isActive ? "text-loops-primary" : "text-loops-muted")} />
+                                        )}
+                                        
+                                        {/* Active Indicator Glow */}
+                                        {isActive && (
+                                            <motion.div 
+                                                layoutId="activeCategoryGlow"
+                                                className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-loops-primary to-loops-accent"
+                                            />
+                                        )}
+                                    </div>
+                                    <span className={cn(
+                                        "text-[9px] md:text-[10px] font-black uppercase tracking-widest text-center",
+                                        isActive ? "text-loops-main" : "text-loops-muted"
+                                    )}>
+                                        {cat.label}
+                                    </span>
                                 </button>
                             );
                         })}
@@ -263,27 +335,39 @@ export default function MarketplacePage() {
                     </div>
                 </div>
 
-                {/* Grid */}
+                {/* Hybrid Grid (Masonry + Symmetric Blend) */}
                 <div className="py-2">
                     {loading ? (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-10">
                             {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
                         </div>
                     ) : listings.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-10">
-                            {listings.map((listing, idx) => (
-                                <ProductCard
-                                    key={listing.id}
-                                    id={listing.id}
-                                    title={listing.title}
-                                    price={`${CURRENCY}${listing.price}`}
-                                    category={listing.category}
-                                    image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
-                                    author={listing.profiles}
-                                    boosted_until={listing.boosted_until}
-                                    delay={idx * 0.05}
-                                />
-                            ))}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-10 auto-rows-max">
+                            {listings.map((listing, idx) => {
+                                const isFeatured = (idx % 6 === 0) || (listing.boosted_until && new Date(listing.boosted_until) > new Date());
+                                
+                                return (
+                                    <div 
+                                        key={listing.id}
+                                        className={cn(
+                                            "transition-all duration-700",
+                                            isFeatured ? "col-span-2 row-span-2" : "col-span-1"
+                                        )}
+                                    >
+                                        <ProductCard
+                                            id={listing.id}
+                                            title={listing.title}
+                                            price={`${CURRENCY}${listing.price}`}
+                                            category={listing.category}
+                                            image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
+                                            author={listing.profiles}
+                                            boosted_until={listing.boosted_until}
+                                            delay={idx * 0.05}
+                                            featured={isFeatured}
+                                        />
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="text-center py-32 bg-white border-2 border-dashed border-loops-border rounded-[3rem] px-8 relative overflow-hidden group">

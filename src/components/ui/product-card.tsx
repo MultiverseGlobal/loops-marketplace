@@ -20,24 +20,29 @@ interface ProductCardProps {
     delay?: number;
     author?: any;
     boosted_until?: string | null;
+    featured?: boolean;
 }
 
-export function ProductCard({ id, title, price, image, category, delay = 0, author, boosted_until }: ProductCardProps) {
+export function ProductCard({ id, title, price, image, category, delay = 0, author, boosted_until, featured = false }: ProductCardProps) {
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [wishlistLoading, setWishlistLoading] = useState(false);
     const { addToCart, refreshWishlist } = useCart();
     const supabase = createClient();
     const toast = useToast();
 
-    // 3D Tilt State
+    // 3D Tilt & Light Reflection State
     const x = useMotionValue(0);
     const y = useMotionValue(0);
 
     const mouseXSpring = useSpring(x);
     const mouseYSpring = useSpring(y);
 
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
+    
+    // Light reflection based on mouse position
+    const lightX = useTransform(mouseXSpring, [-0.5, 0.5], ["0%", "100%"]);
+    const lightY = useTransform(mouseYSpring, [-0.5, 0.5], ["0%", "100%"]);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const rect = e.currentTarget.getBoundingClientRect();
@@ -115,9 +120,7 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
         e.preventDefault();
         e.stopPropagation();
         await addToCart({ id, title, price, images: [image], profiles: author });
-    };
-
-    return (
+    };    return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,92 +132,95 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
                 rotateY,
                 transformStyle: "preserve-3d",
             }}
-            className="group perspective-1000"
+            className={cn(
+                "group perspective-1000",
+                featured ? "h-full" : ""
+            )}
         >
             <Link href={`/listings/${id}`}>
-                <div className="relative aspect-square overflow-hidden rounded-2xl md:rounded-3xl bg-loops-subtle border border-loops-border group-hover:border-loops-primary/30 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-loops-primary/10">
+                <div className={cn(
+                    "relative overflow-hidden rounded-[2.5rem] bg-white/40 backdrop-blur-md border border-white/50 transition-all duration-700 group-hover:border-loops-primary/50 group-hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)]",
+                    featured ? "aspect-[4/5] sm:aspect-auto sm:h-full" : "aspect-square"
+                )}>
+                    {/* Light Refraction Overlay */}
+                    <motion.div 
+                        style={{
+                            background: `radial-gradient(circle at ${lightX.get()} ${lightY.get()}, rgba(255,255,255,0.4) 0%, transparent 80%)`,
+                        }}
+                        className="absolute inset-0 pointer-events-none z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    />
+
                     <Image
                         src={image}
                         alt={title}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
-                    <div className="absolute top-2 left-2 md:top-4 md:left-4 flex flex-col gap-2 items-start">
-                        <span className="text-[8px] md:text-[10px] font-bold px-2 py-0.5 rounded-lg bg-white/95 text-loops-main backdrop-blur-md uppercase tracking-widest shadow-sm border border-loops-border/50">
-                            {category}
-                        </span>
-                        {boosted_until && new Date(boosted_until) > new Date() && (
-                            <div className="flex items-center gap-1.5 px-3 py-1 bg-loops-primary text-loops-main rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl animate-pulse-subtle">
-                                <Plus className="w-2.5 h-2.5 fill-current" />
-                                <span>Loop Boost</span>
+                    
+                    {/* Glass Overlay for data */}
+                    <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 bg-gradient-to-t from-loops-main/90 via-loops-main/40 to-transparent backdrop-blur-[2px] z-10">
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center justify-between gap-2">
+                                <span className={cn(
+                                    "font-bold uppercase tracking-[0.2em] text-white/60",
+                                    featured ? "text-[10px]" : "text-[8px] md:text-[9px]"
+                                )}>
+                                    {category}
+                                </span>
+                                {boosted_until && new Date(boosted_until) > new Date() && (
+                                    <div className="px-2 py-0.5 bg-loops-primary text-white rounded-lg text-[8px] font-black uppercase tracking-widest animate-pulse">
+                                        Boosted
+                                    </div>
+                                )}
                             </div>
-                        )}
+                            <h3 className={cn(
+                                "font-display font-bold text-white tracking-tight group-hover:text-loops-accent transition-colors truncate",
+                                featured ? "text-xl md:text-3xl" : "text-sm md:text-base"
+                            )}>
+                                {title}
+                            </h3>
+                            <div className="flex items-center justify-between mt-1">
+                                <p className={cn(
+                                    "text-loops-accent font-black tracking-tighter",
+                                    featured ? "text-2xl" : "text-base"
+                                )}>
+                                    {price}
+                                </p>
+                                <div className="flex items-center gap-2 px-2 py-1 bg-white/10 rounded-xl backdrop-blur-md border border-white/10">
+                                    <div className="w-3.5 h-3.5 rounded-full overflow-hidden border border-white/20">
+                                        {((author as any)?.store_logo_url || (author as any)?.avatar_url) ? (
+                                            <Image
+                                                src={(author as any)?.store_logo_url || (author as any)?.avatar_url}
+                                                alt=""
+                                                width={14}
+                                                height={14}
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <User className="w-2 h-2 text-white" />
+                                        )}
+                                    </div>
+                                    <span className="text-[8px] font-bold text-white uppercase tracking-wider truncate max-w-[50px]">
+                                        {(author as any)?.store_name || (author as any)?.full_name || "Campus"}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    {/* Quick Action - Desktop */}
                     <button
                         onClick={toggleWishlist}
                         disabled={wishlistLoading}
                         className={cn(
-                            "absolute top-2 right-2 md:top-4 md:right-4 p-2 rounded-xl backdrop-blur-md transition-all duration-300 z-10",
+                            "absolute top-4 right-4 p-3 rounded-2xl backdrop-blur-xl transition-all duration-500 z-30",
                             isWishlisted
-                                ? "bg-white text-red-500 shadow-lg scale-110"
-                                : "bg-white/70 text-loops-muted hover:bg-white hover:text-red-500"
+                                ? "bg-loops-primary text-white shadow-lg scale-110"
+                                : "bg-white/10 text-white border border-white/20 hover:bg-loops-primary hover:border-loops-primary"
                         )}
                     >
                         <Heart className={cn("w-4 h-4 md:w-5 h-5", isWishlisted && "fill-current")} />
                     </button>
-
-                    {/* Add to Cart - Desktop Overlay */}
-                    <div className="absolute inset-0 bg-loops-main/40 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center pointer-events-none md:group-hover:pointer-events-auto">
-                        <Button
-                            onClick={handleAddToCart}
-                            className="bg-white text-loops-main hover:bg-loops-primary hover:text-white rounded-2xl p-4 font-bold h-auto shadow-2xl transition-all translate-y-4 group-hover:translate-y-0 duration-500 border-0"
-                        >
-                            <ShoppingCart className="w-5 h-5 mr-3" />
-                            Add to Cart
-                        </Button>
-                    </div>
-
-                    {/* Add to Cart - Mobile Button */}
-                    <div className="md:hidden absolute bottom-2 right-2 pointer-events-auto">
-                        <Button
-                            onClick={handleAddToCart}
-                            size="icon"
-                            className="w-10 h-10 bg-white/90 backdrop-blur-md text-loops-main rounded-xl shadow-lg border border-loops-border active:scale-90 transition-transform"
-                        >
-                            <Plus className="w-5 h-5" />
-                        </Button>
-                    </div>
-                </div>
-                <div className="mt-3 space-y-1 px-1">
-                    <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-[13px] md:text-sm font-bold text-loops-main group-hover:text-loops-primary transition-colors truncate tracking-tight flex-1">{title}</h3>
-                        {(author as any)?.is_plug && (
-                            <div className="flex-shrink-0 px-1.5 py-0.5 rounded-md bg-loops-primary/10 text-loops-primary text-[8px] font-bold uppercase tracking-tighter flex items-center gap-1">
-                                <ShieldCheck className="w-2.5 h-2.5" />
-                                <span>Plug</span>
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <p className="text-[12px] md:text-[13px] text-loops-primary font-black tracking-tighter">{price}</p>
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-4 h-4 rounded-full bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
-                                {((author as any)?.store_logo_url || (author as any)?.avatar_url) ? (
-                                    <Image
-                                        src={(author as any)?.store_logo_url || (author as any)?.avatar_url}
-                                        alt={(author as any)?.store_name || "Seller"}
-                                        width={16}
-                                        height={16}
-                                        className="object-cover"
-                                    />
-                                ) : (
-                                    <User className="w-2 h-2 text-loops-muted" />
-                                )}
-                            </div>
-                            <span className="text-[9px] font-bold text-loops-muted uppercase tracking-wider truncate max-w-[60px]">{(author as any)?.store_name || (author as any)?.full_name || "Campus Hub"}</span>
-                            <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse-subtle flex-shrink-0", (author as any)?.store_banner_color || "bg-loops-primary")} />
-                        </div>
-                    </div>
                 </div>
             </Link>
         </motion.div>

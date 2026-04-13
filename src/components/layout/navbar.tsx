@@ -23,6 +23,8 @@ function NavLink({ href, children }: { href: string, children: React.ReactNode }
     );
 }
 
+import { motion, AnimatePresence } from "framer-motion";
+
 export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
@@ -83,27 +85,37 @@ export function Navbar() {
     return (
         <>
             {/* Desktop Navbar */}
-            <nav className="hidden md:block fixed top-0 w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-12">
-                        <Link href="/" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-loops-primary/20 group-hover:rotate-12 transition-transform duration-500 overflow-hidden border border-loops-border">
-                                <InfinityLogo className="w-9 h-9" />
+            <nav className="hidden md:block fixed top-6 inset-x-0 max-w-7xl mx-auto z-50">
+                <div className="mx-6 px-6 h-20 bg-white/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/40 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] flex items-center justify-between transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(16,185,129,0.15)]">
+                    <div className="flex items-center gap-10">
+                        <Link href="/" className="flex items-center gap-4 group">
+                            <div className="relative">
+                                {/* Logo Mesh Glow */}
+                                <div className="absolute -inset-4 bg-loops-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                                <motion.div 
+                                    whileHover={{ rotate: 12, scale: 1.1 }}
+                                    className="relative w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-loops-border overflow-hidden z-10"
+                                >
+                                    <InfinityLogo className="w-10 h-10" />
+                                </motion.div>
                             </div>
-                            <span className="font-display text-2xl font-bold tracking-tighter text-loops-main">
-                                Loops
-                            </span>
+                            <div className="flex flex-col">
+                                <span className="font-display text-2xl font-black tracking-tighter text-loops-main leading-none">
+                                    Loops
+                                </span>
+                                <span className="text-[8px] font-bold text-loops-primary uppercase tracking-[0.3em] mt-1 ml-0.5">Campus OS</span>
+                            </div>
                         </Link>
 
-                        <nav className="hidden lg:flex items-center gap-2">
+                        <nav className="hidden lg:flex items-center gap-1">
                             <NavLink href="/browse?view=product">{getTerm('marketplaceName') || 'Marketplace'}</NavLink>
                             <NavLink href="/browse?view=service">Services</NavLink>
                             <NavLink href="/requests">Requests</NavLink>
                             {user && (
-                                <Link href="/messages" className="relative">
+                                <Link href="/messages" className="relative group">
                                     <NavLink href="/messages">Messages</NavLink>
                                     {unreadMessagesCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
+                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white ring-2 ring-loops-primary/10">
                                             {unreadMessagesCount}
                                         </span>
                                     )}
