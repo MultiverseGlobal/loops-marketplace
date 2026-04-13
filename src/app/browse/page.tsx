@@ -333,45 +333,38 @@ export default function MarketplacePage() {
                             }}
                             initial="hidden"
                             animate="show"
-                            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-10 auto-rows-max"
+                            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-8"
                         >
-                            {listings.map((listing, idx) => {
-                                const isFeatured = (idx % 6 === 0) || (listing.boosted_until && new Date(listing.boosted_until) > new Date());
-                                
-                                return (
-                                    <motion.div 
-                                        key={listing.id}
-                                        variants={{
-                                            hidden: { opacity: 0, y: 30, scale: 0.95 },
-                                            show: { 
-                                                opacity: 1, 
-                                                y: 0, 
-                                                scale: 1,
-                                                transition: {
-                                                    type: "spring",
-                                                    stiffness: 100,
-                                                    damping: 15
-                                                }
+                            {listings.map((listing) => (
+                                <motion.div 
+                                    key={listing.id}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 20, scale: 0.95 },
+                                        show: { 
+                                            opacity: 1, 
+                                            y: 0, 
+                                            scale: 1,
+                                            transition: {
+                                                type: "spring",
+                                                stiffness: 100,
+                                                damping: 15
                                             }
-                                        }}
-                                        className={cn(
-                                            "transition-all duration-700",
-                                            isFeatured ? "col-span-2 row-span-2" : "col-span-1"
-                                        )}
-                                    >
-                                        <ProductCard
-                                            id={listing.id}
-                                            title={listing.title}
-                                            price={`${CURRENCY}${listing.price}`}
-                                            category={listing.category}
-                                            image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
-                                            author={listing.profiles}
-                                            boosted_until={listing.boosted_until}
-                                            featured={isFeatured}
-                                        />
-                                    </motion.div>
-                                );
-                            })}
+                                        }
+                                    }}
+                                    className="col-span-1"
+                                >
+                                    <ProductCard
+                                        id={listing.id}
+                                        title={listing.title}
+                                        price={`${CURRENCY}${listing.price}`}
+                                        category={listing.category}
+                                        image={listing.images?.[0] || listing.image_url || FALLBACK_PRODUCT_IMAGE}
+                                        author={listing.profiles}
+                                        boosted_until={listing.boosted_until}
+                                        featured={false}
+                                    />
+                                </motion.div>
+                            ))}
                         </motion.div>
                     ) : (
                         <div className="text-center py-32 bg-white border-2 border-dashed border-loops-border rounded-[3rem] px-8 relative overflow-hidden group">
