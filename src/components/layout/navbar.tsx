@@ -32,6 +32,15 @@ export function Navbar() {
     const { campus, getTerm } = useCampus();
     const toast = useToast();
     const { unreadCount, unreadMessagesCount, pendingLoopsCount } = useNotifications();
+    const [showAppBanner, setShowAppBanner] = useState(false);
+
+    useEffect(() => {
+        const dismissed = localStorage.getItem('loops_app_banner_dismissed');
+        const isMobile = window.innerWidth < 768;
+        if (isMobile && !dismissed) {
+            setShowAppBanner(true);
+        }
+    }, []);
 
     useEffect(() => {
         const getUser = async () => {
@@ -209,7 +218,39 @@ export function Navbar() {
             </nav>
 
             {/* Mobile Header (Sticky Logo Only) */}
-            <nav className="md:hidden fixed top-0 w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl">
+            <nav className={cn(
+                "md:hidden fixed top-0 w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl transition-all duration-500",
+                showAppBanner ? "pt-12" : "pt-0"
+            )}>
+                {showAppBanner && (
+                    <div className="absolute top-0 w-full h-12 bg-loops-primary text-white flex items-center justify-between px-6 animate-in slide-in-from-top duration-500">
+                        <div className="flex items-center gap-2">
+                            <Smartphone className="w-4 h-4" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Get the Loops App</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => {
+                                    triggerPWAInstall();
+                                    setShowAppBanner(false);
+                                    localStorage.setItem('loops_app_banner_dismissed', 'true');
+                                }}
+                                className="text-[9px] font-black uppercase tracking-widest bg-white text-loops-primary px-3 py-1 rounded-full shadow-lg"
+                            >
+                                Install Now
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowAppBanner(false);
+                                    localStorage.setItem('loops_app_banner_dismissed', 'true');
+                                }}
+                                className="opacity-50 hover:opacity-100"
+                            >
+                                <Icons.X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                )}
                 <div className="px-6 h-14 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-lg shadow-loops-primary/10 border border-loops-border">

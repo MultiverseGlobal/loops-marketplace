@@ -286,12 +286,35 @@ export default function MarketplacePage() {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-24 bg-loops-subtle border border-loops-border rounded-3xl">
-                            <div className="text-loops-muted font-bold uppercase tracking-widest text-xs mb-2 italic">The {getTerm('communityName')} is quiet.</div>
-                            <p className="text-loops-muted mb-8">Be the first to {getTerm('listingAction')?.toLowerCase().includes('post') ? getTerm('listingAction') : `post a ${getTerm('listingName')}`} from your {campus?.name || 'campus'}!</p>
-                            <Link href="/listings/create">
-                                <Button className="bg-loops-primary text-white shadow-xl shadow-loops-primary/20 rounded-xl px-10">{getTerm('listingAction')}</Button>
-                            </Link>
+                        <div className="text-center py-32 bg-white border-2 border-dashed border-loops-border rounded-[3rem] px-8 relative overflow-hidden group">
+                            {/* Abstract Background Decoration */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-loops-primary/5 rounded-full blur-3xl -mt-32 transition-all group-hover:bg-loops-primary/10" />
+                            
+                            <div className="relative z-10 space-y-6">
+                                <div className="w-24 h-24 bg-loops-primary/5 rounded-[2rem] flex items-center justify-center mx-auto text-loops-primary/20 group-hover:text-loops-primary/40 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
+                                    <Icons.Inbox className="w-12 h-12" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-3xl font-bold font-display italic tracking-tighter text-loops-main">This Loop is quiet. Too quiet.</h3>
+                                    <p className="text-loops-muted text-sm max-w-sm mx-auto leading-relaxed">
+                                        Be the first student to drop a {getTerm('listingName')?.toLowerCase()} at <span className="text-loops-primary font-bold">{campus?.name || 'this campus'}</span> and claim your status as a Founding Plug. 🔌✨
+                                    </p>
+                                </div>
+                                <div className="pt-4">
+                                    <Link href="/listings/create">
+                                        <Button className="h-16 px-10 bg-loops-primary text-white font-bold rounded-2xl shadow-2xl shadow-loops-primary/20 hover:scale-105 active:scale-95 transition-all text-lg group">
+                                            <Icons.PlusCircle className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-500" />
+                                            {getTerm('listingAction')}
+                                        </Button>
+                                    </Link>
+                                </div>
+                                <div className="flex items-center justify-center gap-6 pt-8 opacity-30 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
+                                    <Icons.ShoppingBag className="w-5 h-5 text-loops-primary" />
+                                    <Icons.Zap className="w-5 h-5 text-loops-energetic" />
+                                    <Icons.Sparkles className="w-5 h-5 text-loops-accent" />
+                                    <Icons.ShieldCheck className="w-5 h-5 text-loops-success" />
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

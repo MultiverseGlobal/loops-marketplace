@@ -63,8 +63,13 @@ export default function PublicStorefront() {
             });
         } else {
             navigator.clipboard.writeText(window.location.href);
-            alert("Link copied to clipboard! 🚀");
+            alert("Store link copied to clipboard! 🚀");
         }
+    };
+
+    const handleShareToWhatsApp = () => {
+        const text = encodeURIComponent(`Yo! 🔌 Just updated my store on Loops with new items. Check out the latest Drops @ ${profile?.campuses?.name || 'Campus'}!\n\nBrowse my Loop here: ${window.location.href} ♾️✨`);
+        window.open(`https://wa.me/?text=${text}`, '_blank');
     };
 
     if (loading) return null;
@@ -111,13 +116,22 @@ export default function PublicStorefront() {
                                 {profile.store_name || profile.full_name}
                             </h1>
                         </div>
-                        <Button
-                            onClick={handleShare}
-                            className="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white border border-white/30 h-14 px-8 rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 group transition-all"
-                        >
-                            <Share2 className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                            Share Store
-                        </Button>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <Button
+                                onClick={handleShareToWhatsApp}
+                                className="bg-loops-success hover:bg-loops-success/90 text-white h-14 px-8 rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 group transition-all shadow-xl shadow-loops-success/20"
+                            >
+                                <MessageSquare className="w-4 h-4" />
+                                Share to WhatsApp
+                            </Button>
+                            <Button
+                                onClick={handleShare}
+                                className="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white border border-white/30 h-14 px-8 rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 group transition-all"
+                            >
+                                <Share2 className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                                Copy Link
+                            </Button>
+                        </div>
                     </div>
                 </motion.div>
 

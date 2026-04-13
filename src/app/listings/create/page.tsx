@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
 import { CURRENCY } from "@/lib/constants";
+import { triggerSuccessBlast } from "@/lib/confetti";
 
 type ListingType = 'product' | 'service' | 'request';
 
@@ -96,6 +97,7 @@ export default function CreateListingPage() {
                 throw error;
             }
             if (!error) {
+                triggerSuccessBlast();
                 toast.success("Listing created! Your Item is now live in the Loop.");
                 router.push(`/browse?view=${type}`);
             } else {

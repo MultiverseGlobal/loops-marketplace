@@ -20,6 +20,7 @@ import { UserPlus, UserMinus } from "lucide-react";
 import { Rating } from "../../../components/ui/rating";
 import { LoopLoading } from "../../../components/ui/loop-loading";
 import { initializeTransaction } from "@/lib/paystack";
+import { triggerSuccessBlast } from "@/lib/confetti";
 
 export default function ListingDetailPage() {
     const { id } = useParams();
@@ -160,6 +161,7 @@ export default function ListingDetailPage() {
 
             if (data.number) {
                 setPendingWhatsApp(data);
+                triggerSuccessBlast(); // 🎉 Celebration!
                 setShowSuccessModal(true);
             } else {
                 toast.warning("Loop created! Note: This seller hasn't connected WhatsApp, please use the in-app chat.");
@@ -209,6 +211,12 @@ export default function ListingDetailPage() {
         }
 
         setIsInteracting(false);
+    };
+
+    const handleShareToStatus = () => {
+        const text = encodeURIComponent(`Yo! 🔌 Just found this "${listing.title}" for ${CURRENCY}${listing.price} on Loops @ ${campus?.name || 'Campus'}.\n\nCheck it out before someone else grabs it! ♾️✨\n\n${window.location.href}`);
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+        toast.success("Opening WhatsApp Status... 🚀");
     };
 
     const handleInteraction = async () => {
@@ -753,6 +761,15 @@ export default function ListingDetailPage() {
                                     >
                                         <Zap className="w-5 h-5 mr-2 text-loops-primary group-hover:animate-pulse" />
                                         Make an Offer
+                                    </Button>
+
+                                    {/* NEW: Viral Status Share */}
+                                    <Button
+                                        onClick={handleShareToStatus}
+                                        className="h-14 sm:h-16 bg-white border-2 border-loops-success/30 text-loops-success hover:bg-loops-success/5 font-display font-bold rounded-2xl transition-all flex items-center justify-center gap-2 sm:col-span-2 group"
+                                    >
+                                        <Share2 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                                        Post to WhatsApp Status
                                     </Button>
                                 </div>
 
