@@ -87,6 +87,8 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
         e.preventDefault();
         e.stopPropagation();
         await addToCart({ id, title, price, images: [image], profiles: author });
+    };
+
     return (
         <div 
             className={cn(
