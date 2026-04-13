@@ -30,39 +30,6 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
     const supabase = createClient();
     const toast = useToast();
 
-    // 3D Tilt & Light Reflection State
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
-    const mouseXSpring = useSpring(x);
-    const mouseYSpring = useSpring(y);
-
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
-    
-    // Light reflection based on mouse position
-    const lightX = useTransform(mouseXSpring, [-0.5, 0.5], ["0%", "100%"]);
-    const lightY = useTransform(mouseYSpring, [-0.5, 0.5], ["0%", "100%"]);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        const xPct = mouseX / width - 0.5;
-        const yPct = mouseY / height - 0.5;
-
-        x.set(xPct);
-        y.set(yPct);
-    };
-
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
-
     useEffect(() => {
         const checkWishlistStatus = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -120,35 +87,18 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
         e.preventDefault();
         e.stopPropagation();
         await addToCart({ id, title, price, images: [image], profiles: author });
-    };    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay }}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{
-                rotateX,
-                rotateY,
-                transformStyle: "preserve-3d",
-            }}
+    return (
+        <div 
             className={cn(
-                "group perspective-1000",
+                "group",
                 featured ? "h-full" : ""
             )}
         >
             <Link href={`/listings/${id}`}>
                 <div className={cn(
-                    "relative overflow-hidden rounded-[2.5rem] bg-white/40 backdrop-blur-md border border-white/50 transition-all duration-700 group-hover:border-loops-primary/50 group-hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)]",
+                    "relative overflow-hidden rounded-[2.5rem] bg-white border border-loops-border transition-all duration-500 group-hover:border-loops-primary/50 group-hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)]",
                     featured ? "aspect-[4/5] sm:aspect-auto sm:h-full" : "aspect-square"
                 )}>
-                    {/* Light Refraction Overlay */}
-                    <motion.div 
-                        style={{
-                            background: `radial-gradient(circle at ${lightX.get()} ${lightY.get()}, rgba(255,255,255,0.4) 0%, transparent 80%)`,
-                        }}
-                        className="absolute inset-0 pointer-events-none z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    />
 
                     <Image
                         src={image}
@@ -223,6 +173,6 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
                     </button>
                 </div>
             </Link>
-        </motion.div>
+        </div>
     );
 }

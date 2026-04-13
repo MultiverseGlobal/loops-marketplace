@@ -320,37 +320,10 @@ export default function MarketplacePage() {
                             {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
                         </div>
                     ) : listings.length > 0 ? (
-                        <motion.div 
-                            variants={{
-                                hidden: { opacity: 0 },
-                                show: {
-                                    opacity: 1,
-                                    transition: {
-                                        staggerChildren: 0.1,
-                                        delayChildren: 0.2
-                                    }
-                                }
-                            }}
-                            initial="hidden"
-                            animate="show"
-                            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-8"
-                        >
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-8">
                             {listings.map((listing) => (
-                                <motion.div 
+                                <div 
                                     key={listing.id}
-                                    variants={{
-                                        hidden: { opacity: 0, y: 20, scale: 0.95 },
-                                        show: { 
-                                            opacity: 1, 
-                                            y: 0, 
-                                            scale: 1,
-                                            transition: {
-                                                type: "spring",
-                                                stiffness: 100,
-                                                damping: 15
-                                            }
-                                        }
-                                    }}
                                     className="col-span-1"
                                 >
                                     <ProductCard
@@ -363,9 +336,9 @@ export default function MarketplacePage() {
                                         boosted_until={listing.boosted_until}
                                         featured={false}
                                     />
-                                </motion.div>
+                                </div>
                             ))}
-                        </motion.div>
+                        </div>
                     ) : (
                         <div className="text-center py-32 bg-white border-2 border-dashed border-loops-border rounded-[3rem] px-8 relative overflow-hidden group">
                             {/* Abstract Background Decoration */}
