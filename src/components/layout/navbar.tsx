@@ -14,6 +14,7 @@ import { useToast } from "@/context/toast-context";
 import { CartDrawer } from "./cart-drawer";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/context/notification-context";
+import { EcosystemSwitcher } from "./ecosystem-switcher";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (
@@ -87,7 +88,9 @@ export function Navbar() {
             {/* Desktop Navbar */}
             <nav className="hidden md:block fixed top-6 inset-x-0 max-w-7xl mx-auto z-50">
                 <div className="mx-6 px-6 h-20 bg-white/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/40 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] flex items-center justify-between transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(16,185,129,0.15)]">
-                    <div className="flex items-center gap-10">
+                    <div className="flex items-center gap-6">
+                        <EcosystemSwitcher />
+                        <div className="w-px h-8 bg-loops-border mx-1" />
                         <Link href="/" className="flex items-center gap-4 group">
                             <div className="relative">
                                 {/* Logo Mesh Glow */}
@@ -264,7 +267,9 @@ export function Navbar() {
                     </div>
                 )}
                 <div className="px-6 h-14 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
+                        <EcosystemSwitcher />
+                        <Link href="/" className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-lg shadow-loops-primary/10 border border-loops-border">
                             <InfinityLogo className="w-6 h-6" />
                         </div>
