@@ -42,21 +42,17 @@ export function EcosystemSwitcher() {
 
     return (
         <div className="relative">
-            {/* Bento Trigger */}
-            <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            {/* Stealth Trigger */}
+            <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={cn(
-                    "w-10 h-10 md:w-11 md:h-11 rounded-2xl flex items-center justify-center transition-all duration-500",
-                    isOpen 
-                        ? "bg-loops-main text-white shadow-xl shadow-loops-main/20 ring-4 ring-loops-main/10" 
-                        : "bg-white/50 backdrop-blur-xl border border-loops-border text-loops-muted hover:text-loops-primary hover:border-loops-primary/30"
-                )}
-                title="Multiverse Global Enterprise"
+                className="text-[8px] font-bold text-loops-muted opacity-40 hover:opacity-100 uppercase tracking-[0.25em] flex items-center gap-1.5 transition-all group"
             >
-                {isOpen ? <Layers className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
-            </motion.button>
+                <span>Byte Tech Wing</span>
+                <div className={cn(
+                    "w-1 h-1 rounded-full bg-loops-primary transition-all",
+                    isOpen ? "scale-150 animate-pulse" : "group-hover:scale-125"
+                )} />
+            </button>
 
             <AnimatePresence>
                 {isOpen && (
@@ -67,16 +63,15 @@ export function EcosystemSwitcher() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsOpen(false)}
-                            className="fixed inset-0 z-[60] bg-loops-main/5 backdrop-blur-sm md:hidden"
+                            className="fixed inset-0 z-[60] bg-black/5 backdrop-blur-[2px]"
                         />
 
-                        {/* Switcher Card */}
+                        {/* Switcher Card - Upward Opening */}
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 10, x: -10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 10, x: -10 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                            className="absolute top-14 left-0 w-[320px] md:w-[400px] z-[70]"
+                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                            animate={{ opacity: 1, scale: 1, y: -20 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                            className="absolute bottom-6 left-0 w-[280px] md:w-[320px] z-[70] origin-bottom-left"
                         >
                             <div className="bg-white/80 backdrop-blur-3xl border border-white/40 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.2)] rounded-[2.5rem] overflow-hidden">
                                 {/* MGE Header */}

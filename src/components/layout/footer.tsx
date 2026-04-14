@@ -74,22 +74,24 @@ export function Footer() {
 
                 <div className="border-t border-loops-border pt-10 flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
-                        <div className="flex flex-col items-center md:items-start gap-1">
-                            <p className="text-[11px] text-loops-muted font-medium text-center md:text-left">
+                        <div className="flex flex-col items-center md:items-start opacity-30 hover:opacity-100 transition-opacity duration-500">
+                            <p className="text-[10px] text-loops-muted font-medium text-center md:text-left">
                                 © {currentYear} Loops Marketplace. <br className="md:hidden" />
-                                Built with <Heart className="inline w-3 h-3 text-loops-accent fill-loops-accent mx-0.5" /> for Nigerian Students.
+                                Built for Nigerian Students.
                             </p>
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-loops-primary opacity-60">
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-loops-muted">
                                 A Multiverse Global Enterprise (MGE) Platform
                             </span>
                         </div>
                         <div className="flex items-center gap-8">
                             <div className="flex flex-col items-center md:items-start gap-1">
-                                <div className="flex items-center gap-1.5 text-[11px] text-loops-muted font-bold uppercase tracking-widest">
-                                    <Globe className="w-3.5 h-3.5 text-loops-primary" />
+                                <div className="flex items-center gap-1.5 text-[10px] text-loops-muted font-bold uppercase tracking-widest">
+                                    <Globe className="w-3 h-3" />
                                     <span>Region: NG</span>
                                 </div>
-                                <span className="text-[8px] font-bold text-loops-muted opacity-40 uppercase tracking-widest">Byte Tech Wing</span>
+                                <div className="mt-1">
+                                    <EcosystemSwitcher />
+                                </div>
                             </div>
                         <div className="w-px h-4 bg-loops-border hidden sm:block" />
                         <div className="text-[11px] text-loops-muted font-medium">
