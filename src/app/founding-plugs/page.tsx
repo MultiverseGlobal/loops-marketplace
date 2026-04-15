@@ -148,10 +148,9 @@ export default function FoundingPlugsCarousel() {
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
-        const isWaitlist37 = formData.referralCode?.trim().toUpperCase() === 'PLUG37';
-        const user = (await supabase.auth.getUser()).data.user;
+            const isWaitlist37 = formData.referralCode?.trim().toUpperCase() === 'PLUG37';
+            const user = (await supabase.auth.getUser()).data.user;
 
-        try {
             // 1. Insert Application with instant 'approved' status if Golden Ticket used
             const { error: appError } = await supabase
                 .from('seller_applications')
@@ -191,8 +190,6 @@ export default function FoundingPlugsCarousel() {
                 
                 if (profileError) console.error("Profile activation error:", profileError);
             }
-
-
 
             if (isWaitlist37) {
                 toast.success("Golden Ticket Verified! Plug Status Activated instantly. ♾️");

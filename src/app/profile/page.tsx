@@ -605,6 +605,17 @@ export default function ProfilePage() {
                                                     <CheckCircle className={cn("w-3.5 h-3.5", profile?.is_verified ? "text-loops-success" : "text-loops-border")} />
                                                     <span>Account Verified</span>
                                                 </div>
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
+                                                    <CheckCircle className={cn("w-3.5 h-3.5", listings.length >= 3 ? "text-loops-success" : "text-loops-border")} />
+                                                    <span>Minimum 3 Listings</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
+                                                    <CheckCircle className={cn("w-3.5 h-3.5", profile?.store_name ? "text-loops-success" : "text-loops-border")} />
+                                                    <span>Storefront Branded</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     {/* Wallet & Earnings Card - Only for Owner */}
                                     {(!targetUserId || targetUserId === user?.id) && (
@@ -636,17 +647,6 @@ export default function ProfilePage() {
                                             </Button>
                                         </div>
                                     )}
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
-                                                    <CheckCircle className={cn("w-3.5 h-3.5", listings.length >= 3 ? "text-loops-success" : "text-loops-border")} />
-                                                    <span>Minimum 3 Listings</span>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
-                                                    <CheckCircle className={cn("w-3.5 h-3.5", profile?.store_name ? "text-loops-success" : "text-loops-border")} />
-                                                    <span>Storefront Branded</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     {/* Referral Card - Universal for All Users */}
                                     <div className="p-6 rounded-3xl bg-loops-main text-white space-y-4 relative overflow-hidden shadow-xl">
