@@ -16,6 +16,7 @@ import { useCampus } from "@/context/campus-context";
 import { CURRENCY, LOOPBOT_NUMBER } from "@/lib/constants";
 import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
 import { UserPlus, UserMinus, Users, User } from "lucide-react";
+import { FoundingPlugGrowthKit } from "@/components/dashboard/growth-kit";
 import { Rating } from "@/components/ui/rating";
 
 export default function ProfilePage() {
@@ -372,7 +373,7 @@ export default function ProfilePage() {
                                                 <Sparkles className="w-3.5 h-3.5" />
                                                 <span className="text-[9px] font-black uppercase tracking-[0.2em]">{profile.store_name} Merchant</span>
                                             </div>
-                                            {profile?.branding_tier === 'founding' && (
+                                            {(profile?.branding_tier === 'founding' || profile?.is_founding_member) && (
                                                 <div className="flex items-center gap-2 px-3 py-1 bg-loops-main/5 border border-loops-primary/20 rounded-lg w-fit text-loops-primary shadow-sm hover:bg-loops-primary/5 transition-colors cursor-help group/tier relative">
                                                     <Award className="w-3.5 h-3.5" />
                                                     <span className="text-[9px] font-black uppercase tracking-[0.2em]">Founding Plug</span>
@@ -570,8 +571,13 @@ export default function ProfilePage() {
 
                             {user?.id === profile?.id && (profile?.is_plug || profile?.primary_role === 'plug') && (
                                 <div className="space-y-6 pt-6 border-t border-loops-border">
-                                    {/* Launch Readiness Card */}
-                                    <div className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
+                                    {profile?.is_founding_member && (
+                                        <FoundingPlugGrowthKit profile={profile} />
+                                    )}
+                                    
+                                    {!profile?.is_founding_member && (
+                                        /* Launch Readiness Card */
+                                        <div className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-xs font-black uppercase tracking-widest text-loops-main italic">Launch Readiness</h3>
                                             <span className={cn(

@@ -58,7 +58,7 @@ interface DashboardViewProps {
     setCurrentView: (view: AdminView) => void;
     setMarketplaceFilter: (filter: 'all' | 'product' | 'service') => void;
     setUserTab: (tab: 'requests' | 'directory') => void;
-    setDirectoryFilter: (filter: 'all' | 'plug' | 'admin' | 'student') => void;
+    setDirectoryFilter: (filter: 'all' | 'plug' | 'admin' | 'student' | 'founding') => void;
 }
 
 interface UniversityViewProps {
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
     const [allUsers, setAllUsers] = useState<AdminProfile[]>([]);
     const [userTab, setUserTab] = useState<'requests' | 'directory'>('requests');
     const [applicationSubTab, setApplicationSubTab] = useState<'product' | 'service' | 'review' | 'approved'>('product');
-    const [directoryFilter, setDirectoryFilter] = useState<'all' | 'plug' | 'admin' | 'student'>('all');
+    const [directoryFilter, setDirectoryFilter] = useState<'all' | 'plug' | 'admin' | 'student' | 'founding'>('all');
 
     const supabase = createClient();
     const router = useRouter();
@@ -300,6 +300,59 @@ export default function AdminDashboard() {
             setProcessingId(null);
         }
     };
+    const handleGoldenTicketBroadcast = async () => {
+        const pendingApps = applications.filter(a => a.status === 'pending');
+        if (pendingApps.length === 0) {
+            toast.error("No pending applications found.");
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to send the Golden Ticket to all ${pendingApps.length} pending applicants?`)) return;
+
+        setProcessingId('broadcast');
+        try {
+            const messageTemplate = "👑 *GOLDEN TICKET ACTIVATED!* \n\nHello {name}, your waitlist spot is ready. Use the link below and code *PLUG37* to launch your store instantly and claim your Founding Badge. \n\n🔗 https://loops-marketplace.com/founding-plugs \n\n♾️ LOOPS PLATFORMS";
+            
+            const recipients = pendingApps.map(a => ({
+                id: a.id,
+                whatsapp_number: a.whatsapp_number,
+                full_name: a.full_name
+            }));
+
+            const res = await fetch('/api/admin/broadcast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    recipients,
+                    message: messageTemplate
+                })
+            });
+
+            if (!res.ok) throw new Error('Broadcast failed');
+
+            // Also send system notifications if they have user_ids
+            const notificationEntries = pendingApps
+                .filter(a => a.user_id)
+                .map(a => ({
+                    user_id: a.user_id,
+                    title: "👑 Golden Ticket Activated!",
+                    message: "Your waitlist spot is ready! Use code PLUG37 to join as a Founding Plug.",
+                    type: 'system',
+                    link: '/founding-plugs'
+                }));
+
+            if (notificationEntries.length > 0) {
+                await supabase.from('notifications').insert(notificationEntries);
+            }
+
+            toast.success(`Golden Ticket sent to ${pendingApps.length} vendors! 🚀`);
+        } catch (err: any) {
+            toast.error(err.message);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
     const ADMIN_ACCESS_CODE = "LOOPS404";
 
     useEffect(() => {
@@ -626,6 +679,7 @@ export default function AdminDashboard() {
                                 toggleUserSelection={toggleUserSelection}
                                 togglePlugStatus={togglePlugStatus}
                                 processingId={processingId}
+                                handleGoldenTicketBroadcast={handleGoldenTicketBroadcast}
                             />
                         )}
                         {currentView === 'universities' && (
@@ -794,8 +848,8 @@ interface UserViewProps {
     setUserSearch: (s: string) => void;
     userTab: 'requests' | 'directory';
     setUserTab: (t: 'requests' | 'directory') => void;
-    directoryFilter: 'all' | 'plug' | 'admin' | 'student';
-    setDirectoryFilter: (f: 'all' | 'plug' | 'admin' | 'student') => void;
+    directoryFilter: 'all' | 'plug' | 'admin' | 'student' | 'founding';
+    setDirectoryFilter: (f: 'all' | 'plug' | 'admin' | 'student' | 'founding') => void;
     selectedUsers: string[];
     setSelectedUsers: (ids: string[]) => void;
     selectedApps: string[];
@@ -808,6 +862,7 @@ interface UserViewProps {
     toggleUserSelection: (id: string) => void;
     togglePlugStatus: (userId: string, currentStatus: boolean) => void;
     processingId: string | null;
+    handleGoldenTicketBroadcast: () => void;
 }
 
 const UserView = ({
@@ -833,7 +888,8 @@ const UserView = ({
     toggleAppSelection,
     toggleUserSelection,
     togglePlugStatus,
-    processingId
+    processingId,
+    handleGoldenTicketBroadcast
 }: UserViewProps) => {
     // Filter applications based on tab
     const tabFilteredApps = applications.filter(a => {
@@ -857,6 +913,7 @@ const UserView = ({
         const matchesRole = directoryFilter === 'all' ||
             (directoryFilter === 'plug' && u.is_plug) ||
             (directoryFilter === 'admin' && u.is_admin) ||
+            (directoryFilter === 'founding' && (u as any).is_founding_member) ||
             (directoryFilter === 'student' && !u.is_plug && !u.is_admin);
         return matchesSearch && matchesRole;
     });
@@ -903,6 +960,15 @@ const UserView = ({
                 >
                     <MessageCircle className="w-4 h-4" />
                     Broadcast to All ({allUsers.length + applications.length})
+                </Button>
+
+                <Button
+                    onClick={handleGoldenTicketBroadcast}
+                    disabled={processingId === 'broadcast' || stats.pendingApps === 0}
+                    className="bg-loops-primary text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-loops-primary/90 transition-all shadow-lg shadow-loops-primary/20 flex items-center gap-2"
+                >
+                    <Award className="w-4 h-4" />
+                    Invite All 37 ({stats.pendingApps})
                 </Button>
             </div>
 
@@ -1113,6 +1179,7 @@ const UserView = ({
                                                 <div className="flex gap-2">
                                                     {user.is_admin && <span className="px-3 py-1 bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-red-100">Admin</span>}
                                                     {user.is_plug && <span className="px-3 py-1 bg-loops-primary/5 text-loops-primary text-[9px] font-black uppercase tracking-widest rounded-full border border-loops-primary/10">Plug</span>}
+                                                    {(user as any).is_founding_member && <span className="px-3 py-1 bg-loops-primary/20 text-loops-primary text-[9px] font-black uppercase tracking-widest rounded-full border border-loops-primary shadow-[0_0_10px_rgba(16,185,129,0.3)]">Founding Plug</span>}
                                                     {!user.is_admin && !user.is_plug && <span className="px-3 py-1 bg-loops-subtle text-loops-muted text-[9px] font-black uppercase tracking-widest rounded-full border border-loops-border">Student</span>}
                                                 </div>
                                             </td>

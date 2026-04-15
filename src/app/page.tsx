@@ -117,12 +117,11 @@ export default function Home() {
                     setListings(scoredListings.slice(0, 8));
                 }
 
-                // Fetch founding plugs
+                // Fetch founding plugs (Specifically the Waitlist 37)
                 const { data: plugs } = await supabase
                     .from('profiles')
                     .select('*')
-                    .eq('is_plug', true)
-                    .eq('is_verified', true)
+                    .eq('is_founding_member', true)
                     .limit(6);
                 if (plugs) setFoundingPlugs(plugs);
             } catch (error) {

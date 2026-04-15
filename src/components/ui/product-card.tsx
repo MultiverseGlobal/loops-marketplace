@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import Image from "next/image";
-import { User, ShieldCheck, Heart } from "lucide-react";
+import { User, ShieldCheck, Heart, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -155,6 +155,11 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
                                     <span className="text-[8px] font-bold text-white uppercase tracking-wider truncate max-w-[50px]">
                                         {(author as any)?.store_name || (author as any)?.full_name || "Campus"}
                                     </span>
+                                    {(author as any)?.is_founding_member && (
+                                        <div className="flex items-center justify-center p-0.5 bg-loops-primary rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+                                            <Award className="w-2.5 h-2.5 text-white" />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

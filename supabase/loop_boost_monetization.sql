@@ -8,6 +8,10 @@ ADD COLUMN IF NOT EXISTS boosted_until TIMESTAMPTZ DEFAULT NULL;
 -- 2. Index for performance on the Feed / Buzz
 CREATE INDEX IF NOT EXISTS idx_listings_boosted_until ON public.listings (boosted_until);
 
+-- 2b. Add is_founding_member to profiles if missing
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS is_founding_member BOOLEAN DEFAULT FALSE;
+
 -- 3. Update the Activity Buzz View to prioritize boosted items
 -- We'll recreate the view to include the boost priority
 DROP VIEW IF EXISTS public.activity_buzz;
@@ -24,6 +28,7 @@ SELECT
     c.name as campus_name,
     c.slug as campus_slug,
     (l.boosted_until > now()) as is_boosted,
+    p_seller.is_founding_member as is_founding_seller,
     l.created_at
 FROM public.listings l
 JOIN public.profiles p_seller ON l.seller_id = p_seller.id

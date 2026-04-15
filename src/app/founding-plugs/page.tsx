@@ -148,7 +148,12 @@ export default function FoundingPlugsCarousel() {
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
-            const { error } = await supabase
+        const isWaitlist37 = formData.referralCode?.trim().toUpperCase() === 'PLUG37';
+        const user = (await supabase.auth.getUser()).data.user;
+
+        try {
+            // 1. Insert Application with instant 'approved' status if Golden Ticket used
+            const { error: appError } = await supabase
                 .from('seller_applications')
                 .insert({
                     full_name: formData.name,
@@ -157,20 +162,43 @@ export default function FoundingPlugsCarousel() {
                     offering_type: formData.offeringType,
                     offering_description: formData.description,
                     estimated_item_count: formData.estimatedItemCount || "Not Specified",
-                    status: 'pending',
+                    status: isWaitlist37 ? 'approved' : 'pending',
                     store_name: formData.storeName,
                     store_banner_color: formData.storeBannerColor,
                     store_category: formData.storeCategory || (formData.offeringType === 'product' ? 'General Goods' : 'Campus Services'),
                     store_logo_url: formData.storeLogoUrl,
-                    motivation: `Intent: ${formData.intent} | Tier: ${formData.brandingTier}`,
+                    motivation: isWaitlist37 
+                        ? `GOLDEN TICKET ACTIVATION (Waitlist 37) | Tier: ${formData.brandingTier}` 
+                        : `Intent: ${formData.intent} | Tier: ${formData.brandingTier}`,
                     referred_by_code: formData.referralCode || null,
-                    user_id: (await supabase.auth.getUser()).data.user?.id || null
+                    user_id: user?.id || null
                 });
 
+            if (appError) throw appError;
 
-            if (error) throw error;
+            // 2. Instant activation for Golden Ticket holders
+            if (isWaitlist37 && user?.id) {
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({
+                        is_plug: true,
+                        primary_role: 'plug',
+                        store_name: formData.storeName,
+                        reputation: 100,
+                        is_founding_member: true
+                    })
+                    .eq('id', user.id);
+                
+                if (profileError) console.error("Profile activation error:", profileError);
+            }
 
-            toast.success("Founding Plug Application Received! ♾️");
+
+
+            if (isWaitlist37) {
+                toast.success("Golden Ticket Verified! Plug Status Activated instantly. ♾️");
+            } else {
+                toast.success("Founding Plug Application Received! ♾️");
+            }
             setIsComplete(true);
             nextSlide();
         } catch (error: any) {

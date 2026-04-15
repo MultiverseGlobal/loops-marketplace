@@ -11,6 +11,14 @@ create table if not exists seller_applications (
   currently_selling text,
   motivation text not null,
   status text default 'pending' check (status in ('pending', 'approved', 'rejected')),
+  
+  -- Brand Configuration (Waitlist 37)
+  store_name text,
+  store_banner_color text,
+  store_category text,
+  store_logo_url text,
+  referred_by_code text,
+  
   rejection_reason text,
   reviewed_by uuid references auth.users(id),
   reviewed_at timestamp with time zone,

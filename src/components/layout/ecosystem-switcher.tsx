@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutGrid, ShoppingBag, Users, Zap, Layers, ArrowRight } from 'lucide-react';
+import { ShoppingBag, Users, Zap, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -123,7 +123,7 @@ export function EcosystemSwitcher() {
                                     <span className="text-[9px] font-bold text-loops-muted uppercase tracking-[0.25em]">Connected @ MGE Ecosystem</span>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     </>
                 )}
             </AnimatePresence>

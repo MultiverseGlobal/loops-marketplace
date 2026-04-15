@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Package, Book, Coffee, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Package, Book, Coffee, ArrowRight, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BuzzItem {
@@ -12,6 +12,7 @@ interface BuzzItem {
     campus_name: string;
     buyer_name: string;
     seller_name: string;
+    is_founding_seller?: boolean;
     created_at: string;
 }
 
@@ -86,9 +87,18 @@ export function ActivityBuzz() {
                                     {(current as any).listing_title || (current as any).title || 'something'}
                                 </span>
                                 <span className="text-loops-muted italic">from</span>
-                                <span className="font-bold">
+                                <span className={cn(
+                                    "font-bold transition-colors",
+                                    current.is_founding_seller ? "text-loops-primary" : "text-loops-main"
+                                )}>
                                     {(current as any).seller_name?.split(' ')[0] || 'Peer'}
                                 </span>
+                                {current.is_founding_seller && (
+                                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-loops-primary/10 border border-loops-primary/20 rounded-full scale-90 -ml-1">
+                                        <Award className="w-2.5 h-2.5 text-loops-primary" />
+                                        <span className="text-[7px] font-black uppercase tracking-widest text-loops-primary">Plug</span>
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     </AnimatePresence>

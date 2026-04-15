@@ -88,9 +88,12 @@ export default function CheckoutPage() {
                     <Link href="/browse" className="p-2 hover:bg-loops-subtle rounded-full transition-colors">
                         <ArrowLeft className="w-6 h-6 text-loops-main" />
                     </Link>
-                    <div className="flex items-center gap-2">
-                        <Lock className="w-4 h-4 text-green-500" />
-                        <span className="font-bold text-sm uppercase tracking-widest text-loops-main">Secure Checkout</span>
+                    <div className="flex flex-col items-center gap-1">
+                        <div className="flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-loops-primary" />
+                            <span className="font-bold text-sm uppercase tracking-widest text-loops-main">Campus Handshake</span>
+                        </div>
+                        <span className="text-[8px] font-black text-white bg-loops-primary px-2 py-0.5 rounded-full uppercase tracking-widest">Phase 1: Handshake Only</span>
                     </div>
                     <div className="w-10" /> {/* Spacer */}
                 </div>
@@ -162,8 +165,13 @@ export default function CheckoutPage() {
                                     <span>{CURRENCY}{platformFee}</span>
                                 </div>
                                 <div className="pt-4 border-t border-loops-border flex justify-between items-center">
-                                    <span className="text-xl font-black text-loops-main tracking-tighter">Total Amount</span>
+                                    <span className="text-xl font-black text-loops-main tracking-tighter">Total Value</span>
                                     <span className="text-3xl font-black text-loops-primary tracking-tighter">{CURRENCY}{total}</span>
+                                </div>
+                                <div className="bg-loops-primary/5 p-4 rounded-2xl border border-loops-primary/10">
+                                    <p className="text-[10px] text-loops-primary font-black uppercase tracking-widest text-center">
+                                        🚀 Integrated Escrow Payments launching August 2026
+                                    </p>
                                 </div>
                             </div>
 
@@ -183,7 +191,7 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            <Button 
+                             <Button 
                                 onClick={handleCheckout}
                                 disabled={isProcessing || !agreed}
                                 className="w-full h-16 rounded-[24px] bg-loops-primary hover:bg-loops-main text-white font-black text-xl shadow-2xl shadow-loops-primary/20 transition-all disabled:opacity-50 group"
@@ -195,17 +203,17 @@ export default function CheckoutPage() {
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-2">
-                                        <span>Complete Payment</span>
+                                        <span>Initiate Secure Handshake</span>
                                         <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
                                     </div>
                                 )}
                             </Button>
 
-                            <div className="flex flex-col items-center gap-3 pt-4">
-                                <div className="flex items-center gap-3 grayscale opacity-50">
+                            <div className="flex flex-col items-center gap-3 pt-4 opacity-40 grayscale group-hover:grayscale-0 transition-all">
+                                <div className="flex items-center gap-3">
                                     <Image src="https://paystack.com/assets/img/v3/logo.svg" alt="Paystack" width={100} height={20} />
                                 </div>
-                                <p className="text-[10px] text-loops-muted uppercase font-black tracking-widest">Secured by Paystack Escrow</p>
+                                <p className="text-[10px] text-loops-muted uppercase font-black tracking-widest italic">Escrow Integration Launching August</p>
                             </div>
                         </div>
                     </div>

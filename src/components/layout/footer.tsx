@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useCampus } from "@/context/campus-context";
-import { MessageSquare, Github, Twitter, Instagram, Mail, MapPin, Globe, Heart } from "lucide-react";
+import { Globe, Instagram, Twitter } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
+import { EcosystemSwitcher } from "./ecosystem-switcher";
 
 export function Footer() {
-    const { getTerm, campus } = useCampus();
+    const { campus } = useCampus();
     const currentYear = new Date().getFullYear();
 
     return (
@@ -39,11 +40,10 @@ export function Footer() {
                     <div className="space-y-6">
                         <h4 className="font-bold text-loops-main uppercase tracking-widest text-[10px]">Discovery</h4>
                         <ul className="space-y-3">
-                            <li><NavLink href="/browse">{getTerm('marketplaceName')}</NavLink></li>
+                            <li><NavLink href="/browse">Marketplace</NavLink></li>
                             <li><NavLink href="/services">Campus Services</NavLink></li>
                             <li><NavLink href="/requests">Student Requests</NavLink></li>
                             <li><Link href="/request-campus" className="text-loops-primary font-bold hover:underline transition-all text-sm">Request a Campus</Link></li>
-                            <li><NavLink href="/listings/create">Post a Drop</NavLink></li>
                         </ul>
                     </div>
 
@@ -93,9 +93,6 @@ export function Footer() {
                                     <EcosystemSwitcher />
                                 </div>
                             </div>
-                        <div className="w-px h-4 bg-loops-border hidden sm:block" />
-                        <div className="text-[11px] text-loops-muted font-medium">
-                            v0.1.0-beta
                         </div>
                     </div>
                 </div>
