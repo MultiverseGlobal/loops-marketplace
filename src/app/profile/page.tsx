@@ -615,7 +615,7 @@ export default function ProfilePage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     {/* Wallet & Earnings Card - Only for Owner */}
                                     {(!targetUserId || targetUserId === user?.id) && (
@@ -647,6 +647,8 @@ export default function ProfilePage() {
                                             </Button>
                                         </div>
                                     )}
+                                </div>
+                            )}
 
                                     {/* Referral Card - Universal for All Users */}
                                     <div className="p-6 rounded-3xl bg-loops-main text-white space-y-4 relative overflow-hidden shadow-xl">
