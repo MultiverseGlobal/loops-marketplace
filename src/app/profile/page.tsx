@@ -578,41 +578,41 @@ export default function ProfilePage() {
                                     {!profile?.is_founding_member && (
                                         /* Launch Readiness Card */
                                         <div className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="text-xs font-black uppercase tracking-widest text-loops-main italic">Launch Readiness</h3>
-                                            <span className={cn(
-                                                "text-[9px] font-black uppercase px-2 py-0.5 rounded-full border",
-                                                listings.length >= 3 ? "bg-loops-success/10 text-loops-success border-loops-success/20" : "bg-loops-primary/10 text-loops-primary border-loops-primary/20"
-                                            )}>
-                                                {listings.length >= 3 ? 'Ready for Launch' : 'Initializing...'}
-                                            </span>
-                                        </div>
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="text-xs font-black uppercase tracking-widest text-loops-main italic">Launch Readiness</h3>
+                                                <span className={cn(
+                                                    "text-[9px] font-black uppercase px-2 py-0.5 rounded-full border",
+                                                    listings.length >= 3 ? "bg-loops-success/10 text-loops-success border-loops-success/20" : "bg-loops-primary/10 text-loops-primary border-loops-primary/20"
+                                                )}>
+                                                    {listings.length >= 3 ? 'Ready for Launch' : 'Initializing...'}
+                                                </span>
+                                            </div>
 
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between text-[10px] font-bold">
-                                                <span className="text-loops-muted">Inventory Depth</span>
-                                                <span className={listings.length >= 3 ? "text-loops-success" : "text-loops-primary"}>{listings.length}/3 Items</span>
-                                            </div>
-                                            <div className="h-1.5 w-full bg-loops-subtle rounded-full overflow-hidden">
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${Math.min((listings.length / 3) * 100, 100)}%` }}
-                                                    className={cn("h-full transition-all", listings.length >= 3 ? "bg-loops-success" : "bg-loops-primary")}
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-1 gap-2 pt-2">
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
-                                                    <CheckCircle className={cn("w-3.5 h-3.5", profile?.is_verified ? "text-loops-success" : "text-loops-border")} />
-                                                    <span>Account Verified</span>
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between text-[10px] font-bold">
+                                                    <span className="text-loops-muted">Inventory Depth</span>
+                                                    <span className={listings.length >= 3 ? "text-loops-success" : "text-loops-primary"}>{listings.length}/3 Items</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
-                                                    <CheckCircle className={cn("w-3.5 h-3.5", listings.length >= 3 ? "text-loops-success" : "text-loops-border")} />
-                                                    <span>Minimum 3 Listings</span>
+                                                <div className="h-1.5 w-full bg-loops-subtle rounded-full overflow-hidden">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${Math.min((listings.length / 3) * 100, 100)}%` }}
+                                                        className={cn("h-full transition-all", listings.length >= 3 ? "bg-loops-success" : "bg-loops-primary")}
+                                                    />
                                                 </div>
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
-                                                    <CheckCircle className={cn("w-3.5 h-3.5", profile?.store_name ? "text-loops-success" : "text-loops-border")} />
-                                                    <span>Storefront Branded</span>
-                                                </div>
+                                                <div className="grid grid-cols-1 gap-2 pt-2">
+                                                    <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
+                                                        <CheckCircle className={cn("w-3.5 h-3.5", profile?.is_verified ? "text-loops-success" : "text-loops-border")} />
+                                                        <span>Account Verified</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
+                                                        <CheckCircle className={cn("w-3.5 h-3.5", listings.length >= 3 ? "text-loops-success" : "text-loops-border")} />
+                                                        <span>Minimum 3 Listings</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-[10px] font-bold text-loops-muted">
+                                                        <CheckCircle className={cn("w-3.5 h-3.5", profile?.store_name ? "text-loops-success" : "text-loops-border")} />
+                                                        <span>Storefront Branded</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -648,8 +648,6 @@ export default function ProfilePage() {
                                             </Button>
                                         </div>
                                     )}
-                                </div>
-                            )}
 
                                     {/* Referral Card - Universal for All Users */}
                                     <div className="p-6 rounded-3xl bg-loops-main text-white space-y-4 relative overflow-hidden shadow-xl">
