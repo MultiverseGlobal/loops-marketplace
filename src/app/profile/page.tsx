@@ -613,6 +613,7 @@ export default function ProfilePage() {
                                                     <CheckCircle className={cn("w-3.5 h-3.5", profile?.store_name ? "text-loops-success" : "text-loops-border")} />
                                                     <span>Storefront Branded</span>
                                                 </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
