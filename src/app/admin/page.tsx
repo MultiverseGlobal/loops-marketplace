@@ -343,7 +343,7 @@ export default function AdminDashboard() {
             if (!res.ok) throw new Error('Broadcast failed');
 
             // Also send system notifications if they have user_ids
-            const notificationEntries = pendingApps
+            const notificationEntries = targetingApps
                 .filter(a => a.user_id)
                 .map(a => ({
                     user_id: a.user_id,
