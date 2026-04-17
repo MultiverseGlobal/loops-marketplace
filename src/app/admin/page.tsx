@@ -323,7 +323,7 @@ export default function AdminDashboard() {
 
         setProcessingId('broadcast');
         try {
-            const messageTemplate = "👑 *GOLDEN TICKET ACTIVATED!* \n\nHello {name}, your waitlist spot is ready. Use the link below and code *PLUG37* to launch your store instantly and claim your Founding Badge. \n\n🔗 https://loops-marketplace.com/founding-plugs \n\n♾️ LOOPS PLATFORMS";
+            const messageTemplate = "🚀 *TIME TO POPULATE THE LOOP!* \n\nHello {name}, tonight is the night! We are launching and it's time for you to upload your goods and services to populate your store before the grand opening. Log in now and start dropping your items! \n\n🔗 https://loops-marketplace.com/login \n\n♾️ LOOPS PLATFORMS";
             
             const recipients = targetingApps.map(a => ({
                 id: a.id,
