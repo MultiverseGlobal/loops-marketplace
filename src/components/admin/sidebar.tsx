@@ -16,7 +16,7 @@ import {
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-export type AdminView = 'dashboard' | 'users' | 'universities' | 'marketplace' | 'safety' | 'settings' | 'onboarding' | 'disputes';
+export type AdminView = 'dashboard' | 'users' | 'universities' | 'marketplace' | 'safety' | 'settings' | 'onboarding' | 'disputes' | 'monetization';
 
 interface AdminSidebarProps {
     currentView: AdminView;
@@ -33,6 +33,7 @@ export function AdminSidebar({ currentView, onViewChange }: AdminSidebarProps) {
         { id: 'marketplace' as const, label: 'Marketplace', icon: ShoppingBag },
         { id: 'safety' as const, label: 'Safety Hub', icon: ShieldAlert },
         { id: 'disputes' as const, label: 'Disputes', icon: ShieldAlert }, // Using ShieldAlert or specialized icon
+        { id: 'monetization' as const, label: 'Monetization', icon: Zap },
         { id: 'onboarding' as const, label: 'Blitz Kit', icon: Zap },
         { id: 'settings' as const, label: 'Settings', icon: Settings },
     ];

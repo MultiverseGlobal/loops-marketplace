@@ -48,6 +48,7 @@ interface AdminProfile {
     avatar_url?: string | null;
     created_at: string;
     referral_code?: string | null;
+    is_founding_member?: boolean;
 }
 
 interface DashboardViewProps {
@@ -525,12 +526,6 @@ export default function AdminDashboard() {
         }
     };
 
-    const searchUser = async () => {
-        if (!userSearch) return;
-        const { data } = await supabase.from('profiles').select('*').or(`email.ilike.%${userSearch}%,id.eq.${userSearch}`).single();
-        setFoundUser(data);
-    };
-
     const handleResolveDispute = async (disputeId: string, decision: 'REFUND' | 'RELEASE', notes: string) => {
         setProcessingId(disputeId);
         try {
@@ -708,6 +703,15 @@ export default function AdminDashboard() {
                                 supabase={supabase}
                                 setAllListings={setAllListings}
                                 toast={toast}
+                            />
+                        )}
+                        {currentView === 'monetization' && (
+                            <MonetizationView 
+                                allListings={allListings}
+                                allUsers={allUsers}
+                                handleBoostListing={handleBoostListing}
+                                toggleFoundingMember={toggleFoundingMember}
+                                processingId={processingId}
                             />
                         )}
                         {currentView === 'settings' && (
@@ -968,7 +972,7 @@ const UserView = ({
                     className="bg-loops-primary text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-loops-primary/90 transition-all shadow-lg shadow-loops-primary/20 flex items-center gap-2"
                 >
                     <Award className="w-4 h-4" />
-                    Invite All 37 ({stats.pendingApps})
+                    Invite All Pending ({stats.pendingApps})
                 </Button>
             </div>
 
@@ -1914,5 +1918,115 @@ const MarketplaceView = ({
                 <p className="text-loops-muted italic font-medium">No active listings found.</p>
             </div>
         )}
+    </div>
+);
+
+interface MonetizationViewProps {
+    allListings: any[];
+    allUsers: any[];
+    handleBoostListing: (listingId: string, durationDays: number) => void;
+    toggleFoundingMember: (userId: string, currentStatus: boolean) => void;
+    processingId: string | null;
+}
+
+const MonetizationView = ({
+    allListings,
+    allUsers,
+    handleBoostListing,
+    toggleFoundingMember,
+    processingId
+}: MonetizationViewProps) => (
+    <div className="space-y-12">
+        {/* Founders Board */}
+        <div className="bg-loops-main rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl border border-white/10 group">
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
+                <div className="space-y-4 max-w-xl">
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-loops-primary rounded-2xl flex items-center justify-center text-loops-main shadow-lg shadow-loops-primary/20 group-hover:scale-125 transition-transform">
+                            <Award className="w-6 h-6 fill-current" />
+                        </div>
+                        <span className="px-3 py-1 bg-white/10 backdrop-blur rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">Elite Membership</span>
+                    </div>
+                    <h2 className="text-4xl font-black italic tracking-tighter leading-tight">Founder Management</h2>
+                    <p className="text-white/60 font-medium text-base">Elevate elite Plugs to Founding Member status to grant them permanent platform benefits and verification badges.</p>
+                </div>
+            </div>
+            <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-loops-primary/20 rounded-full blur-[100px]" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Boost Active Center */}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-3">
+                        <Zap className="w-5 h-5 text-loops-primary" />
+                        <h3 className="text-xl font-black italic uppercase tracking-tighter">Active Boosts</h3>
+                    </div>
+                </div>
+                <div className="bg-white rounded-[2rem] border border-loops-border overflow-hidden shadow-sm">
+                    <div className="divide-y divide-loops-border">
+                        {allListings.filter(l => l.boosted_until && new Date(l.boosted_until) > new Date()).map(listing => (
+                            <div key={listing.id} className="p-6 flex items-center justify-between group hover:bg-loops-subtle/30 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-loops-subtle overflow-hidden">
+                                        <img src={listing.images?.[0]} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm text-loops-main">{listing.title}</p>
+                                        <p className="text-[10px] font-bold text-loops-primary uppercase tracking-widest">Expires {new Date(listing.boosted_until!).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    onClick={() => handleBoostListing(listing.id, 0)}
+                                    className="text-red-500 hover:bg-red-50 font-bold text-[10px] uppercase tracking-widest"
+                                >
+                                    Remove
+                                </Button>
+                            </div>
+                        ))}
+                        {allListings.filter(l => l.boosted_until && new Date(l.boosted_until) > new Date()).length === 0 && (
+                            <div className="p-12 text-center text-loops-muted italic text-xs font-medium">No listings currently boosted.</div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Founding Directory */}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-3">
+                        <Award className="w-5 h-5 text-amber-500" />
+                        <h3 className="text-xl font-black italic uppercase tracking-tighter">Founding Members</h3>
+                    </div>
+                </div>
+                <div className="bg-white rounded-[2rem] border border-loops-border overflow-hidden shadow-sm">
+                    <div className="divide-y divide-loops-border">
+                        {allUsers.filter(u => u.is_founding_member).map(user => (
+                            <div key={user.id} className="p-6 flex items-center justify-between group hover:bg-loops-subtle/30 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 font-bold border border-amber-500/20">
+                                        {user.full_name?.[0]}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm text-loops-main">{user.full_name}</p>
+                                        <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Founding Plug</p>
+                                    </div>
+                                </div>
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    onClick={() => toggleFoundingMember(user.id, true)}
+                                    className="text-red-500 hover:bg-red-50 font-bold text-[10px] uppercase tracking-widest"
+                                >
+                                    Revoke
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 );

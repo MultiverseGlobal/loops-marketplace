@@ -8,9 +8,20 @@ ADD COLUMN IF NOT EXISTS boosted_until TIMESTAMPTZ DEFAULT NULL;
 -- 2. Index for performance on the Feed / Buzz
 CREATE INDEX IF NOT EXISTS idx_listings_boosted_until ON public.listings (boosted_until);
 
--- 2b. Add is_founding_member to profiles if missing
+-- 2b. Add email and identity fields to profiles if missing
 ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS email TEXT,
 ADD COLUMN IF NOT EXISTS is_founding_member BOOLEAN DEFAULT FALSE;
+
+-- 2c. Sync existing emails from auth.users to public.profiles
+UPDATE public.profiles p
+SET email = u.email
+FROM auth.users u
+WHERE p.id = u.id AND p.email IS NULL;
+
+-- 2d. Index for Admin Directory filtering
+CREATE INDEX IF NOT EXISTS idx_profiles_is_founding_member ON public.profiles (is_founding_member);
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles (email);
 
 -- 3. Update the Activity Buzz View to prioritize boosted items
 -- We'll recreate the view to include the boost priority
