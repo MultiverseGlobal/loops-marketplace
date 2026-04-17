@@ -1020,6 +1020,8 @@ const UserView = ({
                         setBroadcastMessage("");
                     }}
                     className="bg-black text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2"
+                >
+                    <MessageCircle className="w-4 h-4" />
                     Broadcast to All ({new Set([
                         ...allUsers.map(u => u.id), 
                         ...applications.map(a => a.user_id || a.id)
