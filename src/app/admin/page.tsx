@@ -262,12 +262,12 @@ export default function AdminDashboard() {
 
             // Deduplicate recipients by a unique key (email or combination of ID/Type)
             // Using a Map to keep the first occurrence of each unique ID
-            const uniqueRecipients = Array.from(
+            const uniqueRecipients: any[] = Array.from(
                 recipients.reduce((map, r) => {
-                    const key = r.id; // Using ID as the unique key
+                    const key = r.id; 
                     if (!map.has(key)) map.set(key, r);
                     return map;
-                }, new Map()).values()
+                }, new Map<string, any>()).values()
             );
 
             const res = await fetch('/api/admin/broadcast', {
