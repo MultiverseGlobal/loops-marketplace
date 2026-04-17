@@ -238,10 +238,7 @@ export default function AdminDashboard() {
     };
 
     const executeBroadcast = async () => {
-        const isFromApps = selectedApps.length > 0;
-        const targetIds = isFromApps ? selectedApps : selectedUsers;
-
-        if (targetIds.length === 0) return;
+        if (selectedApps.length === 0 && selectedUsers.length === 0) return;
         setProcessingId('broadcast');
 
         try {
@@ -262,11 +259,22 @@ export default function AdminDashboard() {
                 recipients = [...recipients, ...userRecipients];
             }
 
+
+            // Deduplicate recipients by a unique key (email or combination of ID/Type)
+            // Using a Map to keep the first occurrence of each unique ID
+            const uniqueRecipients = Array.from(
+                recipients.reduce((map, r) => {
+                    const key = r.id; // Using ID as the unique key
+                    if (!map.has(key)) map.set(key, r);
+                    return map;
+                }, new Map()).values()
+            );
+
             const res = await fetch('/api/admin/broadcast', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    recipients,
+                    recipients: uniqueRecipients,
                     message: broadcastMessage
                 })
             });
@@ -274,7 +282,7 @@ export default function AdminDashboard() {
             if (!res.ok) throw new Error('Broadcast failed');
 
             // --- Notification Blast Integration ---
-            const notificationEntries = recipients
+            const notificationEntries = uniqueRecipients
                 .filter(r => r.id && (r.type === 'Plug' || r.type === 'User')) // Notify all registered types
                 .map(r => ({
                     user_id: r.id,
@@ -290,7 +298,7 @@ export default function AdminDashboard() {
             }
             // --------------------------------------
 
-            toast.success(`Broadcast sent to ${targetIds.length} recipients! 📣`);
+            toast.success(`Broadcast sent to ${recipients.length} recipients! 📣`);
             setSelectedApps([]);
             setSelectedUsers([]);
             setShowBroadcastModal(false);
@@ -302,19 +310,22 @@ export default function AdminDashboard() {
         }
     };
     const handleGoldenTicketBroadcast = async () => {
-        const pendingApps = applications.filter(a => a.status === 'pending');
-        if (pendingApps.length === 0) {
-            toast.error("No pending applications found.");
+        const targetingApps = applications.filter(a => 
+            a.status === 'pending' || 
+            (a.status === 'approved' && !allUsers.some(u => u.id === a.user_id))
+        );
+        if (targetingApps.length === 0) {
+            toast.error("No eligible recipients found.");
             return;
         }
 
-        if (!confirm(`Are you sure you want to send the Golden Ticket to all ${pendingApps.length} pending applicants?`)) return;
+        if (!confirm(`Are you sure you want to send the Golden Ticket to all ${targetingApps.length} eligible vendors?`)) return;
 
         setProcessingId('broadcast');
         try {
             const messageTemplate = "👑 *GOLDEN TICKET ACTIVATED!* \n\nHello {name}, your waitlist spot is ready. Use the link below and code *PLUG37* to launch your store instantly and claim your Founding Badge. \n\n🔗 https://loops-marketplace.com/founding-plugs \n\n♾️ LOOPS PLATFORMS";
             
-            const recipients = pendingApps.map(a => ({
+            const recipients = targetingApps.map(a => ({
                 id: a.id,
                 whatsapp_number: a.whatsapp_number,
                 full_name: a.full_name
@@ -346,7 +357,7 @@ export default function AdminDashboard() {
                 await supabase.from('notifications').insert(notificationEntries);
             }
 
-            toast.success(`Golden Ticket sent to ${pendingApps.length} vendors! 🚀`);
+            toast.success(`Golden Ticket sent to ${targetingApps.length} vendors! 🚀`);
         } catch (err: any) {
             toast.error(err.message);
         } finally {
@@ -441,7 +452,10 @@ export default function AdminDashboard() {
                     products: products.count || 0,
                     services: servicesCount.count || 0,
                     reports: reportsCount.count || 0,
-                    pendingApps: allApplications?.filter(a => a.status === 'pending').length || 0,
+                    pendingApps: allApplications?.filter(a => 
+                        a.status === 'pending' || 
+                        (a.status === 'approved' && !usersData?.some(u => u.id === a.user_id))
+                    ).length || 0,
                     readyPlugs: usersData?.filter(u => {
                         const has3Listings = (listingsData?.filter(l => l.seller_id === u.id).length || 0) >= 3;
                         return u.is_plug && has3Listings;
@@ -1006,9 +1020,10 @@ const UserView = ({
                         setBroadcastMessage("");
                     }}
                     className="bg-black text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2"
-                >
-                    <MessageCircle className="w-4 h-4" />
-                    Broadcast to All ({allUsers.length + applications.length})
+                    Broadcast to All ({new Set([
+                        ...allUsers.map(u => u.id), 
+                        ...applications.map(a => a.user_id || a.id)
+                    ]).size})
                 </Button>
 
                 <Button
@@ -1017,7 +1032,7 @@ const UserView = ({
                     className="bg-loops-primary text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl hover:bg-loops-primary/90 transition-all shadow-lg shadow-loops-primary/20 flex items-center gap-2"
                 >
                     <Award className="w-4 h-4" />
-                    Invite All Pending ({stats.pendingApps})
+                    Invite All ({stats.pendingApps})
                 </Button>
             </div>
 
