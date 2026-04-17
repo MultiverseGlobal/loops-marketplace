@@ -526,6 +526,51 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleBoostListing = async (listingId: string, durationDays: number) => {
+        setProcessingId(listingId);
+        try {
+            const boostedUntil = new Date();
+            boostedUntil.setDate(boostedUntil.getDate() + durationDays);
+
+            const { error } = await supabase
+                .from('listings')
+                .update({ boosted_until: durationDays === 0 ? null : boostedUntil.toISOString() })
+                .eq('id', listingId);
+
+            if (error) throw error;
+
+            setAllListings(prev => prev.map(l => 
+                l.id === listingId ? { ...l, boosted_until: durationDays === 0 ? null : boostedUntil.toISOString() } : l
+            ));
+            toast.success(durationDays === 0 ? "Boost removed" : `Listing boosted for ${durationDays} days! 💎`);
+        } catch (err: any) {
+            toast.error(err.message);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const toggleFoundingMember = async (userId: string, currentStatus: boolean) => {
+        setProcessingId(userId);
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ is_founding_member: !currentStatus })
+                .eq('id', userId);
+
+            if (error) throw error;
+
+            setAllUsers(prev => prev.map(u => 
+                u.id === userId ? { ...u, is_founding_member: !currentStatus } : u
+            ));
+            toast.success(`Founding status ${!currentStatus ? 'activated' : 'deactivated'}`);
+        } catch (err: any) {
+            toast.error(err.message);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
     const handleResolveDispute = async (disputeId: string, decision: 'REFUND' | 'RELEASE', notes: string) => {
         setProcessingId(disputeId);
         try {
