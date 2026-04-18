@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { useNotifications } from "@/context/notification-context";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 
 interface NotificationDrawerProps {
     isOpen: boolean;
@@ -15,6 +17,32 @@ interface NotificationDrawerProps {
 export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps) {
     const { notifications, markAsRead, markAllAsRead, unreadCount } = useNotifications();
     const router = useRouter();
+    const supabase = createClient();
+    const [isPinging, setIsPinging] = useState(false);
+
+    const sendTestNotification = async () => {
+        setIsPinging(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            setIsPinging(false);
+            return;
+        }
+
+        const testNotif = {
+            user_id: user.id,
+            title: "Magic Loop Detected! ✨",
+            message: "Someone on campus just boosted your reputation. Check out the new marketplace pulse for trending drops.",
+            type: 'engagement',
+            category: 'social',
+            image_url: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=800",
+            cta_link: "/browse",
+            read: false
+        };
+
+        const { error } = await supabase.from('notifications').insert(testNotif);
+        if (error) console.error("TEST_NOTIF_ERROR:", error);
+        setIsPinging(false);
+    };
 
     return (
         <AnimatePresence>
@@ -163,15 +191,39 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
                                     </motion.div>
                                 ))
                             ) : (
-                                <div className="h-full flex flex-col items-center justify-center text-center p-12 space-y-4 opacity-30">
-                                    <Bell className="w-16 h-16 text-loops-muted" />
-                                    <p className="text-sm font-black uppercase tracking-widest">All caught up</p>
+                                <div className="h-full flex flex-col items-center justify-center text-center p-12 space-y-6 opacity-30 group/empty">
+                                    <div className="relative">
+                                        <Bell className="w-16 h-16 text-loops-muted group-hover/empty:text-loops-primary transition-colors duration-500" />
+                                        <div className="absolute -inset-4 bg-loops-primary/10 rounded-full blur-xl group-hover/empty:opacity-100 opacity-0 transition-opacity" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-sm font-black uppercase tracking-widest">All caught up</p>
+                                        <p className="text-[10px] font-medium leading-relaxed max-w-[180px] mx-auto">Your campus alerts will appear here as they happen.</p>
+                                    </div>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        disabled={isPinging}
+                                        onClick={sendTestNotification}
+                                        className="rounded-xl border-loops-primary/20 text-loops-primary hover:bg-loops-primary/10 transition-all opacity-100"
+                                    >
+                                        {isPinging ? "Magic Pinging..." : "Send Test Magic Ping"}
+                                    </Button>
                                 </div>
                             )}
                         </div>
 
                         {/* Footer */}
-                        <div className="p-8 border-t border-loops-border bg-loops-subtle/30">
+                        <div className="p-8 border-t border-loops-border bg-loops-subtle/30 space-y-4">
+                            <Button 
+                                variant="ghost" 
+                                size="sm"
+                                disabled={isPinging}
+                                onClick={sendTestNotification}
+                                className="w-full h-11 rounded-2xl border border-loops-primary/10 text-loops-primary font-black uppercase tracking-[0.2em] text-[10px] hover:bg-loops-primary/5 transition-all"
+                            >
+                                {isPinging ? "Syncing Magic..." : "Trigger Magic Ping"}
+                            </Button>
                             <p className="text-[10px] text-center font-bold text-loops-muted uppercase tracking-[0.2em]">
                                 Only your last 20 alerts are shown here
                             </p>
