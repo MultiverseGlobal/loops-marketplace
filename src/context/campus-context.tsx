@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 type CampusBranding = {
+    id: string;
     primary: string;
     secondary: string;
     accent: string;
@@ -53,6 +54,7 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
                 if (profile?.campuses) {
                     const dbCampus = profile.campuses;
                     setCampus({
+                        id: dbCampus.id,
                         primary: dbCampus.primary_color || '#1e40af',
                         secondary: dbCampus.secondary_color || '#3b82f6',
                         accent: dbCampus.accent_color || '#fbbf24',
