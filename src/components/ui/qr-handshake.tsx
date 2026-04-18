@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Camera, X, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from './button';
 import { useToast } from '@/context/toast-context';
+import { cn } from "@/lib/utils";
 import confetti from 'canvas-confetti';
 
 interface QRHandshakeProps {
