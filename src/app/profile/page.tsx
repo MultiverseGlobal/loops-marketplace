@@ -17,7 +17,7 @@ import { CURRENCY, LOOPBOT_NUMBER } from "@/lib/constants";
 import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
 import { UserPlus, UserMinus, Users, User } from "lucide-react";
 import { FoundingPlugGrowthKit } from "@/components/dashboard/growth-kit";
-import { Ruling } from "@/components/ui/rating";
+import { Rating } from "@/components/ui/rating";
 import { QRHandshake } from "@/components/ui/qr-handshake";
 import { Camera } from "lucide-react";
 
