@@ -61,3 +61,34 @@ export async function sendWhatsAppTemplate(to: string, templateName: string, lan
         return { error: { message: error.message } };
     }
 }
+
+export async function sendWhatsAppMedia(to: string, type: 'image' | 'video', url: string, caption?: string) {
+    const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
+    const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    if (!ACCESS_TOKEN || !PHONE_NUMBER_ID) return { error: { message: "WhatsApp credentials missing." } };
+
+    try {
+        const response = await fetch(`https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: to,
+                type: type,
+                [type]: { 
+                    link: url,
+                    ...(caption && { caption })
+                }
+            })
+        });
+
+        return await response.json();
+    } catch (error: any) {
+        return { error: { message: error.message } };
+    }
+}

@@ -11,6 +11,7 @@ type NotificationContextType = {
     unreadMessagesCount: number;
     pendingLoopsCount: number;
     markAsRead: (id: string) => Promise<void>;
+    markAllAsRead: () => Promise<void>;
     refreshNotifications: () => Promise<void>;
 };
 
@@ -76,13 +77,24 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                     table: 'notifications',
                     filter: `user_id=eq.${user.id}`
                 },
-                (payload) => {
+        (payload) => {
                     const newNotif = payload.new;
                     setNotifications(prev => [newNotif, ...prev]);
                     setUnreadCount(prev => prev + 1);
-                    if (newNotif.type === 'message') setUnreadMessagesCount(prev => prev + 1);
-                    if (newNotif.type === 'loop' || newNotif.type === 'transaction') setPendingLoopsCount(prev => prev + 1);
-                    toast.success(`${newNotif.title}: ${newNotif.message}`);
+                    
+                    if (newNotif.type === 'message') {
+                        setUnreadMessagesCount(prev => prev + 1);
+                    }
+                    if (newNotif.type === 'loop' || newNotif.type === 'transaction') {
+                        setPendingLoopsCount(prev => prev + 1);
+                    }
+
+                    // Premium toast for engagement campaigns vs generic alert
+                    if (newNotif.type === 'engagement') {
+                        toast.success(`🔔 ${newNotif.title}`);
+                    } else {
+                        toast.success(`${newNotif.title}: ${newNotif.message.slice(0, 60)}${newNotif.message.length > 60 ? '...' : ''}`);
+                    }
                 }
             )
             .subscribe();
@@ -107,6 +119,22 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         }
     };
 
+    const markAllAsRead = async () => {
+        if (!user) return;
+        const { error } = await supabase
+            .from('notifications')
+            .update({ read: true })
+            .eq('user_id', user.id)
+            .eq('read', false);
+
+        if (!error) {
+            setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+            setUnreadCount(0);
+            setUnreadMessagesCount(0);
+            setPendingLoopsCount(0);
+        }
+    };
+
     const refreshNotifications = async () => {
         if (user) await fetchNotifications(user.id);
     };
@@ -117,6 +145,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         unreadMessagesCount,
         pendingLoopsCount,
         markAsRead,
+        markAllAsRead,
         refreshNotifications
     };
 

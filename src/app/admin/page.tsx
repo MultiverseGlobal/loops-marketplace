@@ -28,8 +28,11 @@ import {
     ChevronDown,
     ArrowUpRight,
     Copy,
-    Check
+    Check,
+    Sparkles,
+    Bell
 } from "lucide-react";
+import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/context/toast-context";
 import { cn } from "@/lib/utils";
@@ -90,6 +93,15 @@ interface MarketplaceViewProps {
     toast: any;
 }
 
+interface EngagementViewProps {
+    campaigns: any[];
+    stats: any;
+    allUsers: any[];
+    applications: any[];
+    onSendCampaign: (campaign: any) => Promise<void>;
+    processingId: string | null;
+}
+
 export default function AdminDashboard() {
     const [currentView, setCurrentView] = useState<AdminView>('dashboard');
     const [stats, setStats] = useState({
@@ -130,6 +142,7 @@ export default function AdminDashboard() {
     const [allListings, setAllListings] = useState<any[]>([]);
     const [marketplaceFilter, setMarketplaceFilter] = useState<'all' | 'product' | 'service'>('all');
     const [marketplaceSearch, setMarketplaceSearch] = useState("");
+    const [campaigns, setCampaigns] = useState<any[]>([]);
 
     // User Directory
     const [allUsers, setAllUsers] = useState<AdminProfile[]>([]);
@@ -365,6 +378,55 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleSendCampaign = async (campaign: any) => {
+        setProcessingId('campaign');
+        try {
+            // Determine recipients based on segment
+            let segmentRecipients: any[] = [];
+            if (campaign.segment === 'all') {
+                segmentRecipients = [
+                    ...allUsers.map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name })),
+                    ...applications.map(a => ({ id: a.id, whatsapp_number: a.whatsapp_number, full_name: a.full_name }))
+                ];
+            } else if (campaign.segment === 'plugs') {
+                segmentRecipients = allUsers.filter(u => u.is_plug).map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name }));
+            } else if (campaign.segment === 'students') {
+                segmentRecipients = allUsers.filter(u => !u.is_plug).map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name }));
+            }
+
+            // Deduplicate
+            const uniqueRecipients = Array.from(
+                segmentRecipients.reduce((map, r) => {
+                    const key = r.whatsapp_number || r.id;
+                    if (!map.has(key)) map.set(key, r);
+                    return map;
+                }, new Map()).values()
+            );
+
+            const res = await fetch('/api/admin/engagement/broadcast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...campaign,
+                    recipients: uniqueRecipients
+                })
+            });
+
+            if (!res.ok) throw new Error('Campaign broadcast failed');
+            
+            toast.success(`Engagement campaign "${campaign.title}" launched to ${uniqueRecipients.length} users! 🚀`);
+            
+            // Refresh campaigns list
+            const { data } = await supabase.from('engagement_campaigns').select('*').order('created_at', { ascending: false });
+            setCampaigns(data || []);
+            
+        } catch (err: any) {
+            toast.error(err.message);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
     const ADMIN_ACCESS_CODE = "LOOPS404";
 
     useEffect(() => {
@@ -445,6 +507,12 @@ export default function AdminDashboard() {
                     .select('*')
                     .order('created_at', { ascending: false })
                     .limit(1000);
+
+                // 9. Engagement Campaigns
+                const { data: campaignsData } = await supabase
+                    .from('engagement_campaigns')
+                    .select('*')
+                    .order('created_at', { ascending: false });
                 setStats({
                     totalUsers: users.count || 0,
                     totalPlugs: activePlugs.count || 0,
@@ -469,6 +537,7 @@ export default function AdminDashboard() {
                 setDisputes(disputesData || []);
                 setAllListings(listingsData || []);
                 setAllUsers(usersData || []);
+                setCampaigns(campaignsData || []);
 
             } catch (err) {
                 console.error("Data fetch error:", err);
@@ -770,6 +839,16 @@ export default function AdminDashboard() {
                                 allUsers={allUsers}
                                 handleBoostListing={handleBoostListing}
                                 toggleFoundingMember={toggleFoundingMember}
+                                processingId={processingId}
+                            />
+                        )}
+                        {currentView === 'engagement' && (
+                            <EngagementView 
+                                campaigns={campaigns}
+                                stats={stats}
+                                allUsers={allUsers}
+                                applications={applications}
+                                onSendCampaign={handleSendCampaign}
                                 processingId={processingId}
                             />
                         )}
@@ -2092,3 +2171,197 @@ const MonetizationView = ({
         </div>
     </div>
 );
+
+const EngagementView = ({ campaigns, stats, allUsers, applications, onSendCampaign, processingId }: EngagementViewProps) => {
+    const [title, setTitle] = useState("");
+    const [message, setMessage] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const [videoUrl, setVideoUrl] = useState("");
+    const [ctaLink, setCtaLink] = useState("");
+    const [segment, setSegment] = useState<'all' | 'students' | 'plugs'>('all');
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Composer */}
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="bg-white p-8 rounded-[2.5rem] border border-loops-border shadow-xl">
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="w-12 h-12 bg-loops-primary/10 rounded-2xl flex items-center justify-center text-loops-primary">
+                            <Zap className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-black text-loops-main">Campaign Composer</h2>
+                            <p className="text-xs font-bold text-loops-muted uppercase tracking-widest mt-1">Rich Media Engine</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted mb-2 block">Campaign Title</label>
+                            <input 
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="e.g. 🚀 TIME TO POPULATE THE LOOP!"
+                                className="w-full bg-loops-subtle border-none rounded-2xl px-6 py-4 text-sm font-bold placeholder:text-loops-muted focus:ring-2 ring-loops-primary/20"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted mb-2 block">Engagement Message</label>
+                            <textarea 
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder="Write your hook here... use {name} for personalization"
+                                className="w-full bg-loops-subtle border-none rounded-2xl px-6 py-4 text-sm font-bold placeholder:text-loops-muted h-32 focus:ring-2 ring-loops-primary/20"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted mb-2 block">Image URL</label>
+                                <input 
+                                    value={imageUrl}
+                                    onChange={(e) => setImageUrl(e.target.value)}
+                                    placeholder="https://"
+                                    className="w-full bg-loops-subtle border-none rounded-2xl px-6 py-4 text-sm font-bold placeholder:text-loops-muted focus:ring-2 ring-loops-primary/20"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted mb-2 block">Video URL</label>
+                                <input 
+                                    value={videoUrl}
+                                    onChange={(e) => setVideoUrl(e.target.value)}
+                                    placeholder="mp4 direct link"
+                                    className="w-full bg-loops-subtle border-none rounded-2xl px-6 py-4 text-sm font-bold placeholder:text-loops-muted focus:ring-2 ring-loops-primary/20"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted mb-2 block">Call to Action Link</label>
+                            <input 
+                                value={ctaLink}
+                                onChange={(e) => setCtaLink(e.target.value)}
+                                placeholder="/browse or https://"
+                                className="w-full bg-loops-subtle border-none rounded-2xl px-6 py-4 text-sm font-bold placeholder:text-loops-muted focus:ring-2 ring-loops-primary/20"
+                            />
+                        </div>
+
+                        <div className="pt-6 border-t border-loops-border">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted mb-4 block text-center">Select Target Segment</label>
+                            <div className="grid grid-cols-3 gap-3">
+                                {(['all', 'students', 'plugs'] as const).map((s) => (
+                                    <button
+                                        key={s}
+                                        onClick={() => setSegment(s)}
+                                        className={cn(
+                                            "py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                            segment === s 
+                                                ? "bg-loops-primary text-white shadow-lg" 
+                                                : "bg-loops-subtle text-loops-muted hover:text-loops-main"
+                                        )}
+                                    >
+                                        {s}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <Button 
+                            onClick={() => onSendCampaign({ title, message, image_url: imageUrl, video_url: videoUrl, cta_link: ctaLink, segment })}
+                            disabled={!title || !message || processingId === 'campaign'}
+                            className="w-full h-16 rounded-[2rem] bg-black text-white font-black uppercase tracking-[0.2em] text-xs hover:bg-gray-900 shadow-2xl mt-4"
+                        >
+                            {processingId === 'campaign' ? "Launching Campaign..." : "Launch Campaign 🚀"}
+                        </Button>
+                    </div>
+                </div>
+
+                {/* History */}
+                <div className="bg-white/50 p-8 rounded-[2.5rem] border border-loops-border">
+                    <h3 className="text-sm font-black text-loops-main uppercase tracking-widest mb-6 px-2">Campaign History</h3>
+                    <div className="space-y-3">
+                        {campaigns.map((c, i) => (
+                            <div key={i} className="bg-white p-5 rounded-3xl border border-loops-border flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-loops-subtle rounded-xl flex items-center justify-center">
+                                        {c.image_url ? <Package className="w-4 h-4 text-loops-primary" /> : <MessageCircle className="w-4 h-4 text-loops-muted" />}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-loops-main">{c.title}</p>
+                                        <p className="text-[10px] font-bold text-loops-muted uppercase tracking-widest mt-1">{c.recipients_count} Recipients • {c.segment}</p>
+                                    </div>
+                                </div>
+                                <span className="text-[9px] font-bold text-loops-muted italic">{new Date(c.created_at).toLocaleDateString()}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Live Preview / Mockup */}
+            <div className="hidden lg:flex flex-col items-center justify-center p-12 bg-loops-subtle rounded-[3rem] border border-loops-border relative overflow-hidden h-[fit-content]">
+                <div className="absolute top-0 right-0 p-8">
+                    <Sparkles className="w-8 h-8 text-loops-primary/20" />
+                </div>
+                
+                <p className="text-[10px] font-black text-loops-muted uppercase tracking-[0.3em] mb-10">Live Mobile Preview</p>
+
+                {/* iPhone Mockup */}
+                <div className="w-[300px] h-[600px] bg-black rounded-[3.5rem] p-3 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border-[4px] border-gray-800 relative z-10 scale-90 translate-y-[-20px]">
+                    <div className="w-full h-full bg-white rounded-[2.8rem] overflow-hidden relative">
+                        {/* Dynamic Notification Popup */}
+                        <div className="absolute inset-x-4 top-12 z-20">
+                            <motion.div 
+                                initial={{ y: -50, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                key={message}
+                                className="bg-white/90 backdrop-blur-xl p-4 rounded-3xl shadow-2xl border border-loops-border"
+                            >
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="w-6 h-6 bg-loops-primary rounded-lg flex items-center justify-center">
+                                        <InfinityLogo className="w-4 h-4 text-white" />
+                                    </div>
+                                    <span className="text-[9px] font-bold text-loops-muted uppercase tracking-widest">Loops Platform</span>
+                                </div>
+                                <h4 className="text-[11px] font-black text-loops-main mb-1">{title || "Your New Alert"}</h4>
+                                <p className="text-[10px] text-loops-muted leading-relaxed line-clamp-3">
+                                    {message.replace(/{name}/g, "User") || "How your engagement message will look to students..."}
+                                </p>
+                                {imageUrl && (
+                                    <div className="mt-3 rounded-2xl overflow-hidden border border-loops-border aspect-video">
+                                        <img src={imageUrl} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+                                {ctaLink && (
+                                    <div className="mt-3 py-2 bg-loops-primary rounded-xl text-center text-[8px] font-black text-white uppercase tracking-widest">
+                                        View Details
+                                    </div>
+                                )}
+                            </motion.div>
+                        </div>
+
+                        {/* Background simulated app */}
+                        <div className="pt-24 px-6">
+                            <div className="w-12 h-12 bg-loops-subtle rounded-2xl mb-6" />
+                            <div className="space-y-3 mb-8">
+                                <div className="h-4 bg-loops-subtle rounded-full w-3/4" />
+                                <div className="h-4 bg-loops-subtle rounded-full w-full" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="aspect-square bg-loops-subtle rounded-3xl" />
+                                <div className="aspect-square bg-loops-subtle rounded-3xl" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-4 max-w-[280px] text-center">
+                    <p className="text-[10px] font-bold text-loops-muted leading-relaxed uppercase tracking-widest">
+                        Engagement campaigns are delivered via WhatsApp and In-App notification feed simultaneously.
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+};

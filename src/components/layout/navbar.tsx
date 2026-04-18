@@ -14,6 +14,7 @@ import { useToast } from "@/context/toast-context";
 import { CartDrawer } from "./cart-drawer";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/context/notification-context";
+import { NotificationDrawer } from "./notification-drawer";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (
@@ -29,6 +30,7 @@ export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<any>(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const supabase = createClient();
     const router = useRouter();
     const { campus, getTerm } = useCampus();
@@ -88,7 +90,7 @@ export function Navbar() {
             <nav className="hidden md:block fixed top-6 inset-x-0 max-w-7xl mx-auto z-50">
                 <div className="mx-6 px-6 h-20 bg-white/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/40 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] flex items-center justify-between transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(16,185,129,0.15)]">
                     <div className="flex items-center gap-10">
-                        <Link href="/" className="flex items-center gap-4 group">
+                        <Link href="/welcome" className="flex items-center gap-4 group">
                             <div className="relative">
                                 {/* Logo Mesh Glow */}
                                 <div className="absolute -inset-4 bg-loops-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -195,21 +197,20 @@ export function Navbar() {
                                     </Button>
                                 </Link>
 
-                                <Link href="/messages">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
-                                        title="Notifications"
-                                    >
-                                        <Bell className={cn("w-5 h-5", pendingLoopsCount > 0 && "text-loops-primary animate-pulse")} />
-                                        {pendingLoopsCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in">
-                                                {pendingLoopsCount}
-                                            </span>
-                                        )}
-                                    </Button>
-                                </Link>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setIsNotificationsOpen(true)}
+                                    className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
+                                    title="Notifications"
+                                >
+                                    <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary animate-pulse")} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in px-1">
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </Button>
                             </>
                         ) : (
                             <div className="flex items-center gap-2">
@@ -264,7 +265,7 @@ export function Navbar() {
                     </div>
                 )}
                 <div className="px-6 h-14 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2">
+                    <Link href="/welcome" className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-lg shadow-loops-primary/10 border border-loops-border">
                             <InfinityLogo className="w-6 h-6" />
                         </div>
@@ -275,12 +276,17 @@ export function Navbar() {
 
                     <div className="flex items-center gap-3">
                         {user && (
-                            <Link href="/messages" className="relative p-2 text-loops-muted hover:text-loops-primary">
-                                <Bell className={cn("w-5 h-5", pendingLoopsCount > 0 && "text-loops-primary")} />
-                                {pendingLoopsCount > 0 && (
-                                    <span className="absolute top-1 right-1 w-2 h-2 bg-loops-primary rounded-full border border-white" />
+                            <button 
+                                onClick={() => setIsNotificationsOpen(true)}
+                                className="relative p-2 text-loops-muted hover:text-loops-primary"
+                            >
+                                <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary")} />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-0 right-0 min-w-[16px] h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white px-0.5">
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
                                 )}
-                            </Link>
+                            </button>
                         )}
                         <Button
                             variant="ghost"
@@ -327,6 +333,7 @@ export function Navbar() {
                     </Link>
                 </div>
             </nav>
+            <NotificationDrawer isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
         </>
     );
 }

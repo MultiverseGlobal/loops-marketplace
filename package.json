@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",
+    "html5-qrcode": "^2.3.8",
     "lucide-react": "latest",
     "next": "16.1.6",
     "paystack-sdk": "^3.7.0",

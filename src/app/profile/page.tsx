@@ -17,7 +17,9 @@ import { CURRENCY, LOOPBOT_NUMBER } from "@/lib/constants";
 import { followUser, unfollowUser, getFollowStatus, getFollowCounts } from "@/lib/follows";
 import { UserPlus, UserMinus, Users, User } from "lucide-react";
 import { FoundingPlugGrowthKit } from "@/components/dashboard/growth-kit";
-import { Rating } from "@/components/ui/rating";
+import { Ruling } from "@/components/ui/rating";
+import { QRHandshake } from "@/components/ui/qr-handshake";
+import { Camera } from "lucide-react";
 
 export default function ProfilePage() {
     const [user, setUser] = useState<any>(null);
@@ -57,6 +59,11 @@ export default function ProfilePage() {
     const [accountName, setAccountName] = useState("");
     const [isWithdrawing, setIsWithdrawing] = useState(false);
     const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
+    
+    // QR Handshake State
+    const [qrModalOpen, setQrModalOpen] = useState(false);
+    const [qrMode, setQrMode] = useState<'generate' | 'scan'>('generate');
+    const [selectedTx, setSelectedTx] = useState<any>(null);
 
     const router = useRouter();
 
@@ -828,28 +835,15 @@ export default function ProfilePage() {
                                                                         </div>
                                                                     </div>
                                                                     <Button
-                                                                        onClick={async () => {
-                                                                            const token = prompt("Enter verification token (8 chars) from buyer:");
-                                                                            if (token) {
-                                                                                const res = await fetch(`/api/loops/${tx.id}/verify`, {
-                                                                                    method: 'POST',
-                                                                                    headers: { 'Content-Type': 'application/json' },
-                                                                                    body: JSON.stringify({ token })
-                                                                                });
-                                                                                const data = await res.json();
-                                                                                if (res.ok) {
-                                                                                    toast.success(data.message);
-                                                                                    setSoldTransactions(prev => prev.map(t => t.id === tx.id ? { ...t, status: 'completed' } : t));
-                                                                                    // Also update user's myTransactions if they are the buyer viewing their own profile
-                                                                                    setMyTransactions(prev => prev.map(t => t.id === tx.id ? { ...t, status: 'completed' } : t));
-                                                                                } else {
-                                                                                    toast.error(data.error);
-                                                                                }
-                                                                            }
+                                                                        onClick={() => {
+                                                                            setSelectedTx(tx);
+                                                                            setQrMode('generate');
+                                                                            setQrModalOpen(true);
                                                                         }}
-                                                                        className="bg-white text-loops-primary font-black uppercase tracking-widest text-[10px] px-6 h-12 rounded-xl hover:scale-105 transition-all shadow-lg"
+                                                                        className="bg-white text-loops-primary font-black uppercase tracking-widest text-[10px] px-6 h-12 rounded-xl hover:scale-105 transition-all shadow-lg flex items-center gap-2"
                                                                     >
-                                                                        Complete Loop 🤝
+                                                                        <ShieldCheck className="w-4 h-4" />
+                                                                        Generate Handshake 🤝
                                                                     </Button>
                                                                 </div>
                                                             </div>
@@ -914,7 +908,19 @@ export default function ProfilePage() {
 
                                                         <div className="flex flex-col md:flex-row gap-8 items-center md:items-start relative z-10">
                                                             {/* QR Section */}
-                                                            <div className="w-48 h-48 bg-loops-subtle rounded-3xl border border-loops-border p-3 flex flex-col items-center justify-center gap-2 group-hover:border-loops-primary/30 transition-all shadow-inner">
+                                                            <div 
+                                                                onClick={() => {
+                                                                    if (tx.status !== 'completed') {
+                                                                        setSelectedTx(tx);
+                                                                        setQrMode('scan');
+                                                                        setQrModalOpen(true);
+                                                                    }
+                                                                }}
+                                                                className={cn(
+                                                                    "w-48 h-48 bg-loops-subtle rounded-3xl border border-loops-border p-3 flex flex-col items-center justify-center gap-2 group-hover:border-loops-primary/30 transition-all shadow-inner cursor-pointer",
+                                                                    tx.status !== 'completed' && "hover:bg-loops-accent/5"
+                                                                )}
+                                                            >
                                                                 {tx.status === 'completed' ? (
                                                                     <div className="flex flex-col items-center">
                                                                         <ShieldCheck className="w-16 h-16 text-loops-success mb-2" />
@@ -922,14 +928,11 @@ export default function ProfilePage() {
                                                                     </div>
                                                                 ) : (
                                                                     <>
-                                                                        <div className="relative w-full aspect-square bg-white rounded-xl overflow-hidden shadow-sm">
-                                                                            <img
-                                                                                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${tx.id}|${tx.verification_token}`}
-                                                                                alt="Handshake QR"
-                                                                                className="w-full h-full p-2"
-                                                                            />
+                                                                        <div className="w-16 h-16 bg-loops-accent/10 rounded-2xl flex items-center justify-center text-loops-accent mb-2">
+                                                                            <Camera className="w-8 h-8" />
                                                                         </div>
-                                                                        <div className="text-[9px] font-black uppercase text-loops-primary tracking-[0.2em] animate-pulse">Scan to verify</div>
+                                                                        <div className="text-[10px] font-black uppercase text-loops-accent tracking-[0.2em]">Scan Seller QR</div>
+                                                                        <div className="text-[8px] font-bold text-loops-muted uppercase">To Confirm Pickup</div>
                                                                     </>
                                                                 )}
                                                             </div>
@@ -1304,6 +1307,22 @@ export default function ProfilePage() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* QR Handshake Modal */}
+            {qrModalOpen && (
+                <QRHandshake
+                    mode={qrMode}
+                    transactionId={selectedTx?.id}
+                    token={selectedTx?.verification_token}
+                    onClose={() => setQrModalOpen(false)}
+                    onSuccess={() => {
+                        setQrModalOpen(false);
+                        // Refresh transaction lists
+                        setSoldTransactions(prev => prev.map(t => t.id === selectedTx.id ? { ...t, status: 'completed' } : t));
+                        setMyTransactions(prev => prev.map(t => t.id === selectedTx.id ? { ...t, status: 'completed' } : t));
+                    }}
+                />
+            )}
         </div>
     );
 }
