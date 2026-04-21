@@ -11,6 +11,7 @@ import { ImageUpload } from "@/components/ui/image-upload";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/context/toast-context";
 import { useCampus } from "@/context/campus-context";
+import { CampusSelector } from "@/components/ui/campus-selector";
 import { CURRENCY } from "@/lib/constants";
 import { triggerSuccessBlast } from "@/lib/confetti";
 

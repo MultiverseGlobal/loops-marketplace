@@ -10,6 +10,7 @@ import { createClient } from "../../lib/supabase/client";
 import { SkeletonCard } from "../../components/ui/skeleton-loader";
 import { SearchBar } from "../../components/ui/search-bar";
 import { useCampus } from "../../context/campus-context";
+import { CampusSelector } from "../../components/ui/campus-selector";
 import { HelpCircle, PackageSearch } from "lucide-react";
 import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../lib/constants";
 
