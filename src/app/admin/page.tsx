@@ -438,8 +438,8 @@ export default function AdminDashboard() {
             toast.success(`Campaign "${campaign.title}" launched! In-App: ${data.inApp}, WhatsApp: ${data.whatsapp} 🚀`);
             
             // Refresh campaigns list
-            const { data } = await supabase.from('engagement_campaigns').select('*').order('created_at', { ascending: false });
-            setCampaigns(data || []);
+            const { data: refreshedData } = await supabase.from('engagement_campaigns').select('*').order('created_at', { ascending: false });
+            setCampaigns(refreshedData || []);
             
         } catch (err: any) {
             toast.error(err.message);
