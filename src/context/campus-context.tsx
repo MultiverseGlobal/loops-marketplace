@@ -32,6 +32,7 @@ type CampusContextType = {
     campus: CampusBranding | null;
     loading: boolean;
     getTerm: (key: keyof typeof CAMPUS_DEFAULT_TERMS) => string;
+    selectCampus: (campusId: string) => Promise<void>;
 };
 
 const CampusContext = createContext<CampusContextType | undefined>(undefined);
