@@ -4,10 +4,12 @@ import { Navbar } from "../components/layout/navbar";
 import { PulseFeed } from "../components/ui/pulse-feed";
 import { Footer } from "../components/layout/footer";
 import { CampusSelector } from "../components/ui/campus-selector";
+import { Button } from "../components/ui/button";
 import { useCampus } from "../context/campus-context";
 import { useRouter } from "next/navigation";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Search } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Home() {
     const { campus, loading } = useCampus();
