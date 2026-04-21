@@ -6,6 +6,7 @@ import { Footer } from "../components/layout/footer";
 import { CampusSelector } from "../components/ui/campus-selector";
 import { useCampus } from "../context/campus-context";
 import { useRouter } from "next/navigation";
+import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Home() {
