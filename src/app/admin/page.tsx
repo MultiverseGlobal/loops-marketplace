@@ -292,7 +292,10 @@ export default function AdminDashboard() {
                 })
             });
 
-            if (!res.ok) throw new Error('Broadcast failed');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Broadcast failed');
+            }
 
             // --- Notification Blast Integration ---
             const notificationEntries = uniqueRecipients
@@ -353,7 +356,10 @@ export default function AdminDashboard() {
                 })
             });
 
-            if (!res.ok) throw new Error('Broadcast failed');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Broadcast failed');
+            }
 
             // Also send system notifications if they have user_ids
             const notificationEntries = targetingApps
@@ -380,25 +386,36 @@ export default function AdminDashboard() {
 
     const handleSendCampaign = async (campaign: any) => {
         setProcessingId('campaign');
+        // Sanitize placeholder media URLs
+        if (campaign.image_url === 'https://' || !campaign.image_url?.startsWith('http')) campaign.image_url = null;
+        if (campaign.video_url === 'mp4 direct link' || !campaign.video_url?.includes('.')) campaign.video_url = null;
+        
         try {
             // Determine recipients based on segment
             let segmentRecipients: any[] = [];
             if (campaign.segment === 'all') {
                 segmentRecipients = [
-                    ...allUsers.map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name })),
-                    ...applications.map(a => ({ id: a.id, whatsapp_number: a.whatsapp_number, full_name: a.full_name }))
+                    ...allUsers.map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number, full_name: u.full_name })),
+                    ...applications.map(a => ({ id: a.user_id, whatsapp_number: a.whatsapp_number, full_name: a.full_name }))
                 ];
             } else if (campaign.segment === 'plugs') {
-                segmentRecipients = allUsers.filter(u => u.is_plug).map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name }));
+                segmentRecipients = allUsers.filter(u => u.is_plug).map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number, full_name: u.full_name }));
             } else if (campaign.segment === 'students') {
-                segmentRecipients = allUsers.filter(u => !u.is_plug).map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number || u.email, full_name: u.full_name }));
+                segmentRecipients = allUsers.filter(u => !u.is_plug).map(u => ({ id: u.id, whatsapp_number: u.whatsapp_number, full_name: u.full_name }));
             }
 
-            // Deduplicate
+            // Deduplicate by ID (Priority for In-App)
             const uniqueRecipients = Array.from(
                 segmentRecipients.reduce((map, r) => {
-                    const key = r.whatsapp_number || r.id;
+                    const key = r.id || r.whatsapp_number; // Prioritize ID for tracking
                     if (!map.has(key)) map.set(key, r);
+                    else {
+                        // If we already have the ID, but this entry has a whatsapp_number, merge it
+                        const existing = map.get(key);
+                        if (!existing.whatsapp_number && r.whatsapp_number) {
+                            existing.whatsapp_number = r.whatsapp_number;
+                        }
+                    }
                     return map;
                 }, new Map()).values()
             );
@@ -412,9 +429,13 @@ export default function AdminDashboard() {
                 })
             });
 
-            if (!res.ok) throw new Error('Campaign broadcast failed');
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Campaign broadcast failed');
+            }
             
-            toast.success(`Engagement campaign "${campaign.title}" launched to ${uniqueRecipients.length} users! 🚀`);
+            toast.success(`Campaign "${campaign.title}" launched! In-App: ${data.inApp}, WhatsApp: ${data.whatsapp} 🚀`);
             
             // Refresh campaigns list
             const { data } = await supabase.from('engagement_campaigns').select('*').order('created_at', { ascending: false });

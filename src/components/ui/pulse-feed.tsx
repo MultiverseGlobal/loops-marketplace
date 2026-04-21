@@ -74,8 +74,8 @@ export function PulseFeed({ campusId }: { campusId?: string | null }) {
                         <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black italic tracking-tighter text-loops-main leading-none">Fresh Drops</h2>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-loops-primary mt-1">Real-time Campus Pulse</p>
+                        <h2 className="text-2xl font-black italic tracking-tighter text-loops-main leading-none">Campus Pulse</h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-loops-primary mt-1">Live from The Feed</p>
                     </div>
                 </div>
                 {!authenticated && (

@@ -41,34 +41,75 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
 
-    useEffect(() => {
-        const fetchCampus = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*, campuses(*)')
-                    .eq('id', user.id)
-                    .single();
+    const fetchCampusDetails = async (campusId: string) => {
+        const { data: dbCampus, error } = await supabase
+            .from('campuses')
+            .select('*')
+            .eq('id', campusId)
+            .single();
 
-                if (profile?.campuses) {
-                    const dbCampus = profile.campuses;
-                    setCampus({
-                        id: dbCampus.id,
-                        primary: dbCampus.primary_color || '#1e40af',
-                        secondary: dbCampus.secondary_color || '#3b82f6',
-                        accent: dbCampus.accent_color || '#fbbf24',
-                        name: dbCampus.name,
-                        slug: dbCampus.slug,
-                        type: dbCampus.type || 'public',
-                        terms: dbCampus.terms || CAMPUS_DEFAULT_TERMS,
-                    } as CampusBranding);
+        if (dbCampus && !error) {
+            return {
+                id: dbCampus.id,
+                primary: dbCampus.primary_color || '#1e40af',
+                secondary: dbCampus.secondary_color || '#3b82f6',
+                accent: dbCampus.accent_color || '#fbbf24',
+                name: dbCampus.name,
+                slug: dbCampus.slug,
+                type: dbCampus.type || 'public',
+                terms: dbCampus.terms || CAMPUS_DEFAULT_TERMS,
+            } as CampusBranding;
+        }
+        return null;
+    };
+
+    const selectCampus = async (campusId: string) => {
+        const details = await fetchCampusDetails(campusId);
+        if (details) {
+            setCampus(details);
+            localStorage.setItem('loops_last_campus_id', campusId);
+        }
+    };
+
+    useEffect(() => {
+        const initializeCampus = async () => {
+            setLoading(true);
+            try {
+                // 1. Check Auth User
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('campus_id')
+                        .eq('id', user.id)
+                        .single();
+
+                    if (profile?.campus_id) {
+                        const details = await fetchCampusDetails(profile.campus_id);
+                        if (details) {
+                            setCampus(details);
+                            setLoading(false);
+                            return;
+                        }
+                    }
                 }
+
+                // 2. Fallback to LocalStorage for guests
+                const guestCampusId = localStorage.getItem('loops_last_campus_id');
+                if (guestCampusId) {
+                    const details = await fetchCampusDetails(guestCampusId);
+                    if (details) {
+                        setCampus(details);
+                    }
+                }
+            } catch (err) {
+                console.error("Campus Initialization Error:", err);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
-        fetchCampus();
+        initializeCampus();
     }, [supabase]);
 
     useEffect(() => {
@@ -76,6 +117,11 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
             document.documentElement.style.setProperty('--loops-primary', campus.primary);
             document.documentElement.style.setProperty('--loops-secondary', campus.secondary);
             document.documentElement.style.setProperty('--loops-accent', campus.accent);
+        } else {
+            // Reset to defaults if no campus
+            document.documentElement.style.setProperty('--loops-primary', '#1e40af');
+            document.documentElement.style.setProperty('--loops-secondary', '#3b82f6');
+            document.documentElement.style.setProperty('--loops-accent', '#fbbf24');
         }
     }, [campus]);
 
@@ -84,7 +130,7 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <CampusContext.Provider value={{ campus, loading, getTerm }}>
+        <CampusContext.Provider value={{ campus, loading, getTerm, selectCampus }}>
             {children}
         </CampusContext.Provider>
     );

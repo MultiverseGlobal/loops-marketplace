@@ -105,12 +105,22 @@ export function Navbar() {
                                 <span className="font-display text-2xl font-black tracking-tighter text-loops-main leading-none">
                                     Loops
                                 </span>
-                                <span className="text-[8px] font-bold text-loops-primary uppercase tracking-[0.3em] mt-1 ml-0.5">Campus OS</span>
+                                <div className="flex items-center gap-1.5 mt-1 ml-0.5">
+                                    <span className="text-[8px] font-black text-loops-primary uppercase tracking-[0.3em]">Campus OS</span>
+                                    {campus && (
+                                        <>
+                                            <div className="w-1 h-1 rounded-full bg-loops-border" />
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-[8px] font-black text-loops-main uppercase tracking-[0.2em]">{campus.name}</span>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </Link>
 
                         <nav className="hidden lg:flex items-center gap-1">
-                            <NavLink href="/browse?view=product">{getTerm('marketplaceName') || 'Marketplace'}</NavLink>
+                            <NavLink href="/">{getTerm('marketplaceName') || 'The Feed'}</NavLink>
                             <NavLink href="/browse?view=service">Services</NavLink>
                             <NavLink href="/requests">Requests</NavLink>
                             {user && (
@@ -213,7 +223,18 @@ export function Navbar() {
                                 </Button>
                             </>
                         ) : (
-                            <div className="flex items-center gap-2">
+                             <div className="flex items-center gap-2">
+                                {campus && (
+                                    <button 
+                                        onClick={() => {
+                                            localStorage.removeItem('loops_last_campus_id');
+                                            window.location.reload();
+                                        }}
+                                        className="h-11 px-6 rounded-2xl text-[10px] font-bold text-loops-muted uppercase tracking-widest hover:text-loops-primary hover:bg-loops-primary/5 transition-all"
+                                    >
+                                        Switch Loop
+                                    </button>
+                                )}
                                 <Link href="/login">
                                     <Button variant="ghost" className="h-11 px-6 rounded-2xl text-xs font-bold text-loops-muted hover:text-loops-primary hover:bg-loops-primary/5">
                                         Sign In

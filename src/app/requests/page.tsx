@@ -18,17 +18,28 @@ export default function RequestsPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const supabase = createClient();
-    const { campus, getTerm } = useCampus();
+    const { campus, getTerm, loading: campusLoading } = useCampus();
 
     useEffect(() => {
         const fetchRequests = async () => {
             setLoading(true);
+            
+            const campusId = campus?.id;
+            
             let query = supabase
                 .from('listings')
                 .select('*, profiles(full_name)')
                 .eq('status', 'active')
                 .eq('type', 'request')
                 .order('created_at', { ascending: false });
+
+            if (campusId) {
+                query = query.eq('campus_id', campusId);
+            } else if (!campusLoading) {
+                setListings([]);
+                setLoading(false);
+                return;
+            }
 
             if (searchQuery) {
                 query = query.ilike('title', `%${searchQuery}%`);
@@ -39,11 +50,12 @@ export default function RequestsPage() {
             setLoading(false);
         };
         fetchRequests();
-    }, [supabase, searchQuery]);
+    }, [supabase, searchQuery, campus, campusLoading]);
 
     return (
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
+            <CampusSelector />
 
             {/* App Header */}
             <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-loops-border pt-4 md:pt-20 pb-4 px-4 sm:px-6">

@@ -22,13 +22,13 @@ export async function GET(request: Request) {
 
         const { data: listings } = await listingsQuery;
 
-        // 2. Fetch Recent Transactions (Social Proof)
+        // 2. Fetch Recent Transactions (Social Proof) - Enforce Campus Restriction
         let transactionsQuery = supabase
             .from('transactions')
             .select(`
                 id,
                 created_at,
-                listing:listings(title, type),
+                listing:listings!inner(title, type, campus_id),
                 buyer:profiles!transactions_buyer_id_fkey(full_name),
                 seller:profiles!transactions_seller_id_fkey(full_name, campus:campuses(name))
             `)
@@ -36,14 +36,27 @@ export async function GET(request: Request) {
             .order('created_at', { ascending: false })
             .limit(5);
 
+        if (campusId) {
+            transactionsQuery = transactionsQuery.eq('listing.campus_id', campusId);
+        }
+
         const { data: transactions } = await transactionsQuery;
 
-        // 3. Fetch Engagement Campaigns (Marketing Media)
-        const { data: campaigns } = await supabase
+        // 3. Fetch Engagement Campaigns (Marketing Media) - Filter by Campus if possible
+        let campaignsQuery = supabase
             .from('engagement_campaigns')
             .select('*')
             .order('created_at', { ascending: false })
             .limit(3);
+
+        // If campusId is provided, we can either filter by it (if column exists) 
+        // or just show global ones. For now, let's check if we can add campus_id.
+        // Assuming we might have a campus_id column or global campaigns (null campus_id).
+        if (campusId) {
+            campaignsQuery = campaignsQuery.or(`campus_id.eq.${campusId},campus_id.is.null`);
+        }
+
+        const { data: campaigns } = await campaignsQuery;
 
         // 4. Combine and Sort
         const feed = [

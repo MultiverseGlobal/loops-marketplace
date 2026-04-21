@@ -32,16 +32,21 @@ export async function POST(request: Request) {
         if (!profile?.is_admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
 
         // 2. Broadcast loop
-        const results = [];
-        const waRecipients = recipients.filter((r: any) => r.whatsapp_number);
-        const inAppRecipients = recipients.filter((r: any) => r.id); // Profiles
+        const inAppResults = { success: 0, failed: 0 };
+        const waResults = { success: 0, failed: 0, details: [] as any[] };
+        
+        const waRecipients = recipients.filter((r: any) => 
+            r.whatsapp_number && 
+            /^\+?[1-9]\d{1,14}$/.test(r.whatsapp_number.replace(/\s+/g, '')) // E.164 phone check
+        );
+        const inAppRecipients = recipients.filter((r: any) => r.id && r.id.length === 36);
 
-        // Batch In-App Notifications — use admin client to bypass RLS
+        // a. BATCH IN-APP NOTIFICATIONS (PRIORITY)
         if (inAppRecipients.length > 0) {
             const notifications = inAppRecipients.map((r: any) => ({
                 user_id: r.id,
                 title: title || "New Update!",
-                message: message.replace(/{name}/g, r.full_name || 'there'),
+                message: (message || "").replace(/{name}/g, r.full_name || 'there'),
                 image_url: image_url || null,
                 video_url: video_url || null,
                 cta_link: cta_link || null,
@@ -51,32 +56,46 @@ export async function POST(request: Request) {
             }));
 
             const { error: insertError } = await adminSupabase.from('notifications').insert(notifications);
-            if (insertError) console.error('NOTIF_INSERT_ERROR:', insertError);
+            if (insertError) {
+                console.error('NOTIF_INSERT_ERROR:', insertError);
+                inAppResults.failed = inAppRecipients.length;
+            } else {
+                inAppResults.success = inAppRecipients.length;
+            }
         }
 
-        // WhatsApp Loop
+        // b. WHATSAPP LOOP
         for (const recipient of waRecipients) {
             try {
-                let personalizedMessage = message;
+                let personalizedMessage = message || "";
                 if (recipient.full_name) {
                     personalizedMessage = personalizedMessage.replace(/{name}/g, recipient.full_name);
                 }
 
+                const cleanNumber = recipient.whatsapp_number.replace(/\s+/g, '');
+                let waResult;
                 if (video_url) {
-                    await sendWhatsAppMedia(recipient.whatsapp_number, 'video', video_url, personalizedMessage);
+                    waResult = await sendWhatsAppMedia(cleanNumber, 'video', video_url, personalizedMessage);
                 } else if (image_url) {
-                    await sendWhatsAppMedia(recipient.whatsapp_number, 'image', image_url, personalizedMessage);
+                    waResult = await sendWhatsAppMedia(cleanNumber, 'image', image_url, personalizedMessage);
                 } else {
-                    await sendWhatsAppMessage(recipient.whatsapp_number, personalizedMessage);
+                    waResult = await sendWhatsAppMessage(cleanNumber, personalizedMessage);
                 }
                 
-                results.push({ id: recipient.id, success: true });
+                if (waResult?.error) {
+                    waResults.failed++;
+                    waResults.details.push({ id: recipient.id, success: false, error: waResult.error.message });
+                } else {
+                    waResults.success++;
+                    waResults.details.push({ id: recipient.id, success: true });
+                }
             } catch (err: any) {
-                results.push({ id: recipient.id, success: false, error: err.message });
+                waResults.failed++;
+                waResults.details.push({ id: recipient.id, success: false, error: err.message });
             }
         }
 
-        // 3. Log Campaign — use admin client
+        // 3. Log Campaign
         const { error: campaignError } = await adminSupabase.from('engagement_campaigns').insert({
             title,
             message,
@@ -89,7 +108,25 @@ export async function POST(request: Request) {
         });
         if (campaignError) console.error('CAMPAIGN_LOG_ERROR:', campaignError);
 
-        return NextResponse.json({ success: true, count: results.length });
+        // 4. Return summary
+        const totalDelivered = inAppResults.success + waResults.success;
+        const totalFailed = (inAppRecipients.length + waRecipients.length) - totalDelivered;
+
+        if (totalDelivered === 0 && recipients.length > 0) {
+            return NextResponse.json({ 
+                error: `Broadcast failed across all channels. In-App: ${inAppResults.failed}, WhatsApp: ${waResults.failed}`,
+                whatsappDetails: waResults.details 
+            }, { status: 500 });
+        }
+
+        return NextResponse.json({ 
+            success: true, 
+            delivered: totalDelivered,
+            inApp: inAppResults.success,
+            whatsapp: waResults.success,
+            failed: totalFailed,
+            whatsappFailures: waResults.failed
+        });
 
     } catch (error: any) {
         console.error('ENGAGEMENT_BROADCAST_ERROR:', error);

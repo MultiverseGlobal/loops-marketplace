@@ -56,6 +56,7 @@ export default function ListingDetailPage() {
                     .from('listings')
                     .select(`
                         *,
+                        campuses (id, name, slug),
                         profiles:seller_id (
                             id,
                             full_name,
@@ -81,6 +82,7 @@ export default function ListingDetailPage() {
                     setIsFollowing(following);
                 }
             } catch (err) {
+                console.error("Fetch Listing Error:", err);
             } finally {
                 setLoading(false);
             }
@@ -483,6 +485,45 @@ export default function ListingDetailPage() {
                     <ArrowLeft className="w-4 h-4" />
                     Back to {getTerm('marketplaceName')}
                 </Link>
+
+                {campus && listing.campus_id && campus.id !== listing.campus_id && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-8 p-6 rounded-3xl bg-loops-accent/10 border border-loops-accent/20 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative shadow-xl shadow-loops-accent/5"
+                    >
+                        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                            <Infinity className="w-32 h-32 text-loops-accent" />
+                        </div>
+                        <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left relative z-10">
+                            <div className="w-12 h-12 rounded-2xl bg-loops-accent/20 flex items-center justify-center text-loops-accent">
+                                <AlertTriangle className="w-6 h-6 shrink-0" />
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="font-display font-bold text-loops-main">Away From Your Loop</h3>
+                                <p className="text-xs text-loops-muted max-w-md">
+                                    This item is at <span className="text-loops-main font-bold">{listing.campuses?.name || 'another campus'}</span>. You are currently in the <span className="text-loops-primary font-bold">{campus.name}</span> Loop.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex gap-3 relative z-10">
+                             <Button 
+                                variant="ghost"
+                                onClick={() => router.push('/')}
+                                className="h-11 px-6 rounded-xl text-[10px] font-bold uppercase tracking-widest text-loops-muted hover:bg-loops-accent/10 transition-all border border-transparent hover:border-loops-accent/20"
+                            >
+                                Switch My Loop
+                            </Button>
+                            <Button 
+                                variant="outline"
+                                onClick={() => router.push('/browse')}
+                                className="h-11 px-6 rounded-xl text-[10px] font-bold uppercase tracking-widest border-loops-accent text-loops-accent hover:bg-loops-accent hover:text-white transition-all shadow-lg shadow-loops-accent/10"
+                            >
+                                Back to {campus.name} Feed
+                            </Button>
+                        </div>
+                    </motion.div>
+                )}
 
                 <div className="lg:grid lg:grid-cols-2 lg:gap-x-16">
                     {/* Gallery (Sticky) */}

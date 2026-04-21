@@ -123,6 +123,7 @@ export default function CreateListingPage() {
         <div className="min-h-screen bg-loops-bg text-loops-main relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-loops-primary/10 via-transparent to-transparent pointer-events-none" />
             <Navbar />
+            <CampusSelector />
 
             <main className="pt-32 pb-20 max-w-2xl mx-auto px-6">
                 {/* Header */}

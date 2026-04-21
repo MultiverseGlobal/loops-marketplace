@@ -30,15 +30,12 @@ export default function MarketplacePage() {
     const [sortBy, setSortBy] = useState<string>("newest");
     const [activeType, setActiveType] = useState<'product' | 'service'>('product');
     const supabase = createClient();
-    const { campus, getTerm } = useCampus();
-
+    const { campus, loading: campusLoading, getTerm } = useCampus();
 
     useEffect(() => {
         const fetchListings = async () => {
             setLoading(true);
             const { data: { user } } = await supabase.auth.getUser();
-
-            let campusId = null;
 
             if (user) {
                 setHasUser(true);
@@ -46,21 +43,34 @@ export default function MarketplacePage() {
 
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('campus_id, email_verified')
+                    .select('email_verified')
                     .eq('id', user.id)
                     .single();
 
                 if (profile) {
                     setIsVerified(!!profile.email_verified);
-                    campusId = profile.campus_id;
                 }
             }
+
+            // Strict Isolation: Use context campus ID (persisted for both guests and users)
+            const campusId = campus?.id;
 
             let query = supabase
                 .from('listings')
                 .select('*, profiles(full_name, store_name, store_banner_color, is_plug)')
                 .eq('status', 'active')
                 .eq('type', activeType);
+
+            // Filtering by campus is now MANDATORY for strict isolation
+            if (campusId) {
+                query = query.eq('campus_id', campusId);
+            } else if (!campusLoading) {
+                // If we are not loading but have no campus, and this is a guest
+                // The CampusSelector overlay will handle this, but we'll return empty for safety
+                setListings([]);
+                setLoading(false);
+                return;
+            }
 
             // Apply sorting
             if (sortBy === 'newest') {
@@ -137,6 +147,7 @@ export default function MarketplacePage() {
     return (
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
+            <CampusSelector />
 
             {hasUser && userEmail && (
                 <div className="pt-4 md:pt-20">
