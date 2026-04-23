@@ -117,8 +117,6 @@ export function Navbar() {
                             </div>
                         </Link>
 
-                        </nav>
-
                         {/* Amazon-style Search Bar */}
                         <div className="flex-1 max-w-xl hidden xl:block">
                             <SearchBar 

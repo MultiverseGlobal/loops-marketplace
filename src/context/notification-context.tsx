@@ -67,6 +67,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     useEffect(() => {
         if (!user) return;
 
+        // Request browser notification permissions
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
         const channel = supabase
             .channel(`realtime-notifications-${user.id}`)
             .on(
@@ -77,7 +82,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                     table: 'notifications',
                     filter: `user_id=eq.${user.id}`
                 },
-        (payload) => {
+                (payload) => {
                     const newNotif = payload.new;
                     setNotifications(prev => [newNotif, ...prev]);
                     setUnreadCount(prev => prev + 1);
@@ -89,11 +94,25 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                         setPendingLoopsCount(prev => prev + 1);
                     }
 
-                    // Premium toast for engagement campaigns vs generic alert
+                    // 1. In-App Toast
                     if (newNotif.type === 'engagement') {
                         toast.success(`🔔 ${newNotif.title}`);
                     } else {
                         toast.success(`${newNotif.title}: ${newNotif.message.slice(0, 60)}${newNotif.message.length > 60 ? '...' : ''}`);
+                    }
+
+                    // 2. System/OS Notification (The "Drop")
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        const systemNotif = new Notification(newNotif.title, {
+                            body: newNotif.message,
+                            icon: '/logo.png', // Ensure this exists in public folder
+                            tag: newNotif.id,
+                        });
+
+                        systemNotif.onclick = () => {
+                            window.focus();
+                            if (newNotif.link) window.location.href = newNotif.link;
+                        };
                     }
                 }
             )
