@@ -85,6 +85,13 @@ export function Navbar() {
         window.dispatchEvent(new CustomEvent('show-pwa-install'));
     };
 
+    const hideOnRoutes = ["/onboarding", "/login", "/signup", "/auth", "/founding-plugs"];
+    const shouldHide = hideOnRoutes.includes(pathname) ||
+        pathname.startsWith("/auth/") ||
+        (pathname.startsWith("/messages/") && pathname.split('/').length > 2); // Hide on individual chat pages
+
+    if (shouldHide) return null;
+
     const { cartItems, wishlistCount } = useCart();
     const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 

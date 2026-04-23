@@ -158,8 +158,20 @@ export function CampusSelector() {
                                             className="group relative flex flex-col p-6 rounded-[2rem] bg-white border border-loops-border hover:border-loops-primary hover:shadow-xl hover:shadow-loops-primary/5 transition-all text-left"
                                         >
                                             <div className="flex items-start gap-4 mb-6">
-                                                <div className="w-12 h-12 rounded-xl bg-loops-subtle flex items-center justify-center text-loops-primary group-hover:bg-loops-primary group-hover:text-white transition-all duration-500">
-                                                    <School className="w-6 h-6" />
+                                                <div className="w-12 h-12 rounded-xl bg-loops-subtle flex items-center justify-center text-loops-primary group-hover:bg-loops-primary group-hover:text-white transition-all duration-500 overflow-hidden">
+                                                    {c.slug === 'veritas' ? (
+                                                        <img src="/logos/veritas.png" alt="" className="w-full h-full object-contain p-2" />
+                                                    ) : c.slug === 'mouau' ? (
+                                                        <img src="/logos/mouau.png" alt="" className="w-full h-full object-contain p-2" />
+                                                    ) : c.slug === 'unilag' ? (
+                                                        <img src="/logos/unilag.png" alt="" className="w-full h-full object-contain p-2" />
+                                                    ) : c.slug === 'uniabuja' ? (
+                                                        <img src="/logos/uniabuja.png" alt="" className="w-full h-full object-contain p-2" />
+                                                    ) : c.slug === 'nile' ? (
+                                                        <img src="/logos/nile.png" alt="" className="w-full h-full object-contain p-2" />
+                                                    ) : (
+                                                        <School className="w-6 h-6" />
+                                                    )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <h3 className="font-display font-black text-lg text-loops-main leading-tight group-hover:text-loops-primary transition-colors">
