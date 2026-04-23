@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, ShieldCheck, Zap, ArrowRight, ShoppingBag, MessageSquare, Infinity } from 'lucide-react';
+import { X, Sparkles, ShieldCheck, Zap, ArrowRight, ShoppingBag, MessageSquare, Infinity as InfinityIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -71,7 +71,7 @@ export function AuthPromptModal({
                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                             className="relative z-10"
                         >
-                            <Infinity className="w-16 h-16 text-white/10" />
+                            <InfinityIcon className="w-16 h-16 text-white/10" />
                         </motion.div>
                     </div>
 
@@ -134,8 +134,9 @@ export function AuthPromptModal({
                             </button>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </AnimatePresence>
     );
 }
+
