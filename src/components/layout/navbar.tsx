@@ -29,6 +29,23 @@ function NavLink({ href, children }: { href: string, children: React.ReactNode }
 }
 
 import { motion, AnimatePresence } from "framer-motion";
+import { School } from "lucide-react";
+
+function CampusLogo({ slug, className }: { slug?: string, className?: string }) {
+    const logos: Record<string, string> = {
+        'veritas': '/logos/veritas.png',
+        'mouau': '/logos/mouau.png',
+        'unilag': '/logos/unilag.png',
+        'uniabuja': '/logos/uniabuja.png',
+        'nile': '/logos/nile.png'
+    };
+
+    if (slug && logos[slug]) {
+        return <img src={logos[slug]} alt="" className={cn("object-contain p-1.5", className)} />;
+    }
+
+    return <InfinityLogo className={className} />;
+}
 
 export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
@@ -116,7 +133,7 @@ export function Navbar() {
                                 whileHover={{ rotate: 12, scale: 1.1 }}
                                 className="relative w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-loops-border overflow-hidden z-10"
                             >
-                                <InfinityLogo className="w-10 h-10" />
+                                <CampusLogo slug={campus?.slug} className="w-10 h-10" />
                             </motion.div>
                         </div>
                         <div className="flex flex-col">
@@ -260,10 +277,12 @@ export function Navbar() {
                 )}
                 <div className="px-6 h-14 flex items-center justify-between">
                     <Link href="/welcome" className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-loops-border shadow-sm">
-                            <InfinityLogo className="w-6 h-6" />
+                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-loops-border shadow-sm overflow-hidden">
+                            <CampusLogo slug={campus?.slug} className="w-6 h-6" />
                         </div>
-                        <span className="font-display text-lg font-bold tracking-tighter text-loops-main">Loops</span>
+                        <span className="font-display text-lg font-bold tracking-tighter text-loops-main truncate max-w-[120px]">
+                            {campus?.name?.split(' ')[0] || 'Loops'}
+                        </span>
                     </Link>
 
                     <div className="flex items-center gap-3">

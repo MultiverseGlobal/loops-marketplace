@@ -19,6 +19,7 @@ import { PRODUCT_CATEGORIES, SERVICE_CATEGORIES, FALLBACK_PRODUCT_IMAGE, CURRENC
 
 export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);
+    const [trendingListings, setTrendingListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [userEmail, setUserEmail] = useState<string | undefined>(undefined);
     const [isVerified, setIsVerified] = useState(false);
@@ -118,6 +119,19 @@ export default function MarketplacePage() {
             } else {
                 console.log("Feed Data Success:", data?.length, "items found.");
                 setListings(data || []);
+                
+                // If current campus is empty, fetch trending from others
+                if (data && data.length === 0) {
+                    const { data: trending } = await supabase
+                        .from('listings')
+                        .select('*, campuses(name)')
+                        .eq('status', 'active')
+                        .limit(8)
+                        .order('created_at', { ascending: false });
+                    setTrendingListings(trending || []);
+                } else {
+                    setTrendingListings([]);
+                }
             }
 
             setLoading(false);
@@ -240,8 +254,8 @@ export default function MarketplacePage() {
                         </button>
                     </div>
 
-                    {/* Category Quick Filter Chips */}
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-4 px-1">
+                    {/* Category Quick-Grid (Mobile) / Horizontal (Desktop) */}
+                    <div className="grid grid-cols-4 md:flex items-center gap-2 md:gap-4 py-6 px-1">
                         {(activeType === 'product' ? PRODUCT_CATEGORIES : SERVICE_CATEGORIES).map((cat) => {
                             const Icon = (Icons as any)[cat.icon] || Icons.HelpCircle;
                             const isActive = (selectedCategory === cat.id) || (cat.id === 'all' && !selectedCategory);
@@ -368,6 +382,34 @@ export default function MarketplacePage() {
                                     <Icons.Sparkles className="w-5 h-5 text-loops-accent" />
                                     <Icons.ShieldCheck className="w-5 h-5 text-loops-success" />
                                 </div>
+
+                                {trendingListings.length > 0 && (
+                                    <div className="pt-16 space-y-6 w-full">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-loops-muted flex items-center gap-2">
+                                                <Icons.TrendingUp className="w-4 h-4 text-loops-primary" />
+                                                Trending on other Loops
+                                            </h4>
+                                            <Link href="/welcome" className="text-[10px] font-bold text-loops-primary uppercase tracking-widest hover:underline">Switch Campus</Link>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            {trendingListings.map((item) => (
+                                                <Link key={item.id} href={`/listings/${item.id}`} className="group/item">
+                                                    <div className="aspect-square rounded-2xl overflow-hidden bg-white border border-loops-border relative mb-2">
+                                                        <img src={item.images?.[0] || item.image_url} alt="" className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500" />
+                                                        <div className="absolute top-2 left-2 px-2 py-0.5 bg-white/80 backdrop-blur-md rounded-lg text-[8px] font-bold text-loops-primary border border-loops-primary/10">
+                                                            {item.campuses?.name?.split(' ')[0]}
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-0.5">
+                                                        <h5 className="text-[10px] font-bold text-loops-main truncate">{item.title}</h5>
+                                                        <p className="text-[10px] font-black text-loops-primary">{CURRENCY}{item.price}</p>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

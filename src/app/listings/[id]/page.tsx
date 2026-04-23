@@ -32,6 +32,7 @@ export default function ListingDetailPage() {
     const [isInteracting, setIsInteracting] = useState(false);
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [offerModalOpen, setOfferModalOpen] = useState(false);
+    const [secureBuyModalOpen, setSecureBuyModalOpen] = useState(false);
     const [offerAmount, setOfferAmount] = useState("");
     const [offerMessage, setOfferMessage] = useState("");
     const [isSubmittingOffer, setIsSubmittingOffer] = useState(false);
@@ -780,7 +781,7 @@ export default function ListingDetailPage() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {/* Primary Action: Secure Buy Now (Escrow) */}
                                     <Button
-                                        onClick={handleBuyNow}
+                                        onClick={() => setSecureBuyModalOpen(true)}
                                         disabled={isInteracting}
                                         className="h-16 text-lg sm:text-xl font-bold bg-loops-primary text-white shadow-2xl shadow-loops-primary/20 transition-all font-display group hover:scale-105 sm:col-span-2"
                                     >
@@ -900,10 +901,90 @@ export default function ListingDetailPage() {
                 </div>
             </main>
 
-            {/* Make Offer Modal */}
+            {/* Secure Buy Confirmation Modal */}
             <AnimatePresence>
-                {
-                    offerModalOpen && (
+                {secureBuyModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-loops-main/40 backdrop-blur-md"
+                    >
+                        <motion.div
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "100%" }}
+                            className="bg-white rounded-t-[2.5rem] sm:rounded-[2.5rem] p-8 sm:p-10 w-full max-w-lg shadow-2xl border-t sm:border border-loops-border space-y-8 relative"
+                        >
+                            <button
+                                onClick={() => setSecureBuyModalOpen(false)}
+                                className="absolute top-6 right-8 p-2 text-loops-muted hover:text-loops-main"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-success/10 text-loops-success text-[10px] font-black uppercase tracking-widest border border-loops-success/20">
+                                        <ShieldCheck className="w-3.5 h-3.5" />
+                                        Handshake Protection Enabled
+                                    </div>
+                                    <h3 className="text-3xl font-bold font-display tracking-tighter italic">Secure Checkout</h3>
+                                    <p className="text-loops-muted text-xs italic">You are buying "{listing.title}" with campus escrow protection.</p>
+                                </div>
+
+                                <div className="p-6 bg-loops-subtle rounded-3xl space-y-4">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-loops-muted font-medium">Item Price</span>
+                                        <span className="text-loops-main font-bold">{CURRENCY}{listing.price}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <div className="flex items-center gap-1.5 text-loops-muted font-medium">
+                                            Handshake Fee
+                                            <div className="group relative">
+                                                <Info className="w-3.5 h-3.5 opacity-40 cursor-help" />
+                                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-loops-main text-white text-[9px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                                                    Escrow protection fee (10%) covers dispute resolution and platform safety.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span className="text-loops-main font-bold">{CURRENCY}{(listing.price * 0.1).toFixed(2)}</span>
+                                    </div>
+                                    <div className="h-px bg-loops-border/50" />
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-loops-main font-black uppercase tracking-widest text-[10px]">Total Secure Payment</span>
+                                        <span className="text-2xl font-black tracking-tighter text-loops-primary">{CURRENCY}{(listing.price * 1.1).toFixed(2)}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-amber-50 border border-amber-100">
+                                        <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                                            <AlertTriangle className="w-5 h-5" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-900">Safety Handshake</h4>
+                                            <p className="text-[10px] text-amber-800 leading-relaxed italic opacity-80">Funds are held by Loops and only released once you confirm you've received the item on campus.</p>
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        onClick={() => { setSecureBuyModalOpen(false); handleBuyNow(); }}
+                                        disabled={isInteracting}
+                                        className="w-full h-16 bg-loops-primary text-white font-bold rounded-2xl shadow-xl shadow-loops-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-lg"
+                                    >
+                                        {isInteracting ? "Redirecting..." : "Confirm & Pay Now"}
+                                    </Button>
+                                    <p className="text-[9px] text-center text-loops-muted uppercase tracking-widest font-bold opacity-40">Powered by Paystack Secure Banking</p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {offerModalOpen && (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
