@@ -3,7 +3,6 @@
 import { Navbar } from "../../components/layout/navbar";
 import { ProductCard } from "../../components/ui/product-card";
 import { Button } from "../../components/ui/button";
-import { VerificationBanner } from "../../components/ui/verification-banner";
 import { CampusBuzz } from "../../components/ui/campus-buzz";
 import * as Icons from "lucide-react";
 import { Sparkles } from "lucide-react";
@@ -150,14 +149,8 @@ export default function MarketplacePage() {
             <Navbar />
             <CampusSelector />
 
-            {hasUser && userEmail && (
-                <div className="pt-4 md:pt-20">
-                    <VerificationBanner email={userEmail} isVerified={isVerified} />
-                </div>
-            )}
-
             {/* Pulse Header Section */}
-            <header className="relative pt-24 md:pt-36 pb-8 md:pb-16 px-6 overflow-hidden">
+            <header className="relative pt-36 md:pt-56 pb-8 md:pb-16 px-6 overflow-hidden">
                 {/* Mesh Gradient Background */}
                 <div className="absolute inset-0 -z-10 bg-white">
                     <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-loops-primary/10 rounded-full blur-[120px] animate-[pulse-subtle_8s_ease-in-out_infinite]" />

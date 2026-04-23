@@ -486,7 +486,7 @@ export default function ListingDetailPage() {
         <div className="min-h-screen bg-loops-bg text-loops-main">
             <Navbar />
 
-            <main className="pt-24 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <main className="pt-36 md:pt-48 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Link href="/browse" className="inline-flex items-center gap-2 text-loops-muted hover:text-loops-primary mb-8 transition-colors font-bold uppercase tracking-widest text-xs">
                     <ArrowLeft className="w-4 h-4" />
                     Back to {getTerm('marketplaceName')}

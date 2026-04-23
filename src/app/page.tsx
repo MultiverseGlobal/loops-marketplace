@@ -25,7 +25,7 @@ export default function Home() {
             <Navbar />
             <CampusSelector />
             
-            <main className="pt-32 md:pt-48 pb-24">
+            <main className="pt-48 md:pt-64 pb-24">
                 {/* Amazon-style Hero Section */}
                 <section className="max-w-7xl mx-auto px-4 md:px-6 mb-12">
                     <div className="relative h-[300px] md:h-[450px] rounded-[2.5rem] overflow-hidden bg-loops-main">

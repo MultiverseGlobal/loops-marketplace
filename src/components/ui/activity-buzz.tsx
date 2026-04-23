@@ -53,7 +53,7 @@ export function ActivityBuzz() {
     const current = buzz[currentIndex];
 
     return (
-        <div className="w-full bg-loops-primary/5 border-y border-loops-primary/10 overflow-hidden py-1.5 relative group">
+        <div className="w-full bg-loops-primary/5 border-b border-loops-primary/10 overflow-hidden py-1 relative group">
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-center gap-4">
                 <div className="flex items-center gap-2 text-loops-primary">
                     <div className="relative">

@@ -17,6 +17,8 @@ import { useNotifications } from "@/context/notification-context";
 import { NotificationDrawer } from "./notification-drawer";
 import { SearchBar } from "../ui/search-bar";
 import { PRODUCT_CATEGORIES } from "@/lib/constants";
+import { ActivityBuzz } from "../ui/activity-buzz";
+import { VerificationBanner } from "../ui/verification-banner";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (
@@ -56,7 +58,7 @@ export function Navbar() {
                 // Fetch Profile
                 const { data } = await supabase
                     .from('profiles')
-                    .select('avatar_url, full_name, is_admin')
+                    .select('avatar_url, full_name, is_admin, is_verified')
                     .eq('id', user.id)
                     .single();
                 setProfile(data);
@@ -87,153 +89,123 @@ export function Navbar() {
     const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
-        <>
-            {/* Desktop Navbar */}
-            <nav className="hidden md:block fixed top-6 inset-x-0 max-w-7xl mx-auto z-50">
-                <div className="mx-6 px-6 h-20 bg-white/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/40 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] flex items-center justify-between transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(16,185,129,0.15)]">
-                    <div className="flex items-center gap-10">
-                        <Link href="/welcome" className="flex items-center gap-4 group">
-                            <div className="relative">
-                                {/* Logo Mesh Glow */}
-                                <div className="absolute -inset-4 bg-loops-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                                <motion.div 
-                                    whileHover={{ rotate: 12, scale: 1.1 }}
-                                    className="relative w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-loops-border overflow-hidden z-10"
-                                >
-                                    <InfinityLogo className="w-10 h-10" />
-                                </motion.div>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="font-display text-2xl font-black tracking-tighter text-loops-main leading-none">
-                                    Loops
-                                </span>
-                                {campus && (
-                                    <div className="flex items-center gap-1.5 mt-0.5 ml-0.5">
-                                        <div className="w-1 h-1 rounded-full bg-loops-primary" />
-                                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">{campus.name}</span>
-                                    </div>
-                                )}
+        <header className="fixed top-0 inset-x-0 z-50 flex flex-col">
+            {/* 1. Global Utility Banners Stack */}
+            <div className="flex flex-col">
+                {user && profile && !profile.is_verified && (
+                    <VerificationBanner email={user.email} isVerified={profile.is_verified} />
+                )}
+                <ActivityBuzz />
+            </div>
 
-                            </div>
-                        </Link>
-
-                        {/* Amazon-style Search Bar */}
-                        <div className="flex-1 max-w-xl hidden xl:block">
-                            <SearchBar 
-                                onSearch={(q) => q && router.push(`/browse?q=${q}`)} 
-                                placeholder="Search the Loop marketplace..."
-                                className="h-10"
-                            />
+            {/* 2. Main Desktop Navbar */}
+            <nav className="hidden md:block bg-white/80 backdrop-blur-2xl border-b border-loops-border">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-8">
+                    {/* Logo & Campus Section */}
+                    <Link href="/welcome" className="flex items-center gap-4 group shrink-0">
+                        <div className="relative">
+                            <div className="absolute -inset-4 bg-loops-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                            <motion.div 
+                                whileHover={{ rotate: 12, scale: 1.1 }}
+                                className="relative w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-loops-border overflow-hidden z-10"
+                            >
+                                <InfinityLogo className="w-10 h-10" />
+                            </motion.div>
                         </div>
+                        <div className="flex flex-col">
+                            <span className="font-display text-2xl font-black tracking-tighter text-loops-main leading-none">
+                                Loops
+                            </span>
+                            {campus && (
+                                <div className="flex items-center gap-1.5 mt-0.5 ml-0.5">
+                                    <div className="w-1 h-1 rounded-full bg-loops-primary" />
+                                    <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">{campus.name}</span>
+                                </div>
+                            )}
+                        </div>
+                    </Link>
+
+                    {/* Amazon-style Search Bar (Center) */}
+                    <div className="flex-1 max-w-2xl">
+                        <SearchBar 
+                            onSearch={(q) => q && router.push(`/browse?q=${q}`)} 
+                            placeholder={`Search items in ${campus?.name || 'the Loop'}...`}
+                            className="h-11"
+                        />
                     </div>
 
-                    <div className="flex items-center gap-2 sm:gap-4">
+                    {/* Actions Section */}
+                    <div className="flex items-center gap-3 shrink-0">
                         {user ? (
                             <>
-                                <Link href="/listings/create" className="hidden sm:block">
+                                <Link href="/listings/create">
                                     <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-11 px-6 flex items-center gap-2 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-loops-primary/10 transition-all active:scale-95">
                                         <Sparkles className="w-3.5 h-3.5" />
-                                        {getTerm('listingAction')}
+                                        Post a Drop
                                     </Button>
                                 </Link>
 
-                                <div className="w-px h-6 bg-loops-border mx-2 hidden sm:block" />
+                                <div className="w-px h-6 bg-loops-border mx-1" />
 
                                 {profile?.is_admin && (
-                                    <Link href="/admin" className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-loops-accent/10 border border-loops-accent/20 text-loops-accent hover:bg-loops-accent/20 transition-all group/admin">
-                                        <LayoutDashboard className="w-4 h-4" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest">Loop Command</span>
+                                    <Link href="/admin">
+                                        <Button variant="ghost" className="h-11 px-4 rounded-xl bg-loops-accent/5 border border-loops-accent/10 text-loops-accent hover:bg-loops-accent/10 transition-all">
+                                            <LayoutDashboard className="w-4 h-4 mr-2" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest">Command</span>
+                                        </Button>
                                     </Link>
                                 )}
 
-                                <Link href="/profile" className="hidden sm:flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-loops-subtle border border-loops-border hover:border-loops-primary/20 transition-all group">
-                                    <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-loops-primary text-sm font-bold border border-loops-border shadow-sm overflow-hidden relative group-hover:scale-105 transition-transform">
-                                        {profile?.avatar_url ? (
-                                            <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-                                        ) : (
-                                            (profile?.full_name || user.email || 'U').charAt(0).toUpperCase()
-                                        )}
-                                    </div>
-                                    <div className="hidden md:block text-left">
-                                        <div className="text-[10px] font-bold text-loops-main uppercase tracking-widest leading-none">Me</div>
-                                        <div className="text-[9px] text-loops-muted font-medium mt-1">Plug Profile</div>
-                                    </div>
-                                </Link>
-
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={handleSignOut}
-                                    className="w-11 h-11 rounded-2xl text-loops-muted hover:text-loops-accent hover:bg-loops-accent/5 transition-all"
-                                >
-                                    <LogOut className="w-4 h-4" />
-                                </Button>
-
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => setIsCartOpen(true)}
-                                    className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
-                                    title="Your Cart"
-                                >
-                                    <ShoppingCart className="w-5 h-5" />
-                                    {cartCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in">
-                                            {cartCount}
-                                        </span>
-                                    )}
-                                </Button>
-
-                                <Link href="/profile">
+                                <div className="flex items-center gap-2">
                                     <Button
                                         variant="ghost"
                                         size="icon"
+                                        onClick={() => setIsNotificationsOpen(true)}
                                         className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
-                                        title="Saved Items"
                                     >
-                                        <Heart className="w-5 h-5" />
-                                        {wishlistCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white" />
+                                        <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary animate-pulse")} />
+                                        {unreadCount > 0 && (
+                                            <span className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white px-1">
+                                                {unreadCount > 9 ? '9+' : unreadCount}
+                                            </span>
                                         )}
                                     </Button>
-                                </Link>
 
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => setIsNotificationsOpen(true)}
-                                    className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
-                                    title="Notifications"
-                                >
-                                    <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary animate-pulse")} />
-                                    {unreadCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in px-1">
-                                            {unreadCount > 9 ? '9+' : unreadCount}
-                                        </span>
-                                    )}
-                                </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => setIsCartOpen(true)}
+                                        className="w-11 h-11 rounded-2xl text-loops-main bg-loops-subtle hover:bg-loops-border transition-all relative"
+                                    >
+                                        <ShoppingCart className="w-5 h-5" />
+                                        {cartCount > 0 && (
+                                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-loops-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+                                                {cartCount}
+                                            </span>
+                                        )}
+                                    </Button>
+
+                                    <Link href="/profile" className="flex items-center gap-3 p-1 rounded-2xl bg-loops-subtle border border-loops-border hover:border-loops-primary/20 transition-all group">
+                                        <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-loops-primary text-sm font-bold border border-loops-border shadow-sm overflow-hidden group-hover:scale-105 transition-transform">
+                                            {profile?.avatar_url ? (
+                                                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                                            ) : (
+                                                (profile?.full_name || user.email || 'U').charAt(0).toUpperCase()
+                                            )}
+                                        </div>
+                                    </Link>
+                                </div>
                             </>
                         ) : (
-                             <div className="flex items-center gap-2">
-                                {campus && (
-                                    <button 
-                                        onClick={() => {
-                                            localStorage.removeItem('loops_last_campus_id');
-                                            window.location.reload();
-                                        }}
-                                        className="h-11 px-6 rounded-2xl text-[10px] font-bold text-loops-muted uppercase tracking-widest hover:text-loops-primary hover:bg-loops-primary/5 transition-all"
-                                    >
-                                        Switch Loop
-                                    </button>
-                                )}
+                            <div className="flex items-center gap-2">
                                 <Link href="/login">
-                                    <Button variant="ghost" className="h-11 px-6 rounded-2xl text-xs font-bold text-loops-muted hover:text-loops-primary hover:bg-loops-primary/5">
+                                    <Button variant="ghost" className="h-11 px-6 rounded-2xl text-xs font-bold text-loops-muted">
                                         Sign In
                                     </Button>
                                 </Link>
                                 <Link href="/login?view=signup">
-                                    <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-11 px-6 rounded-2xl text-[10px] font-bold uppercase tracking-[0.15em] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-loops-primary/20">
-                                        Join the Loop
+                                    <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-11 px-6 rounded-2xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg shadow-loops-primary/20">
+                                        Join Loop
                                     </Button>
                                 </Link>
                             </div>
@@ -241,99 +213,67 @@ export function Navbar() {
                     </div>
                 </div>
 
-                {/* Category Navigation Bar (Amazon style) */}
-                <div className="mx-6 mt-4 flex items-center gap-6 px-6 py-2 bg-loops-subtle/50 backdrop-blur-xl rounded-2xl border border-loops-border overflow-x-auto no-scrollbar">
-                    <Link href="/browse" className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-loops-main whitespace-nowrap hover:text-loops-primary transition-colors">
-                        <Package className="w-3.5 h-3.5" />
-                        All Depts
-                    </Link>
-                    <div className="w-px h-3 bg-loops-border" />
-                    {PRODUCT_CATEGORIES.filter(c => c.id !== 'all').map(cat => (
-                        <Link 
-                            key={cat.id} 
-                            href={`/browse?category=${cat.id}`}
-                            className="text-[9px] font-bold uppercase tracking-widest text-loops-muted whitespace-nowrap hover:text-loops-primary transition-colors"
-                        >
-                            {cat.label}
+                {/* Desktop Category Bar */}
+                <div className="bg-loops-subtle/30 border-t border-loops-border">
+                    <div className="max-w-7xl mx-auto px-6 h-11 flex items-center gap-6 overflow-x-auto no-scrollbar">
+                        <Link href="/browse" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-loops-main whitespace-nowrap hover:text-loops-primary">
+                            <Package className="w-4 h-4" />
+                            All Departments
                         </Link>
-                    ))}
-                    <div className="w-px h-3 bg-loops-border" />
-                    <Link href="/browse?view=service" className="text-[9px] font-bold uppercase tracking-widest text-loops-primary whitespace-nowrap flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" />
-                        Campus Services
-                    </Link>
+                        <div className="w-px h-4 bg-loops-border" />
+                        {PRODUCT_CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+                            <Link 
+                                key={cat.id} 
+                                href={`/browse?category=${cat.id}`}
+                                className="text-[10px] font-bold uppercase tracking-widest text-loops-muted whitespace-nowrap hover:text-loops-primary transition-colors"
+                            >
+                                {cat.label}
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             </nav>
 
-            {/* Mobile Header (Sticky Logo Only) */}
+            {/* Mobile Header */}
             <nav className={cn(
-                "md:hidden fixed top-0 w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl transition-all duration-500",
+                "md:hidden w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl transition-all duration-500",
                 showAppBanner ? "pt-12" : "pt-0"
             )}>
                 {showAppBanner && (
-                    <div className="absolute top-0 w-full h-12 bg-loops-primary text-white flex items-center justify-between px-6 animate-in slide-in-from-top duration-500">
+                    <div className="absolute top-0 w-full h-12 bg-loops-primary text-white flex items-center justify-between px-6">
                         <div className="flex items-center gap-2">
                             <Smartphone className="w-4 h-4" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Get the Loops App</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Get the App</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => {
-                                    triggerPWAInstall();
-                                    setShowAppBanner(false);
-                                    localStorage.setItem('loops_app_banner_dismissed', 'true');
-                                }}
-                                className="text-[9px] font-black uppercase tracking-widest bg-white text-loops-primary px-3 py-1 rounded-full shadow-lg"
-                            >
-                                Install Now
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowAppBanner(false);
-                                    localStorage.setItem('loops_app_banner_dismissed', 'true');
-                                }}
-                                className="opacity-50 hover:opacity-100"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
+                            <button onClick={triggerPWAInstall} className="text-[9px] font-black uppercase tracking-widest bg-white text-loops-primary px-3 py-1 rounded-full">Install</button>
+                            <button onClick={() => setShowAppBanner(false)}><X className="w-4 h-4 opacity-50" /></button>
                         </div>
                     </div>
                 )}
                 <div className="px-6 h-14 flex items-center justify-between">
                     <Link href="/welcome" className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-lg shadow-loops-primary/10 border border-loops-border">
+                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-loops-border shadow-sm">
                             <InfinityLogo className="w-6 h-6" />
                         </div>
-                        <span className="font-display text-lg font-bold tracking-tighter text-loops-main">
-                            Loops
-                        </span>
+                        <span className="font-display text-lg font-bold tracking-tighter text-loops-main">Loops</span>
                     </Link>
 
                     <div className="flex items-center gap-3">
                         {user && (
-                            <button 
-                                onClick={() => setIsNotificationsOpen(true)}
-                                className="relative p-2 text-loops-muted hover:text-loops-primary"
-                            >
+                            <button onClick={() => setIsNotificationsOpen(true)} className="relative p-2">
                                 <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary")} />
                                 {unreadCount > 0 && (
-                                    <span className="absolute top-0 right-0 min-w-[16px] h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white px-0.5">
+                                    <span className="absolute top-0 right-0 min-w-[16px] h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
                                         {unreadCount > 9 ? '9+' : unreadCount}
                                     </span>
                                 )}
                             </button>
                         )}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setIsCartOpen(true)}
-                            className="w-10 h-10 text-loops-main relative"
-                        >
+                        <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(true)} className="w-10 h-10 relative">
                             <ShoppingCart className="w-5 h-5" />
                             {cartCount > 0 && (
-                                <span className="absolute top-1 right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
-                                    {cartCount}
-                                </span>
+                                <span className="absolute top-1 right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">{cartCount}</span>
                             )}
                         </Button>
                     </div>
@@ -341,34 +281,8 @@ export function Navbar() {
             </nav>
 
             <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-
-            {/* Mobile Bottom Navigation */}
-            <nav className="md:hidden fixed bottom-0 w-full z-50 border-t border-loops-border bg-white/90 backdrop-blur-xl safe-padding-bottom">
-                <div className="flex items-center justify-around h-16">
-                    <Link href="/" className="flex flex-col items-center gap-1 group">
-                        <Home className={cn("w-5 h-5", router.hasOwnProperty('pathname') && (router as any).pathname === "/" ? "text-loops-primary" : "text-loops-muted")} />
-                        <span className="text-[10px] font-bold uppercase tracking-widest scale-90">Home</span>
-                    </Link>
-                    <Link href="/browse?view=product" className="flex flex-col items-center gap-1 group">
-                        <Search className="w-5 h-5 text-loops-muted group-active:text-loops-primary" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest scale-90 text-loops-muted">Market</span>
-                    </Link>
-                    <Link href="/listings/create" className="flex flex-col items-center gap-1 relative -top-3">
-                        <div className="w-12 h-12 bg-loops-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-loops-primary/30 active:scale-90 transition-transform">
-                            <PlusSquare className="w-6 h-6" />
-                        </div>
-                    </Link>
-                    <Link href="/requests" className="flex flex-col items-center gap-1 group">
-                        <Package className="w-5 h-5 text-loops-muted group-active:text-loops-primary" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest scale-90 text-loops-muted">Requests</span>
-                    </Link>
-                    <Link href="/profile" className="flex flex-col items-center gap-1 group">
-                        <UserCircle className="w-5 h-5 text-loops-muted group-active:text-loops-primary" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest scale-90 text-loops-muted">Profile</span>
-                    </Link>
-                </div>
-            </nav>
             <NotificationDrawer isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
-        </>
+        </header>
     );
+}
 }

@@ -8,7 +8,6 @@ import { ProductCard } from "../../components/ui/product-card";
 import { FeaturedHubs } from "../../components/ui/featured-hubs";
 import { SkeletonCard } from "../../components/ui/skeleton-loader";
 import { ArrowRight, Sparkles, ShieldCheck, Zap, MessageSquare } from "lucide-react";
-import { ActivityBuzz } from "../../components/ui/activity-buzz";
 import { Footer } from "../../components/layout/footer";
 import Link from "next/link";
 import Image from "next/image";
@@ -75,9 +74,8 @@ export default function WelcomePage() {
     return (
         <div className="bg-loops-bg">
             <Navbar />
-            <ActivityBuzz />
 
-            <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-20 sm:pt-24 pb-12 px-4 sm:px-6 overflow-hidden">
+            <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-48 sm:pt-64 pb-12 px-4 sm:px-6 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-loops-primary/10 blur-[120px] rounded-full animate-float" />
                     <div className="absolute bottom-[10%] right-[10%] w-[30%] h-[30%] bg-loops-secondary/5 blur-[100px] rounded-full animate-pulse" />
