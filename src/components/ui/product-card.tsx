@@ -8,6 +8,8 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/context/toast-context";
 import { useCart } from "@/context/cart-context";
+import { CURRENCY } from "@/lib/constants";
+import { Rating } from "./rating";
 import { Plus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
