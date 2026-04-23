@@ -69,6 +69,7 @@ import { PWALogic } from "../components/pwa-logic";
 import { CartProvider } from "../context/cart-context";
 import { NotificationProvider } from "../context/notification-context";
 import { CookieConsent } from "../components/layout/cookie-consent";
+import { AuthPromptProvider } from "../context/auth-prompt-context";
 
 export default function RootLayout({
     children,
@@ -86,13 +87,15 @@ export default function RootLayout({
                 <CampusProvider>
                     <ToastProvider>
                         <ModalProvider>
-                            <CartProvider>
-                                <NotificationProvider>
-                                    <PageTransition>{children}</PageTransition>
-                                    <BottomNav />
-                                    <CookieConsent />
-                                </NotificationProvider>
-                            </CartProvider>
+                            <AuthPromptProvider>
+                                <CartProvider>
+                                    <NotificationProvider>
+                                        <PageTransition>{children}</PageTransition>
+                                        <BottomNav />
+                                        <CookieConsent />
+                                    </NotificationProvider>
+                                </CartProvider>
+                            </AuthPromptProvider>
                             <Analytics />
                         </ModalProvider>
                     </ToastProvider>
