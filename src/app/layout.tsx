@@ -62,6 +62,7 @@ import { PageTransition } from "../components/layout/page-transition";
 import { CampusProvider } from "../context/campus-context";
 import { ToastProvider } from "../context/toast-context";
 import { ModalProvider } from "../context/modal-context";
+import { AuthPromptProvider } from "../context/auth-prompt-context";
 import { BottomNav } from "../components/layout/bottom-nav";
 import { Analytics } from "@vercel/analytics/next";
 import { PWALogic } from "../components/pwa-logic";
@@ -84,19 +85,22 @@ export default function RootLayout({
                 <PWALogic />
                 <CampusProvider>
                     <ToastProvider>
-                        <ModalProvider>
-                            <CartProvider>
-                                <NotificationProvider>
-                                    <PageTransition>{children}</PageTransition>
-                                    <BottomNav />
-                                    <CookieConsent />
-                                </NotificationProvider>
-                            </CartProvider>
-                            <Analytics />
-                        </ModalProvider>
+                        <AuthPromptProvider>
+                            <ModalProvider>
+                                <CartProvider>
+                                    <NotificationProvider>
+                                        <PageTransition>{children}</PageTransition>
+                                        <BottomNav />
+                                        <CookieConsent />
+                                    </NotificationProvider>
+                                </CartProvider>
+                                <Analytics />
+                            </ModalProvider>
+                        </AuthPromptProvider>
                     </ToastProvider>
                 </CampusProvider>
             </body>
         </html>
     );
 }
+

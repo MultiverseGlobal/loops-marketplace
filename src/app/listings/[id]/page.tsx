@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useToast } from "../../../context/toast-context";
 import { useCampus } from "../../../context/campus-context";
 import { useModal } from "../../../context/modal-context";
+import { useAuthPrompt } from "../../../context/auth-prompt-context";
 import { FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../../../lib/constants";
 import { followUser, unfollowUser, getFollowStatus } from "../../../lib/follows";
 import { UserPlus, UserMinus } from "lucide-react";
@@ -42,6 +43,7 @@ export default function ListingDetailPage() {
     const toast = useToast();
     const { campus, getTerm } = useCampus();
     const modal = useModal();
+    const { promptAuth } = useAuthPrompt();
 
     const [isFollowing, setIsFollowing] = useState(false);
     const [followLoading, setFollowLoading] = useState(false);
@@ -105,9 +107,10 @@ export default function ListingDetailPage() {
         fetchUser();
     }, [supabase]);
 
+
     const handleStartLoop = async () => {
         if (!currentUser) {
-            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
+            promptAuth('buy', "Joining the Loop lets you message sellers directly and secure deals with our Handshake Protection.");
             return;
         }
 
@@ -178,7 +181,8 @@ export default function ListingDetailPage() {
     const handleWhatsApp = async () => {
         setIsInteracting(true);
         if (!currentUser) {
-            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
+            promptAuth('message', "Direct Chat is only for verified students. Join now to contact this seller.");
+            setIsInteracting(false);
             return;
         }
 
@@ -224,7 +228,8 @@ export default function ListingDetailPage() {
     const handleInteraction = async () => {
         setIsInteracting(true);
         if (!currentUser) {
-            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
+            promptAuth('message', "Verified Messaging keeps the campus safe. Join to start a conversation.");
+            setIsInteracting(false);
             return;
         }
 
@@ -311,7 +316,7 @@ export default function ListingDetailPage() {
 
     const handleReport = async () => {
         if (!currentUser) {
-            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
+            promptAuth('interact', "Joining the Loop lets you help keep the campus safe. Sign in to submit reports.");
             return;
         }
 
@@ -342,7 +347,7 @@ export default function ListingDetailPage() {
 
     const handleMakeOffer = async () => {
         if (!currentUser) {
-            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
+            promptAuth('buy', "Bargaining is better together. Join the Loop to make offers and track your deals.");
             return;
         }
 
@@ -415,7 +420,7 @@ export default function ListingDetailPage() {
 
     const handleBuyNow = async () => {
         if (!currentUser) {
-            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
+            promptAuth('buy', "Joining the Loop is required for Secure Buy. We protect your funds until you confirm pickup.");
             return;
         }
 
@@ -452,7 +457,7 @@ export default function ListingDetailPage() {
 
     const handleFollow = async () => {
         if (!currentUser) {
-            router.push(`/login?redirect=/listings/${id}&reason=auth_required`);
+            promptAuth('interact', "Never miss a drop from your favorite sellers. Join to follow users.");
             return;
         }
 
@@ -473,6 +478,7 @@ export default function ListingDetailPage() {
             setFollowLoading(false);
         }
     };
+
 
     const isOwner = currentUser?.id === listing.seller_id;
 
