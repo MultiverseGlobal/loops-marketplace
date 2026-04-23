@@ -105,17 +105,13 @@ export function Navbar() {
                                 <span className="font-display text-2xl font-black tracking-tighter text-loops-main leading-none">
                                     Loops
                                 </span>
-                                <div className="flex items-center gap-1.5 mt-1 ml-0.5">
-                                    <span className="text-[8px] font-black text-loops-primary uppercase tracking-[0.3em]">Campus OS</span>
-                                    {campus && (
-                                        <>
-                                            <div className="w-1 h-1 rounded-full bg-loops-border" />
-                                            <div className="flex items-center gap-1">
-                                                <span className="text-[8px] font-black text-loops-main uppercase tracking-[0.2em]">{campus.name}</span>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
+                                {campus && (
+                                    <div className="flex items-center gap-1.5 mt-0.5 ml-0.5">
+                                        <div className="w-1 h-1 rounded-full bg-loops-primary" />
+                                        <span className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">{campus.name}</span>
+                                    </div>
+                                )}
+
                             </div>
                         </Link>
 

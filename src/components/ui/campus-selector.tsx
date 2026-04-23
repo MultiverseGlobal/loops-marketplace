@@ -202,27 +202,13 @@ export function CampusSelector() {
                         </div>
 
                         {/* Bottom Actions */}
-                        <div className="p-8 bg-loops-subtle/50 border-t border-loops-border flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="p-8 bg-loops-subtle/50 border-t border-loops-border flex items-center justify-center">
                             <div className="flex items-center gap-4 text-xs font-bold text-loops-muted uppercase tracking-widest italic opacity-60">
                                 <ShieldCheck className="w-4 h-4 text-loops-success" />
-                                Trusted by 10,000+ students
-                            </div>
-                            <div className="flex items-center gap-4 w-full md:w-auto">
-                                <Button 
-                                    variant="ghost" 
-                                    onClick={handleDismiss}
-                                    className="flex-1 md:flex-none px-8 font-bold text-loops-muted hover:text-loops-primary"
-                                >
-                                    Browse Global Feed
-                                </Button>
-                                <Button 
-                                    onClick={handleDismiss}
-                                    className="flex-1 md:flex-none h-14 px-10 bg-loops-main text-white font-black uppercase tracking-widest italic rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
-                                >
-                                    Discover Loops <ArrowRight className="w-4 h-4 ml-2" />
-                                </Button>
+                                Please select your university to continue
                             </div>
                         </div>
+
                     </motion.div>
                 </div>
             )}
