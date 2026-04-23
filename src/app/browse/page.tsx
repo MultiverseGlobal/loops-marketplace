@@ -208,12 +208,7 @@ export default function MarketplacePage() {
                         </motion.div>
                     </div>
 
-                    {/* Integrated CampusBuzz */}
-                    <div className="mt-8 md:mt-12">
-                        <div className="inline-block px-4 py-2 bg-white/40 backdrop-blur-md rounded-2xl border border-loops-border/50">
-                            <CampusBuzz />
-                        </div>
-                    </div>
+
                 </div>
             </header>
 
