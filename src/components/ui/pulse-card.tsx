@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./button";
 import { CURRENCY, FALLBACK_PRODUCT_IMAGE } from "@/lib/constants";
+import { Rating } from "./rating";
 
 interface PulseCardProps {
     item: any;
@@ -22,49 +23,83 @@ export function PulseCard({ item, delay = 0 }: PulseCardProps) {
                 transition={{ delay }}
                 className="group relative bg-white border border-loops-border rounded-[2rem] p-4 md:p-5 shadow-sm hover:shadow-xl transition-all duration-500 col-span-1"
             >
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-full bg-loops-primary/10 flex items-center justify-center text-loops-primary">
-                        <ShoppingBag className="w-4 h-4" />
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-loops-primary/10 flex items-center justify-center text-loops-primary">
+                            <ShoppingBag className="w-4 h-4" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-loops-primary">Verified Drop</p>
+                            <p className="text-[9px] font-bold text-loops-muted">{new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-loops-primary">New Drop</p>
-                        <p className="text-[9px] font-bold text-loops-muted">{new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                    </div>
+                    {item.profiles?.is_plug && (
+                        <div className="px-2 py-1 bg-loops-primary/10 text-loops-primary border border-loops-primary/20 rounded-lg text-[8px] font-black uppercase tracking-widest">
+                            Campus Choice
+                        </div>
+                    )}
                 </div>
 
                 <Link href={`/listings/${item.id}`}>
-                    <div className="aspect-[4/5] rounded-[1.5rem] overflow-hidden relative mb-4 border border-loops-border">
+                    <div className="aspect-square rounded-2xl overflow-hidden relative mb-4 bg-loops-subtle border border-loops-border">
                         <Image
                             src={item.images?.[0] || item.image_url || FALLBACK_PRODUCT_IMAGE}
                             alt={item.title}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute inset-x-2 bottom-2 p-3 bg-white/80 backdrop-blur-md rounded-xl border border-white/20">
-                            <h3 className="text-xs md:text-sm font-black text-loops-main truncate">{item.title}</h3>
-                            <p className="text-loops-primary font-black text-sm md:text-base tracking-tighter">{CURRENCY}{item.price}</p>
-                        </div>
+                        {item.boosted_until && (
+                            <div className="absolute top-2 left-2 px-2 py-1 bg-loops-energetic text-white rounded-lg text-[8px] font-black uppercase tracking-widest shadow-lg">
+                                Sponsored
+                            </div>
+                        )}
                     </div>
                 </Link>
 
-                <div className="flex items-center justify-between">
+                <div className="space-y-2 mb-4">
+                    <Link href={`/listings/${item.id}`}>
+                        <h3 className="text-sm font-bold text-loops-main line-clamp-2 leading-tight hover:text-loops-primary transition-colors">{item.title}</h3>
+                    </Link>
+                    
                     <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-loops-subtle overflow-hidden relative">
-                            {item.profiles?.avatar_url ? (
-                                <Image src={item.profiles.avatar_url} alt="" fill className="object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-loops-muted uppercase">
-                                    {item.profiles?.full_name?.charAt(0)}
-                                </div>
-                            )}
-                        </div>
-                        <span className="text-[10px] font-bold text-loops-muted truncate max-w-[100px]">
-                            {item.profiles?.store_name || item.profiles?.full_name}
-                        </span>
+                        <Rating value={4.5} size="sm" />
+                        <span className="text-[10px] font-bold text-loops-primary">12+</span>
                     </div>
-                    <Button variant="ghost" size="sm" className="h-8 rounded-xl text-[10px] font-black uppercase tracking-widest text-loops-primary hover:bg-loops-primary/5">
-                        View Item <ArrowRight className="w-3 h-3 ml-2" />
-                    </Button>
+
+                    <div className="flex items-baseline gap-1">
+                        <span className="text-xl font-black text-loops-main tracking-tighter">{CURRENCY}{item.price}</span>
+                        <span className="text-[10px] text-loops-muted line-through opacity-50">{CURRENCY}{(parseFloat(item.price) * 1.2).toFixed(0)}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-loops-success">
+                        <ShieldCheck className="w-3 h-3" />
+                        <span>Ready for Handshake Pickup</span>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <Link href={`/listings/${item.id}`} className="w-full">
+                        <Button className="w-full h-10 rounded-xl bg-loops-primary text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-loops-primary/10 hover:scale-[1.02] transition-all">
+                            Secure Buy Now
+                        </Button>
+                    </Link>
+                    <div className="flex items-center justify-between pt-2 border-t border-loops-border">
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-5 h-5 rounded-full bg-loops-subtle overflow-hidden relative border border-loops-border">
+                                {item.profiles?.avatar_url ? (
+                                    <Image src={item.profiles.avatar_url} alt="" fill className="object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-[8px] font-bold text-loops-muted">
+                                        {item.profiles?.full_name?.charAt(0)}
+                                    </div>
+                                )}
+                            </div>
+                            <span className="text-[9px] font-bold text-loops-muted truncate max-w-[80px]">
+                                {item.profiles?.store_name || item.profiles?.full_name}
+                            </span>
+                        </div>
+                        <Heart className="w-3.5 h-3.5 text-loops-muted hover:text-red-500 cursor-pointer transition-colors" />
+                    </div>
                 </div>
             </motion.div>
         );

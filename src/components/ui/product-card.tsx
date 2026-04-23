@@ -98,86 +98,93 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
         >
             <Link href={`/listings/${id}`}>
                 <div className={cn(
-                    "relative overflow-hidden rounded-[2.5rem] bg-white border border-loops-border transition-all duration-500 group-hover:border-loops-primary/50 group-hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)]",
-                    featured ? "aspect-[4/5] sm:aspect-auto sm:h-full" : "aspect-square"
+                    "relative bg-white border border-loops-border rounded-[2rem] p-3 md:p-4 transition-all duration-500 group-hover:border-loops-primary/50 group-hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.2)]",
+                    featured ? "h-full" : ""
                 )}>
+                    <div className={cn(
+                        "relative overflow-hidden rounded-2xl bg-loops-subtle mb-4 border border-loops-border",
+                        featured ? "aspect-[4/5] sm:aspect-auto sm:h-full" : "aspect-square"
+                    )}>
+                        <Image
+                            src={image}
+                            alt={title}
+                            fill
+                            className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        
+                        {boosted_until && new Date(boosted_until) > new Date() && (
+                            <div className="absolute top-2 left-2 px-2 py-0.5 bg-loops-energetic text-white rounded-lg text-[8px] font-black uppercase tracking-widest shadow-lg">
+                                Sponsored
+                            </div>
+                        )}
 
-                    <Image
-                        src={image}
-                        alt={title}
-                        fill
-                        className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                    />
+                        <button
+                            onClick={toggleWishlist}
+                            disabled={wishlistLoading}
+                            className={cn(
+                                "absolute top-2 right-2 p-2 rounded-xl backdrop-blur-xl transition-all duration-500 z-30",
+                                isWishlisted
+                                    ? "bg-loops-primary text-white shadow-lg scale-110"
+                                    : "bg-white/40 text-loops-main border border-white/20 hover:bg-loops-primary hover:text-white"
+                            )}
+                        >
+                            <Heart className={cn("w-3.5 h-3.5", isWishlisted && "fill-current")} />
+                        </button>
+                    </div>
                     
-                    {/* Glass Overlay for data */}
-                    <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 bg-gradient-to-t from-loops-main/90 via-loops-main/40 to-transparent backdrop-blur-[2px] z-10">
-                        <div className="flex flex-col gap-1">
-                            <div className="flex items-center justify-between gap-2">
-                                <span className={cn(
-                                    "font-bold uppercase tracking-[0.2em] text-white/60",
-                                    featured ? "text-[10px]" : "text-[8px] md:text-[9px]"
-                                )}>
-                                    {category}
+                    <div className="space-y-2 mb-4">
+                        <div className="flex items-center justify-between gap-2">
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-loops-muted opacity-60">
+                                {category}
+                            </span>
+                            {featured && (
+                                <span className="px-2 py-0.5 bg-loops-primary/10 text-loops-primary rounded-lg text-[8px] font-black uppercase tracking-widest">
+                                    Campus Choice
                                 </span>
-                                {boosted_until && new Date(boosted_until) > new Date() && (
-                                    <div className="px-2 py-0.5 bg-loops-primary text-white rounded-lg text-[8px] font-black uppercase tracking-widest animate-pulse">
-                                        Boosted
-                                    </div>
+                            )}
+                        </div>
+
+                        <h3 className="font-display font-bold text-loops-main tracking-tight group-hover:text-loops-primary transition-colors truncate text-sm md:text-base">
+                            {title}
+                        </h3>
+
+                        <div className="flex items-center gap-2">
+                            <Rating value={4.2} size="sm" />
+                            <span className="text-[9px] font-bold text-loops-muted">(8)</span>
+                        </div>
+
+                        <div className="flex items-baseline gap-1">
+                            <p className="text-lg md:text-xl font-black text-loops-main tracking-tighter">
+                                {price}
+                            </p>
+                            <p className="text-[10px] text-loops-muted line-through opacity-40">
+                                {CURRENCY}{(parseFloat(price.replace(/[^0-9.]/g, '')) * 1.2).toFixed(0)}
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-1 border-t border-loops-border">
+                            <div className="w-5 h-5 rounded-full overflow-hidden border border-loops-border bg-white">
+                                {((author as any)?.store_logo_url || (author as any)?.avatar_url) ? (
+                                    <Image
+                                        src={(author as any)?.store_logo_url || (author as any)?.avatar_url}
+                                        alt=""
+                                        width={20}
+                                        height={20}
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <User className="w-2.5 h-2.5 text-loops-muted m-auto" />
                                 )}
                             </div>
-                            <h3 className={cn(
-                                "font-display font-bold text-white tracking-tight group-hover:text-loops-accent transition-colors truncate",
-                                featured ? "text-xl md:text-3xl" : "text-sm md:text-base"
-                            )}>
-                                {title}
-                            </h3>
-                            <div className="flex items-center justify-between mt-1">
-                                <p className={cn(
-                                    "text-loops-accent font-black tracking-tighter",
-                                    featured ? "text-2xl" : "text-base"
-                                )}>
-                                    {price}
-                                </p>
-                                <div className="flex items-center gap-2 px-2 py-1 bg-white/10 rounded-xl backdrop-blur-md border border-white/10">
-                                    <div className="w-3.5 h-3.5 rounded-full overflow-hidden border border-white/20">
-                                        {((author as any)?.store_logo_url || (author as any)?.avatar_url) ? (
-                                            <Image
-                                                src={(author as any)?.store_logo_url || (author as any)?.avatar_url}
-                                                alt=""
-                                                width={14}
-                                                height={14}
-                                                className="object-cover"
-                                            />
-                                        ) : (
-                                            <User className="w-2 h-2 text-white" />
-                                        )}
-                                    </div>
-                                    <span className="text-[8px] font-bold text-white uppercase tracking-wider truncate max-w-[50px]">
-                                        {(author as any)?.store_name || (author as any)?.full_name || "Campus"}
-                                    </span>
-                                    {(author as any)?.is_founding_member && (
-                                        <div className="flex items-center justify-center p-0.5 bg-loops-primary rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]">
-                                            <Award className="w-2.5 h-2.5 text-white" />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            <span className="text-[9px] font-bold text-loops-muted uppercase tracking-wider truncate">
+                                {(author as any)?.store_name || (author as any)?.full_name || "Campus"}
+                            </span>
                         </div>
                     </div>
 
-                    {/* Quick Action - Desktop */}
-                    <button
-                        onClick={toggleWishlist}
-                        disabled={wishlistLoading}
-                        className={cn(
-                            "absolute top-4 right-4 p-3 rounded-2xl backdrop-blur-xl transition-all duration-500 z-30",
-                            isWishlisted
-                                ? "bg-loops-primary text-white shadow-lg scale-110"
-                                : "bg-white/10 text-white border border-white/20 hover:bg-loops-primary hover:border-loops-primary"
-                        )}
-                    >
-                        <Heart className={cn("w-4 h-4 md:w-5 h-5", isWishlisted && "fill-current")} />
-                    </button>
+                    <Button className="w-full h-10 rounded-xl bg-loops-primary text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-loops-primary/10 hover:scale-[1.02] transition-all">
+                        Secure Buy
+                    </Button>
                 </div>
             </Link>
         </div>

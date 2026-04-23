@@ -15,6 +15,8 @@ import { CartDrawer } from "./cart-drawer";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/context/notification-context";
 import { NotificationDrawer } from "./notification-drawer";
+import { SearchBar } from "../ui/search-bar";
+import { PRODUCT_CATEGORIES } from "@/lib/constants";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (
@@ -115,21 +117,16 @@ export function Navbar() {
                             </div>
                         </Link>
 
-                        <nav className="hidden lg:flex items-center gap-1">
-                            <NavLink href="/">{getTerm('marketplaceName') || 'The Feed'}</NavLink>
-                            <NavLink href="/browse?view=service">Services</NavLink>
-                            <NavLink href="/requests">Requests</NavLink>
-                            {user && (
-                                <Link href="/messages" className="relative group">
-                                    <NavLink href="/messages">Messages</NavLink>
-                                    {unreadMessagesCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white ring-2 ring-loops-primary/10">
-                                            {unreadMessagesCount}
-                                        </span>
-                                    )}
-                                </Link>
-                            )}
                         </nav>
+
+                        {/* Amazon-style Search Bar */}
+                        <div className="flex-1 max-w-xl hidden xl:block">
+                            <SearchBar 
+                                onSearch={(q) => q && router.push(`/browse?q=${q}`)} 
+                                placeholder="Search the Loop marketplace..."
+                                className="h-10"
+                            />
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-4">
@@ -244,6 +241,29 @@ export function Navbar() {
                             </div>
                         )}
                     </div>
+                </div>
+
+                {/* Category Navigation Bar (Amazon style) */}
+                <div className="mx-6 mt-4 flex items-center gap-6 px-6 py-2 bg-loops-subtle/50 backdrop-blur-xl rounded-2xl border border-loops-border overflow-x-auto no-scrollbar">
+                    <Link href="/browse" className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-loops-main whitespace-nowrap hover:text-loops-primary transition-colors">
+                        <Package className="w-3.5 h-3.5" />
+                        All Depts
+                    </Link>
+                    <div className="w-px h-3 bg-loops-border" />
+                    {PRODUCT_CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+                        <Link 
+                            key={cat.id} 
+                            href={`/browse?category=${cat.id}`}
+                            className="text-[9px] font-bold uppercase tracking-widest text-loops-muted whitespace-nowrap hover:text-loops-primary transition-colors"
+                        >
+                            {cat.label}
+                        </Link>
+                    ))}
+                    <div className="w-px h-3 bg-loops-border" />
+                    <Link href="/browse?view=service" className="text-[9px] font-bold uppercase tracking-widest text-loops-primary whitespace-nowrap flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        Campus Services
+                    </Link>
                 </div>
             </nav>
 

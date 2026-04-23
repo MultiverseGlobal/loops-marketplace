@@ -42,7 +42,7 @@ export function PulseFeed({ campusId }: { campusId?: string | null }) {
     }, [campusId, supabase]);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 space-y-8">
+        <div className="w-full space-y-8">
             {/* Feed Header */}
             <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-3">
