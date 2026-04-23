@@ -20,7 +20,7 @@ export function PulseCard({ item, delay = 0 }: PulseCardProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay }}
-                className="group relative bg-white border border-loops-border rounded-[2.5rem] p-6 shadow-sm hover:shadow-xl transition-all duration-500"
+                className="group relative bg-white border border-loops-border rounded-[2rem] p-4 md:p-5 shadow-sm hover:shadow-xl transition-all duration-500 col-span-1"
             >
                 <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded-full bg-loops-primary/10 flex items-center justify-center text-loops-primary">
@@ -33,16 +33,16 @@ export function PulseCard({ item, delay = 0 }: PulseCardProps) {
                 </div>
 
                 <Link href={`/listings/${item.id}`}>
-                    <div className="aspect-[4/5] rounded-[2rem] overflow-hidden relative mb-4 border border-loops-border">
+                    <div className="aspect-[4/5] rounded-[1.5rem] overflow-hidden relative mb-4 border border-loops-border">
                         <Image
                             src={item.images?.[0] || item.image_url || FALLBACK_PRODUCT_IMAGE}
                             alt={item.title}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute bottom-4 left-4 right-4 p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white/20">
-                            <h3 className="text-lg font-black text-loops-main truncate">{item.title}</h3>
-                            <p className="text-loops-primary font-black text-xl tracking-tighter">{CURRENCY}{item.price}</p>
+                        <div className="absolute inset-x-2 bottom-2 p-3 bg-white/80 backdrop-blur-md rounded-xl border border-white/20">
+                            <h3 className="text-xs md:text-sm font-black text-loops-main truncate">{item.title}</h3>
+                            <p className="text-loops-primary font-black text-sm md:text-base tracking-tighter">{CURRENCY}{item.price}</p>
                         </div>
                     </div>
                 </Link>
@@ -76,7 +76,7 @@ export function PulseCard({ item, delay = 0 }: PulseCardProps) {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay }}
-                className="bg-loops-main text-white rounded-[2.5rem] p-8 relative overflow-hidden group shadow-lg shadow-loops-main/10"
+                className="bg-loops-main text-white rounded-[2.5rem] p-6 md:p-8 relative overflow-hidden group shadow-lg shadow-loops-main/10 col-span-2 md:col-span-2"
             >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-loops-primary/20 rounded-full blur-[80px] -mr-10 -mt-10" />
                 
@@ -88,7 +88,7 @@ export function PulseCard({ item, delay = 0 }: PulseCardProps) {
                 </div>
 
                 <div className="space-y-4 relative z-10">
-                    <h3 className="text-2xl font-black italic tracking-tighter leading-none">
+                    <h3 className="text-xl md:text-2xl font-black italic tracking-tighter leading-none">
                         {item.buyer?.full_name?.split(' ')[0]} <span className="opacity-40">just secured</span><br />
                         <span className="text-loops-primary underline decoration-2 underline-offset-4">{item.listing?.title}</span>
                     </h3>
@@ -112,7 +112,7 @@ export function PulseCard({ item, delay = 0 }: PulseCardProps) {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay }}
-                className="relative bg-loops-accent/5 border border-loops-accent/10 rounded-[3rem] p-8 overflow-hidden group"
+                className="relative bg-loops-accent/5 border border-loops-accent/10 rounded-[2.5rem] p-6 md:p-8 overflow-hidden group col-span-2 md:col-span-2"
             >
                 <div className="absolute -top-10 -left-10 w-40 h-40 bg-loops-accent/10 rounded-full blur-[100px] group-hover:bg-loops-accent/20 transition-colors" />
                 
