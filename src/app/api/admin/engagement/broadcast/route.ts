@@ -3,12 +3,34 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 import { sendWhatsAppMessage, sendWhatsAppMedia } from '@/lib/whatsapp';
 
+export async function GET() {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
+    const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    return NextResponse.json({
+        supabaseAdmin: !!(supabaseUrl && supabaseServiceKey),
+        whatsapp: !!(waToken && waPhoneId),
+        region: process.env.VERCEL_REGION || 'local'
+    });
+}
+
 export async function POST(request: Request) {
     try {
         // User session client — for auth verification only
         const supabase = await createClient();
         // Admin client — bypasses RLS for cross-user notification inserts
-        const adminSupabase = createAdminClient();
+        let adminSupabase;
+        try {
+            adminSupabase = createAdminClient();
+        } catch (err: any) {
+             return NextResponse.json({ 
+                error: 'Supabase Admin environment variables are missing on the server. Please add SUPABASE_SERVICE_ROLE_KEY to your Vercel/environment settings.',
+                details: err.message 
+            }, { status: 500 });
+        }
+
         const { 
             title, 
             message, 

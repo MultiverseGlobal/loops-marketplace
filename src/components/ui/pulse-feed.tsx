@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { PulseCard } from './pulse-card';
 import { SkeletonCard } from './skeleton-loader';
-import { PulseCard } from './pulse-card';
-import { SkeletonCard } from './skeleton-loader';
 import { Bell, ArrowRight, UserPlus, Info } from 'lucide-react';
 import { Button } from './button';
 import Link from 'next/link';

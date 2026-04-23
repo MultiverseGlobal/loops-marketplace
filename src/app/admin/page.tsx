@@ -2200,6 +2200,15 @@ const EngagementView = ({ campaigns, stats, allUsers, applications, onSendCampai
     const [videoUrl, setVideoUrl] = useState("");
     const [ctaLink, setCtaLink] = useState("");
     const [segment, setSegment] = useState<'all' | 'students' | 'plugs'>('all');
+    const [serverStatus, setServerStatus] = useState<{ supabaseAdmin: boolean; whatsapp: boolean; region: string } | null>(null);
+
+    useEffect(() => {
+        fetch('/api/admin/engagement/broadcast')
+            .then(res => res.json())
+            .then(data => setServerStatus(data))
+            .catch(() => console.error("Engagement status check failed"));
+    }, []);
+
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -2212,7 +2221,21 @@ const EngagementView = ({ campaigns, stats, allUsers, applications, onSendCampai
                         </div>
                         <div>
                             <h2 className="text-xl font-black text-loops-main">Campaign Composer</h2>
-                            <p className="text-xs font-bold text-loops-muted uppercase tracking-widest mt-1">Rich Media Engine</p>
+                            <div className="flex items-center gap-2 mt-1">
+                                {serverStatus ? (
+                                    <>
+                                        <div className={cn("w-2 h-2 rounded-full", serverStatus.supabaseAdmin ? "bg-loops-success" : "bg-red-500")} />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-loops-muted">
+                                            {serverStatus.supabaseAdmin ? "Server Ready" : "Missing Admin Keys"}
+                                        </span>
+                                        {!serverStatus.whatsapp && (
+                                            <span className="text-[10px] font-bold text-amber-500 uppercase ml-2 opacity-60">(WhatsApp Offline)</span>
+                                        )}
+                                    </>
+                                ) : (
+                                    <span className="text-[10px] font-bold text-loops-muted animate-pulse">Checking Server Nodes...</span>
+                                )}
+                            </div>
                         </div>
                     </div>
 
