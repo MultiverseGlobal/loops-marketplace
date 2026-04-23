@@ -150,7 +150,7 @@ export default function MarketplacePage() {
             <CampusSelector />
 
             {/* Pulse Header Section */}
-            <header className="relative pt-36 md:pt-56 pb-8 md:pb-16 px-6 overflow-hidden">
+            <header className="relative pt-20 md:pt-56 pb-8 md:pb-16 px-6 overflow-hidden">
                 {/* Mesh Gradient Background */}
                 <div className="absolute inset-0 -z-10 bg-white">
                     <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-loops-primary/10 rounded-full blur-[120px] animate-[pulse-subtle_8s_ease-in-out_infinite]" />

@@ -95,7 +95,9 @@ export function Navbar() {
                 {user && profile && !profile.is_verified && (
                     <VerificationBanner email={user.email} isVerified={profile.is_verified} />
                 )}
-                <ActivityBuzz />
+                <div className="hidden md:block">
+                    <ActivityBuzz />
+                </div>
             </div>
 
             {/* 2. Main Desktop Navbar */}

@@ -75,7 +75,7 @@ export default function WelcomePage() {
         <div className="bg-loops-bg">
             <Navbar />
 
-            <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-48 sm:pt-64 pb-12 px-4 sm:px-6 overflow-hidden">
+            <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center pt-24 sm:pt-64 pb-12 px-4 sm:px-6 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-loops-primary/10 blur-[120px] rounded-full animate-float" />
                     <div className="absolute bottom-[10%] right-[10%] w-[30%] h-[30%] bg-loops-secondary/5 blur-[100px] rounded-full animate-pulse" />
