@@ -21,6 +21,7 @@ export default function EditListingPage() {
     const [category, setCategory] = useState("");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [oldPrice, setOldPrice] = useState<number | null>(null);
     const router = useRouter();
     const supabase = createClient();
     const toast = useToast();
@@ -48,6 +49,7 @@ export default function EditListingPage() {
                 }
                 setTitle(data.title);
                 setPrice(data.price.toString());
+                setOldPrice(data.price);
                 setDescription(data.description);
                 setCategory(data.category);
             }
@@ -60,17 +62,28 @@ export default function EditListingPage() {
         e.preventDefault();
         setSaving(true);
         try {
+            const newPriceVal = parseFloat(price) || 0;
+            
             const { error } = await supabase
                 .from('listings')
                 .update({
                     title,
                     description,
-                    price: parseFloat(price) || 0,
+                    price: newPriceVal,
                     category,
                 })
                 .eq('id', id);
 
             if (error) throw error;
+
+            // Trigger Price Drop Alert if applicable
+            if (oldPrice && newPriceVal < oldPrice) {
+                fetch(`/api/listings/${id}/price-drop`, {
+                    method: 'POST',
+                    body: JSON.stringify({ oldPrice, newPrice: newPriceVal })
+                }).catch(err => console.error("Price drop trigger failed:", err));
+            }
+
             toast.success("Listing updated successfully!");
             router.push(`/listings/${id}`);
         } catch (error: any) {
