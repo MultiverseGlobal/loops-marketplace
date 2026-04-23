@@ -7,7 +7,7 @@ import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCampus } from "@/context/campus-context";
 import { useCart } from "@/context/cart-context";
 import { useToast } from "@/context/toast-context";
@@ -41,6 +41,7 @@ export function Navbar() {
     const toast = useToast();
     const { unreadCount, unreadMessagesCount, pendingLoopsCount } = useNotifications();
     const [showAppBanner, setShowAppBanner] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
         const dismissed = localStorage.getItem('loops_app_banner_dismissed');
