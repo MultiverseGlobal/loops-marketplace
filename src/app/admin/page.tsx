@@ -30,7 +30,12 @@ import {
     Copy,
     Check,
     Sparkles,
-    Bell
+    Bell,
+    Clock,
+    Play,
+    Pause,
+    ShieldCheck,
+    ShoppingCart
 } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { Button } from "@/components/ui/button";
@@ -2319,6 +2324,61 @@ const EngagementView = ({ campaigns, stats, allUsers, applications, onSendCampai
                             {processingId === 'campaign' ? "Launching Campaign..." : "Launch Campaign 🚀"}
                         </Button>
                     </div>
+                </div>
+
+                {/* Automated Triggers Control Center */}
+                <div className="bg-loops-main rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl border border-white/10">
+                    <div className="relative z-10 space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-loops-primary rounded-2xl flex items-center justify-center text-loops-main">
+                                <Clock className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black italic tracking-tight">Manual Overrides</h3>
+                                <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest">Trigger Automated Workflows</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-3">
+                            {[
+                                { id: 'abandoned-cart', title: 'Abandoned Cart', desc: 'Scan for items in cart > 6h', icon: ShoppingCart },
+                                { id: 'verification-nudge', title: 'Verification Nudge', desc: 'Remind unverified users > 24h', icon: ShieldCheck },
+                                { id: 'weekend-recap', title: 'Weekend Recap', desc: 'Broadcast top 5 trending drops', icon: TrendingUp }
+                            ].map((trigger) => (
+                                <button
+                                    key={trigger.id}
+                                    onClick={async () => {
+                                        if (confirm(`Manually trigger the ${trigger.title} workflow?`)) {
+                                            try {
+                                                const res = await fetch(`/api/cron/${trigger.id}`);
+                                                const data = await res.json();
+                                                if (data.success) {
+                                                    alert(`${trigger.title} complete: ${JSON.stringify(data.results)}`);
+                                                } else {
+                                                    alert(`Trigger error: ${data.message || data.error}`);
+                                                }
+                                            } catch (err: any) {
+                                                alert(`System error: ${err.message}`);
+                                            }
+                                        }
+                                    }}
+                                    className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all text-left group"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-loops-primary group-hover:text-loops-main transition-all">
+                                            <trigger.icon className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-sm">{trigger.title}</p>
+                                            <p className="text-[10px] text-white/40 font-medium">{trigger.desc}</p>
+                                        </div>
+                                    </div>
+                                    <Play className="w-4 h-4 text-white/20 group-hover:text-loops-primary transition-all" />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-loops-primary/20 rounded-full blur-3xl -mr-16 -mt-16" />
                 </div>
 
                 {/* History */}
