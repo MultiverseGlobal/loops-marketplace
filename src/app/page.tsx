@@ -1,3 +1,5 @@
+'use client';
+
 import { Navbar } from "../components/layout/navbar";
 import { PulseFeed } from "../components/ui/pulse-feed";
 import { Footer } from "../components/layout/footer";
