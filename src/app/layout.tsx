@@ -65,6 +65,7 @@ import { ModalProvider } from "../context/modal-context";
 import { BottomNav } from "../components/layout/bottom-nav";
 
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { PWALogic } from "../components/pwa-logic";
 import { CartProvider } from "../context/cart-context";
 import { NotificationProvider } from "../context/notification-context";
@@ -78,9 +79,21 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
+            <head>
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+                <meta name="format-detection" content="telephone=no" />
+                <meta name="mobile-web-app-capable" content="yes" />
+                <meta name="theme-color" content="#6366f1" />
+                
+                {/* Social Sharing / WhatsApp / Twitter */}
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="Loops" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:site" content="@loops_campus" />
+            </head>
             <body
                 suppressHydrationWarning
-                // className={cn(inter.variable, outfit.variable, "font-sans antialiased bg-loops-bg text-loops-main selection:bg-loops-secondary/30")}
                 className={cn("font-sans antialiased bg-loops-bg text-loops-main selection:bg-loops-secondary/30")}
             >
                 <PWALogic />
@@ -99,6 +112,7 @@ export default function RootLayout({
                                 </CartProvider>
                             </AuthPromptProvider>
                             <Analytics />
+                            <SpeedInsights />
                         </ModalProvider>
                     </ToastProvider>
                 </CampusProvider>
