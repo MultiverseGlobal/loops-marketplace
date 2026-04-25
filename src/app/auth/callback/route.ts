@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
                 .eq('id', data.user.id)
                 .single()
 
-            const redirectTo = profile?.campus_id ? '/browse?verified=true' : '/onboarding'
+            const redirectTo = '/auth/verify-success'
             // Ensure we use the dynamic origin of the request to avoid port mismatches
             const redirectUrl = new URL(redirectTo, request.url)
             return NextResponse.redirect(redirectUrl)
