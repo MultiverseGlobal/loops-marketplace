@@ -27,9 +27,10 @@ interface ProductDraft {
     title: string;
     price: string;
     category: string;
-    imageUrl: string;
+    images: string[];
     description: string;
-    status: 'idle' | 'saving' | 'saved' | 'error';
+    status: 'idle' | 'uploading' | 'saving' | 'saved' | 'error';
+    uploadProgress: number;
 }
 
 const createDraft = (): ProductDraft => ({
@@ -37,9 +38,10 @@ const createDraft = (): ProductDraft => ({
     title: '',
     price: '',
     category: '',
-    imageUrl: '',
+    images: [],
     description: '',
     status: 'idle',
+    uploadProgress: 0,
 });
 
 export default function PopulateTheLooPage() {
@@ -86,8 +88,40 @@ export default function PopulateTheLooPage() {
         init();
     }, []);
 
-    const updateDraft = (id: string, field: keyof ProductDraft, value: string) => {
-        setDrafts(prev => prev.map(d => d.id === id ? { ...d, [field]: value } : d));
+    const updateDraft = (id: string, updates: Partial<ProductDraft>) => {
+        setDrafts(prev => prev.map(d => d.id === id ? { ...d, ...updates } : d));
+    };
+
+    const handleImageUpload = async (id: string, file: File) => {
+        if (!file) return;
+
+        updateDraft(id, { status: 'uploading', uploadProgress: 0 });
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${id}-${Math.random()}.${fileExt}`;
+            const filePath = `${profile.id}/${fileName}`;
+
+            const { data, error: uploadError } = await supabase.storage
+                .from('listing-images')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('listing-images')
+                .getPublicUrl(filePath);
+
+            updateDraft(id, { 
+                images: [publicUrl], 
+                status: 'idle', 
+                uploadProgress: 100 
+            });
+            toast.success('Image uploaded!');
+        } catch (err: any) {
+            updateDraft(id, { status: 'error' });
+            toast.error(err.message || 'Image upload failed');
+        }
     };
 
     const addDraft = () => {
@@ -104,7 +138,11 @@ export default function PopulateTheLooPage() {
             return;
         }
 
-        setDrafts(prev => prev.map(d => d.id === draft.id ? { ...d, status: 'saving' } : d));
+        if (draft.images.length === 0) {
+            toast.warning('Adding a photo helps items sell 5x faster!');
+        }
+
+        updateDraft(draft.id, { status: 'saving' });
 
         try {
             const { error } = await supabase.from('listings').insert({
@@ -114,18 +152,18 @@ export default function PopulateTheLooPage() {
                 price: parseFloat(draft.price),
                 category: draft.category,
                 description: draft.description || null,
-                images: draft.imageUrl ? [draft.imageUrl] : [],
+                images: draft.images,
                 status: 'active',
                 type: 'product',
             });
 
             if (error) throw error;
 
-            setDrafts(prev => prev.map(d => d.id === draft.id ? { ...d, status: 'saved' } : d));
+            updateDraft(draft.id, { status: 'saved' });
             setSavedCount(prev => prev + 1);
             toast.success(`"${draft.title}" added to your Loop!`);
         } catch (err: any) {
-            setDrafts(prev => prev.map(d => d.id === draft.id ? { ...d, status: 'error' } : d));
+            updateDraft(draft.id, { status: 'error' });
             toast.error(err.message || 'Failed to save item.');
         }
     };
@@ -264,7 +302,8 @@ export default function PopulateTheLooPage() {
                                 key={draft.id}
                                 draft={draft}
                                 index={i}
-                                onChange={updateDraft}
+                                onChange={(id, updates) => updateDraft(id, updates)}
+                                onUploadImage={(id, file) => handleImageUpload(id, file)}
                                 onRemove={() => removeDraft(draft.id)}
                                 onSave={() => saveDraft(draft)}
                                 canRemove={drafts.length > 1}
@@ -315,18 +354,21 @@ export default function PopulateTheLooPage() {
 // ─── Draft Card ───────────────────────────────────────────────────────────────
 
 function DraftCard({
-    draft, index, onChange, onRemove, onSave, canRemove
+    draft, index, onChange, onUploadImage, onRemove, onSave, canRemove
 }: {
     draft: ProductDraft;
     index: number;
-    onChange: (id: string, field: keyof ProductDraft, value: string) => void;
+    onChange: (id: string, updates: Partial<ProductDraft>) => void;
+    onUploadImage: (id: string, file: File) => void;
     onRemove: () => void;
     onSave: () => void;
     canRemove: boolean;
 }) {
     const isSaved = draft.status === 'saved';
     const isSaving = draft.status === 'saving';
+    const isUploading = draft.status === 'uploading';
     const isError = draft.status === 'error';
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     return (
         <motion.div
@@ -362,7 +404,59 @@ function DraftCard({
             </div>
 
             {/* Fields */}
-            <div className={cn("px-5 pb-5 space-y-3 transition-all", isSaved && "opacity-60 pointer-events-none")}>
+            <div className={cn("px-5 pb-5 space-y-4 transition-all", isSaved && "opacity-60 pointer-events-none")}>
+                
+                {/* Image Upload Area */}
+                <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted flex items-center gap-1.5">
+                        <ImageIcon className="w-3 h-3" /> Product Photo
+                    </label>
+                    <input 
+                        type="file" 
+                        className="hidden" 
+                        ref={fileInputRef} 
+                        accept="image/*"
+                        onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) onUploadImage(draft.id, file);
+                        }}
+                    />
+                    
+                    <div 
+                        onClick={() => fileInputRef.current?.click()}
+                        className={cn(
+                            "relative aspect-[16/9] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer group overflow-hidden transition-all",
+                            draft.images.length > 0 
+                                ? "border-loops-primary/30 bg-loops-primary/5" 
+                                : "border-white/40 bg-white/20 hover:bg-white/30"
+                        )}
+                    >
+                        {draft.images.length > 0 ? (
+                            <>
+                                <img src={draft.images[0]} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <div className="px-3 py-1.5 bg-white rounded-lg text-[9px] font-black uppercase tracking-widest text-loops-main">Change Photo</div>
+                                </div>
+                            </>
+                        ) : isUploading ? (
+                            <div className="flex flex-col items-center gap-2">
+                                <Loader2 className="w-5 h-5 text-loops-primary animate-spin" />
+                                <span className="text-[10px] font-bold text-loops-primary uppercase tracking-widest">Uploading...</span>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="w-10 h-10 rounded-full bg-loops-primary/10 flex items-center justify-center text-loops-primary group-hover:scale-110 transition-transform">
+                                    <Upload className="w-5 h-5" />
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-loops-main">Upload Photo</p>
+                                    <p className="text-[8px] text-loops-muted uppercase font-bold mt-0.5">JPG, PNG or WEBP</p>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+
                 {/* Title */}
                 <div className="space-y-1">
                     <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted flex items-center gap-1.5">
@@ -372,7 +466,7 @@ function DraftCard({
                         id={`title-${draft.id}`}
                         type="text"
                         value={draft.title}
-                        onChange={e => onChange(draft.id, 'title', e.target.value)}
+                        onChange={e => onChange(draft.id, { title: e.target.value })}
                         placeholder="e.g. Custom Hooded Sweatshirt"
                         className="w-full px-4 py-3 text-sm font-bold bg-white/50 border border-white/40 rounded-xl focus:border-loops-primary focus:bg-white/70 outline-none transition-all placeholder:text-loops-muted/40"
                     />
@@ -388,7 +482,7 @@ function DraftCard({
                             id={`price-${draft.id}`}
                             type="number"
                             value={draft.price}
-                            onChange={e => onChange(draft.id, 'price', e.target.value)}
+                            onChange={e => onChange(draft.id, { price: e.target.value })}
                             placeholder="3500"
                             className="w-full px-4 py-3 text-sm font-bold bg-white/50 border border-white/40 rounded-xl focus:border-loops-primary focus:bg-white/70 outline-none transition-all placeholder:text-loops-muted/40"
                         />
@@ -402,7 +496,7 @@ function DraftCard({
                         <select
                             id={`category-${draft.id}`}
                             value={draft.category}
-                            onChange={e => onChange(draft.id, 'category', e.target.value)}
+                            onChange={e => onChange(draft.id, { category: e.target.value })}
                             className="w-full px-4 py-3 text-sm font-bold bg-white/50 border border-white/40 rounded-xl focus:border-loops-primary focus:bg-white/70 outline-none transition-all appearance-none cursor-pointer"
                         >
                             <option value="">Select...</option>
@@ -411,28 +505,13 @@ function DraftCard({
                     </div>
                 </div>
 
-                {/* Image URL */}
-                <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted flex items-center gap-1.5">
-                        <ImageIcon className="w-3 h-3" /> Image URL (optional)
-                    </label>
-                    <input
-                        id={`image-${draft.id}`}
-                        type="url"
-                        value={draft.imageUrl}
-                        onChange={e => onChange(draft.id, 'imageUrl', e.target.value)}
-                        placeholder="https://..."
-                        className="w-full px-4 py-3 text-sm font-bold bg-white/50 border border-white/40 rounded-xl focus:border-loops-primary focus:bg-white/70 outline-none transition-all placeholder:text-loops-muted/40"
-                    />
-                </div>
-
                 {/* Description */}
                 <div className="space-y-1">
                     <label className="text-[10px] font-black uppercase tracking-widest text-loops-muted">Description (optional)</label>
                     <textarea
                         id={`desc-${draft.id}`}
                         value={draft.description}
-                        onChange={e => onChange(draft.id, 'description', e.target.value)}
+                        onChange={e => onChange(draft.id, { description: e.target.value })}
                         placeholder="Briefly describe your item..."
                         rows={2}
                         className="w-full px-4 py-3 text-sm font-bold bg-white/50 border border-white/40 rounded-xl focus:border-loops-primary focus:bg-white/70 outline-none transition-all resize-none placeholder:text-loops-muted/40"
@@ -442,7 +521,7 @@ function DraftCard({
                 {/* Save Button */}
                 <Button
                     onClick={onSave}
-                    disabled={isSaving || !draft.title || !draft.price || !draft.category}
+                    disabled={isSaving || isUploading || !draft.title || !draft.price || !draft.category}
                     className={cn(
                         "w-full h-11 rounded-xl font-black uppercase tracking-widest text-xs transition-all",
                         isSaving ? "bg-loops-primary/50 text-white" : "bg-loops-primary text-white hover:scale-[1.01]"
