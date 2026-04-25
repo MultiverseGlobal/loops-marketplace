@@ -90,9 +90,11 @@ export default function RootLayout({
                             <AuthPromptProvider>
                                 <CartProvider>
                                     <NotificationProvider>
-                                        <PageTransition>{children}</PageTransition>
+                                        <PageTransition>
+                                            {children}
+                                            <CookieConsent />
+                                        </PageTransition>
                                         <BottomNav />
-                                        <CookieConsent />
                                     </NotificationProvider>
                                 </CartProvider>
                             </AuthPromptProvider>

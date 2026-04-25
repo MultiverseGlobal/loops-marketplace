@@ -239,17 +239,17 @@ export function Navbar() {
 
                 {/* Desktop Category Bar */}
                 <div className="bg-loops-subtle/30 border-t border-loops-border">
-                    <div className="max-w-7xl mx-auto px-6 h-11 flex items-center gap-6 overflow-x-auto no-scrollbar">
-                        <Link href="/browse" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-loops-main whitespace-nowrap hover:text-loops-primary">
-                            <Package className="w-4 h-4" />
-                            All Departments
+                    <div className="max-w-7xl mx-auto px-6 h-11 flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth">
+                        <Link href="/browse" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-loops-main whitespace-nowrap hover:text-loops-primary group shrink-0">
+                            <Package className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            Browse Categories
                         </Link>
-                        <div className="w-px h-4 bg-loops-border" />
+                        <div className="w-px h-4 bg-loops-border shrink-0" />
                         {PRODUCT_CATEGORIES.filter(c => c.id !== 'all').map(cat => (
                             <Link 
                                 key={cat.id} 
                                 href={`/browse?category=${cat.id}`}
-                                className="text-[10px] font-bold uppercase tracking-widest text-loops-muted whitespace-nowrap hover:text-loops-primary transition-colors"
+                                className="text-[10px] font-bold uppercase tracking-widest text-loops-muted whitespace-nowrap hover:text-loops-primary transition-colors shrink-0"
                             >
                                 {cat.label}
                             </Link>
@@ -286,6 +286,9 @@ export function Navbar() {
                     </Link>
 
                     <div className="flex items-center gap-3">
+                        <Link href="/browse" className="p-2">
+                            <Search className="w-5 h-5 text-loops-main" />
+                        </Link>
                         {user && (
                             <button onClick={() => setIsNotificationsOpen(true)} className="relative p-2">
                                 <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary")} />

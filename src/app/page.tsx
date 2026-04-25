@@ -28,20 +28,21 @@ export default function Home() {
             <main className="pt-24 md:pt-64 pb-24">
                 {/* Amazon-style Hero Section */}
                 <section className="max-w-7xl mx-auto px-4 md:px-6 mb-12">
-                    <div className="relative h-[300px] md:h-[450px] rounded-[2.5rem] overflow-hidden bg-loops-main">
-                        <div className="absolute inset-0 bg-gradient-to-r from-loops-main via-loops-main/40 to-transparent z-10" />
+                    <div className="relative min-h-[450px] md:h-[500px] rounded-[2.5rem] overflow-hidden bg-loops-main flex flex-col justify-center">
+                        <div className="absolute inset-0 bg-gradient-to-r from-loops-main via-loops-main/60 to-transparent z-10" />
                         <Image 
                             src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop" 
                             alt="Campus Life" 
                             fill 
-                            className="object-cover opacity-60"
+                            priority
+                            className="object-cover opacity-40"
                         />
                         
-                        <div className="absolute inset-0 z-20 p-8 md:p-16 flex flex-col justify-center max-w-2xl space-y-6">
+                        <div className="relative z-20 p-8 md:p-16 flex flex-col justify-center max-w-3xl space-y-6">
                             <motion.div 
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/20 text-loops-primary border border-loops-primary/20 backdrop-blur-md text-[10px] font-black uppercase tracking-[0.2em]"
+                                className="w-fit flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/20 text-loops-primary border border-loops-primary/20 backdrop-blur-md text-[10px] font-black uppercase tracking-[0.2em]"
                             >
                                 <Sparkles className="w-3.5 h-3.5" />
                                 <span>Founding Plug Season</span>
@@ -50,7 +51,7 @@ export default function Home() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="text-4xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter"
+                                className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter"
                             >
                                 Everything <br />
                                 <span className="text-loops-primary italic">Campus</span> <br />
@@ -60,15 +61,15 @@ export default function Home() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="flex flex-wrap gap-4"
+                                className="flex flex-col sm:flex-row gap-4 pt-4"
                             >
                                 <Link href="/browse">
-                                    <Button className="h-14 px-8 bg-loops-primary text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-loops-primary/20 hover:scale-105 transition-all">
-                                        Shop All Depts <ArrowRight className="w-4 h-4 ml-2" />
+                                    <Button className="w-full sm:w-fit h-14 px-8 bg-loops-primary text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-loops-primary/20 hover:scale-105 active:scale-95 transition-all">
+                                        Explore Categories <ArrowRight className="w-4 h-4 ml-2" />
                                     </Button>
                                 </Link>
                                 <Link href="/listings/create">
-                                    <Button variant="outline" className="h-14 px-8 border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-white/10 backdrop-blur-md transition-all">
+                                    <Button variant="outline" className="w-full sm:w-fit h-14 px-8 border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-white/10 backdrop-blur-md transition-all active:scale-95">
                                         Start Selling
                                     </Button>
                                 </Link>
@@ -77,7 +78,7 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* Featured Hubs (Departmental Grid) */}
+                {/* Featured Hubs (Category Grid) */}
                 <FeaturedHubs />
 
                 {/* Main Feed Section (Amazon: Recommended / Just In) */}

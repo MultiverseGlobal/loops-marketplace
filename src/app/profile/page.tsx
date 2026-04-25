@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Zap, MessageSquare, Phone, Sparkles, Award, Smartphone, Download, Heart, X, CheckCircle, Copy, Check, ChevronDown } from "lucide-react";
+import { ShieldCheck, Star, Package, Settings, ExternalLink, Calendar, MapPin, Zap, MessageSquare, Phone, Sparkles, Award, Smartphone, Download, Heart, X, CheckCircle, Copy, Check, ChevronDown, BarChart3, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { cn, formatWhatsAppNumber } from "@/lib/utils";
 import Link from "next/link";
@@ -690,6 +690,23 @@ export default function ProfilePage() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    <Link href="/profile/analytics">
+                                        <button
+                                            className="w-full bg-white border border-loops-border p-4 rounded-2xl flex items-center justify-between group hover:border-loops-primary/50 transition-all shadow-sm"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-loops-primary/10 rounded-xl text-loops-primary group-hover:bg-loops-primary group-hover:text-white transition-all">
+                                                    <BarChart3 className="w-5 h-5" />
+                                                </div>
+                                                <div className="text-left">
+                                                    <div className="text-xs font-black uppercase tracking-widest text-loops-main">Advanced Analytics</div>
+                                                    <div className="text-[9px] font-bold text-loops-muted uppercase">Track your growth this month</div>
+                                                </div>
+                                            </div>
+                                            <ChevronRight className="w-4 h-4 text-loops-muted group-hover:translate-x-1 transition-transform" />
+                                        </button>
+                                    </Link>
 
                                     <button
                                         disabled

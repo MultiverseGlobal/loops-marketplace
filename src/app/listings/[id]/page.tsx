@@ -80,6 +80,12 @@ export default function ListingDetailPage() {
                 if (error) throw error;
                 if (data) {
                     setListing(data);
+                    // Increment view count (Simple update for now)
+                    supabase.from('listings')
+                        .update({ views: (data.views || 0) + 1 })
+                        .eq('id', id)
+                        .then(); // Background task
+
                     // Check follow status
                     const following = await getFollowStatus(data.seller_id);
                     setIsFollowing(following);
