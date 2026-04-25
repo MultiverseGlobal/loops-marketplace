@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const CAMPUS_DATA: Record<string, { name: string, floor: number }> = {
     'veritas': { name: 'Veritas University', floor: 12 },
@@ -62,6 +62,7 @@ const BackgroundShapes = () => (
 );
 
 export default function FoundingPlugsCarousel() {
+    const router = useRouter();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [direction, setDirection] = useState(0);
     const [submitting, setSubmitting] = useState(false);
@@ -586,56 +587,73 @@ export default function FoundingPlugsCarousel() {
         },
         {
             id: 'success',
-            content: (
-                <div className="flex flex-col items-center justify-center text-center space-y-8 sm:space-y-12 min-h-full px-6 py-10">
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                        className="w-20 h-20 sm:w-24 sm:h-24 bg-loops-success/10 rounded-full flex items-center justify-center text-loops-success border border-loops-success/20"
-                    >
-                        <CheckCircle className="w-10 h-10 sm:w-12 sm:h-12" />
-                    </motion.div>
+            content: (() => {
+                const isGoldenTicket = formData.referralCode?.trim().toUpperCase() === 'PLUG37';
+                return (
+                    <div className="flex flex-col items-center justify-center text-center space-y-8 sm:space-y-12 min-h-full px-6 py-10">
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: [1, 1.1, 1], opacity: 1 }}
+                            className="w-20 h-20 sm:w-24 sm:h-24 bg-loops-success/10 rounded-full flex items-center justify-center text-loops-success border border-loops-success/20"
+                        >
+                            <CheckCircle className="w-10 h-10 sm:w-12 sm:h-12" />
+                        </motion.div>
 
-                    <div className="space-y-4">
-                        <h2 className="font-display text-3xl sm:text-4xl font-bold italic uppercase tracking-tighter">You're in the Loop.</h2>
-                        <p className="text-sm sm:text-base text-loops-muted max-w-sm mx-auto leading-relaxed">
-                            Your "Founding Plug" application is being reviewed. Keep an eye on your WhatsApp for an exclusive onboarding link.
-                        </p>
-                    </div>
-
-                    {formData.storeName && (
-                        <div className={cn("p-8 sm:p-10 rounded-[2.5rem] text-white w-full max-w-sm shadow-2xl relative overflow-hidden group", formData.storeBannerColor)}>
-                            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:rotate-12 transition-transform duration-700">
-                                <InfinityLogo className="w-24 h-24" />
-                            </div>
-                            <div className="relative z-10 flex items-center gap-6 mb-8">
-                                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 overflow-hidden flex items-center justify-center shadow-inner">
-                                    {formData.storeLogoUrl ? (
-                                        <Image src={formData.storeLogoUrl} alt="Logo" width={64} height={64} className="object-cover h-full w-full" />
-                                    ) : (
-                                        <User className="w-8 h-8" />
-                                    )}
-                                </div>
-                                <div>
-                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 mb-1">Founding Node</div>
-                                    <div className="px-3 py-1 bg-white/10 rounded-full text-[8px] font-black uppercase border border-white/20 w-fit">Verified ID</div>
-                                </div>
-                            </div>
-                            <div className="text-3xl font-black italic tracking-tighter relative z-10">{formData.storeName}</div>
-                            <div className="mt-6 pt-6 border-t border-white/10 flex items-center gap-3 relative z-10">
-                                <ShieldCheck className="w-5 h-5" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Founding 50 Candidate</span>
-                            </div>
+                        <div className="space-y-4">
+                            <h2 className="font-display text-3xl sm:text-4xl font-bold italic uppercase tracking-tighter">You're in the Loop.</h2>
+                            <p className="text-sm sm:text-base text-loops-muted max-w-sm mx-auto leading-relaxed">
+                                {isGoldenTicket
+                                    ? "Golden Ticket activated! Your store is live. Now add your first products to become a Verified Plug."
+                                    : "Your \"Founding Plug\" application is being reviewed. Keep an eye on your WhatsApp for an exclusive onboarding link."}
+                            </p>
                         </div>
-                    )}
 
-                    <Link href="/">
-                        <Button variant="ghost" className="h-14 font-bold uppercase tracking-widest text-xs text-loops-muted">
-                            Return to Homepage
-                        </Button>
-                    </Link>
-                </div>
-            )
+                        {formData.storeName && (
+                            <div className={cn("p-8 sm:p-10 rounded-[2.5rem] text-white w-full max-w-sm shadow-2xl relative overflow-hidden group", formData.storeBannerColor)}>
+                                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+                                    <InfinityLogo className="w-24 h-24" />
+                                </div>
+                                <div className="relative z-10 flex items-center gap-6 mb-8">
+                                    <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 overflow-hidden flex items-center justify-center shadow-inner">
+                                        {formData.storeLogoUrl ? (
+                                            <Image src={formData.storeLogoUrl} alt="Logo" width={64} height={64} className="object-cover h-full w-full" />
+                                        ) : (
+                                            <User className="w-8 h-8" />
+                                        )}
+                                    </div>
+                                    <div>
+                                        <div className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 mb-1">Founding Node</div>
+                                        <div className="px-3 py-1 bg-white/10 rounded-full text-[8px] font-black uppercase border border-white/20 w-fit">{isGoldenTicket ? 'Plug Activated' : 'Verified ID'}</div>
+                                    </div>
+                                </div>
+                                <div className="text-3xl font-black italic tracking-tighter relative z-10">{formData.storeName}</div>
+                                <div className="mt-6 pt-6 border-t border-white/10 flex items-center gap-3 relative z-10">
+                                    <ShieldCheck className="w-5 h-5" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Founding 50 Candidate</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex flex-col gap-3 w-full max-w-sm">
+                            {isGoldenTicket && (
+                                <Button
+                                    onClick={() => router.push('/founding-plugs/populate')}
+                                    className="h-14 rounded-2xl bg-loops-primary text-white font-black uppercase tracking-[0.2em] text-xs shadow-[0_20px_40px_-10px_rgba(16,185,129,0.4)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Sparkles className="w-4 h-4" />
+                                    Populate the Loop
+                                    <ArrowRight className="w-4 h-4" />
+                                </Button>
+                            )}
+                            <Link href="/">
+                                <Button variant="ghost" className="w-full h-12 font-bold uppercase tracking-widest text-xs text-loops-muted">
+                                    Return to Homepage
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                );
+            })()
         }
     ];
 

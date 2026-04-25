@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin';
+import { sendWhatsAppMessage } from '@/lib/whatsapp';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -75,7 +76,15 @@ export async function GET(request: Request) {
 
             if (!notifError) {
                 results.sent++;
-                // In the future, we could also trigger a WhatsApp message here
+
+                // Also send WhatsApp nudge if user has a number
+                if (user.whatsapp_number) {
+                    const firstName = user.full_name?.split(' ')[0] || 'there';
+                    const waMessage = `Hey ${firstName}! 📦 Just a heads-up — *"${listing.title}"* is still waiting in your Loop cart.\n\nDon't let another student grab it first 👀\n\n🔗 ${process.env.NEXT_PUBLIC_SITE_URL || 'https://loops-stores.vercel.app'}/listings/${listing.id}`;
+                    await sendWhatsAppMessage(user.whatsapp_number, waMessage).catch(err => {
+                        console.warn('ABANDONED_CART_WHATSAPP_WARN:', err?.message);
+                    });
+                }
             }
         }
 

@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server';
 
 export async function POST(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { oldPrice, newPrice } = await request.json();
-        const listingId = params.id;
+        const { id: listingId } = await params;
 
         if (!newPrice || !oldPrice || newPrice >= oldPrice) {
             return NextResponse.json({ message: 'No price drop detected.' });
