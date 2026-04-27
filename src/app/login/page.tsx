@@ -35,6 +35,8 @@ export default function LoginPage() {
         }
     }, []);
 
+    const handleGoogleLogin = async () => {
+        setLoading(true);
         const origin = typeof window !== 'undefined' ? window.location.origin : '';
         const redirectTo = origin.includes('localhost') 
             ? `${origin}/auth/callback` 
