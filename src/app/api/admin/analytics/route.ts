@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
             .select('price')
             .eq('status', 'active');
 
-        const listedGMV = gmvData?.reduce((acc, curr) => acc + (Number(curr.price) || 0), 0) || 0;
+        const listedGMV = gmvData?.reduce((acc: number, curr: any) => acc + (Number(curr.price) || 0), 0) || 0;
 
         // 4. Category Distribution
         const { data: categories, error: catError } = await supabase
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
             .select('category');
 
         const categoryMap: Record<string, number> = {};
-        categories?.forEach(item => {
+        categories?.forEach((item: any) => {
             const cat = item.category || 'Uncategorized';
             categoryMap[cat] = (categoryMap[cat] || 0) + 1;
         });
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
             .eq('status', 'active');
 
         const sellerCounts: Record<string, { name: string, avatar: string, count: number }> = {};
-        topSellers?.forEach(item => {
+        topSellers?.forEach((item: any) => {
             if (!item.seller_id) return;
             const profile: any = item.profiles;
             if (!sellerCounts[item.seller_id]) {
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
         });
 
         const sortedSellers = Object.values(sellerCounts)
-            .sort((a, b) => b.count - a.count)
+            .sort((a: any, b: any) => b.count - a.count)
             .slice(0, 5);
 
         return NextResponse.json({
