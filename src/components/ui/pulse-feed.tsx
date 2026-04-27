@@ -41,7 +41,8 @@ export function PulseFeed({ campusId }: { campusId?: string | null }) {
 
         fetchFeed();
     }, [campusId, supabase]);
-
+    return (
+        <div className="w-full">
             <HybridGrid items={items} loading={loading} />
 
             {/* Bottom Spacer/Padding */}

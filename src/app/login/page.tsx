@@ -35,12 +35,15 @@ export default function LoginPage() {
         }
     }, []);
 
-    const handleGoogleLogin = async () => {
-        setLoading(true);
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        const redirectTo = origin.includes('localhost') 
+            ? `${origin}/auth/callback` 
+            : 'https://loops-marketplace.vercel.app/auth/callback';
+
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo,
             },
         });
         if (error) {
@@ -123,6 +126,11 @@ export default function LoginPage() {
         try {
             if (view === 'signup') {
 
+                const origin = typeof window !== 'undefined' ? window.location.origin : '';
+                const emailRedirectTo = origin.includes('localhost') 
+                    ? `${origin}/auth/callback` 
+                    : 'https://loops-marketplace.vercel.app/auth/callback';
+
                 // Signup flow
                 const { data, error } = await supabase.auth.signUp({
                     email,
@@ -131,7 +139,7 @@ export default function LoginPage() {
                         data: {
                             full_name: fullName,
                         },
-                        emailRedirectTo: `${window.location.origin}/auth/callback`,
+                        emailRedirectTo,
                     },
                 });
 
