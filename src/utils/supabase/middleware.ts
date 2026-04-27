@@ -9,8 +9,10 @@ export async function updateSession(request: NextRequest) {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    // Safety check: if env vars are missing, just allow the request through
-    if (!url || !key) {
+    // Safety check: if env vars are missing or invalid, just allow the request through
+    const isValidUrl = url && (url.startsWith('http://') || url.startsWith('https://')) && !url.includes('your-supabase-url');
+
+    if (!isValidUrl || !key) {
         return supabaseResponse;
     }
 
