@@ -4,15 +4,17 @@ import { NextResponse } from "next/server";
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
-  // Initialize client inside to avoid build-time errors if env vars are missing
-  const supabaseAdmin = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      return NextResponse.json({ error: "Configuration missing" }, { status: 500 });
+  const isValidUrl = url.startsWith('http://') || url.startsWith('https://');
+
+  if (!isValidUrl || !key) {
+      return NextResponse.json({ error: "Configuration missing or invalid" }, { status: 500 });
   }
+
+  // Initialize client inside to avoid build-time errors if env vars are missing
+  const supabaseAdmin = createSupabaseClient(url, key);
 
   try {
     const { action, payload } = await req.json();

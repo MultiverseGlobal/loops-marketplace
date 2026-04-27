@@ -6,11 +6,19 @@ export async function createClient() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    if (!url || !key) {
-        console.warn("⚠️ Supabase keys missing in Server. Activating Ghost Client.");
-        return new Proxy({} as any, {
-            get: () => () => ({ data: null, error: null, count: 0 })
-        });
+    const isValidUrl = url && (url.startsWith('http://') || url.startsWith('https://')) && !url.includes('your-supabase-url');
+
+    if (!isValidUrl || !key) {
+        console.warn("⚠️ Supabase keys missing or invalid in Server. Activating Ghost Client.");
+        const createGhostProxy = (): any => {
+            return new Proxy(() => ({ data: null, error: null, count: 0 }), {
+                get: (target, prop) => {
+                    if (prop === 'then') return undefined;
+                    return createGhostProxy();
+                }
+            });
+        };
+        return createGhostProxy();
     }
 
     return createServerClient(

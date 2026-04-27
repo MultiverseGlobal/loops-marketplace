@@ -1,14 +1,25 @@
 import { createClient } from '@supabase/supabase-js'
 
 export function createAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co"
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder"
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.warn('⚠️ Supabase Admin environment variables are missing. Using placeholders for build.');
+  const isValidUrl = url && (url.startsWith('http://') || url.startsWith('https://')) && !url.includes('your-supabase-url');
+
+  if (!isValidUrl || !key) {
+    console.warn('⚠️ Supabase Admin environment variables are missing or invalid. Using Ghost Client for build.');
+    const createGhostProxy = (): any => {
+        return new Proxy(() => ({ data: null, error: null, count: 0 }), {
+            get: (target, prop) => {
+                if (prop === 'then') return undefined;
+                return createGhostProxy();
+            }
+        });
+    };
+    return createGhostProxy();
   }
 
-  return createClient(supabaseUrl, supabaseServiceKey, {
+  return createClient(url, key, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
