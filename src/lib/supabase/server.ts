@@ -14,7 +14,9 @@ export async function createClient() {
             const ghost: any = new Proxy(() => ghost, {
                 get: (target, prop) => {
                     if (prop === 'then') return undefined;
-                    if (prop === 'data') return null;
+                    if (prop === 'data') return new Proxy({ user: null }, {
+                        get: (t, p) => p === 'length' ? 0 : (t as any)[p] ?? ghost
+                    });
                     if (prop === 'error') return null;
                     if (prop === 'count') return 0;
                     return ghost;
