@@ -70,7 +70,8 @@ export function Navbar() {
 
     useEffect(() => {
         const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+            const authResponse = await supabase.auth.getUser();
+            const user = authResponse?.data?.user;
             setUser(user);
             if (user) {
                 // Fetch Profile
@@ -84,14 +85,16 @@ export function Navbar() {
         };
         getUser();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const authChangeResponse = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
             if (!session?.user) {
                 setProfile(null);
             }
         });
 
-        return () => subscription.unsubscribe();
+        const subscription = authChangeResponse?.data?.subscription;
+
+        return () => subscription?.unsubscribe?.();
     }, [supabase]);
 
     const handleSignOut = async () => {

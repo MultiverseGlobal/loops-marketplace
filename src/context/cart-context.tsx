@@ -32,7 +32,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const toast = useToast();
 
     const refreshCart = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
+        const authResponse = await supabase.auth.getUser();
+        const user = authResponse?.data?.user;
         if (!user) {
             setCartItems([]);
             setLoading(false);
@@ -51,7 +52,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     };
 
     const refreshWishlist = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
+        const authResponse = await supabase.auth.getUser();
+        const user = authResponse?.data?.user;
         if (!user) {
             setWishlistCount(0);
             return;
@@ -71,16 +73,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         refreshCart();
         refreshWishlist();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+        const authChangeResponse = supabase.auth.onAuthStateChange(() => {
             refreshCart();
             refreshWishlist();
         });
 
-        return () => subscription.unsubscribe();
+        const subscription = authChangeResponse?.data?.subscription;
+
+        return () => subscription?.unsubscribe?.();
     }, []);
 
     const addToCart = async (listing: any) => {
-        const { data: { user } } = await supabase.auth.getUser();
+        const authResponse = await supabase.auth.getUser();
+        const user = authResponse?.data?.user;
         if (!user) {
             toast.error("Please login to add items to cart.");
             return;

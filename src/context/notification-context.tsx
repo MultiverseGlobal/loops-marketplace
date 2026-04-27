@@ -45,13 +45,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     useEffect(() => {
         const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+            const authResponse = await supabase.auth.getUser();
+            const user = authResponse?.data?.user;
             setUser(user);
             if (user) fetchNotifications(user.id);
         };
         checkUser();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const authChangeResponse = supabase.auth.onAuthStateChange((_event, session) => {
             const nextUser = session?.user ?? null;
             setUser(nextUser);
             if (nextUser) fetchNotifications(nextUser.id);
@@ -61,7 +62,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             }
         });
 
-        return () => subscription.unsubscribe();
+        const subscription = authChangeResponse?.data?.subscription;
+
+        return () => subscription?.unsubscribe?.();
     }, [supabase, fetchNotifications]);
 
     useEffect(() => {

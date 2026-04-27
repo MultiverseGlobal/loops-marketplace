@@ -43,11 +43,14 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
 
     const fetchCampusDetails = async (campusId: string) => {
-        const { data: dbCampus, error } = await supabase
+        const response = await supabase
             .from('campuses')
             .select('*')
             .eq('id', campusId)
             .single();
+
+        const dbCampus = response?.data;
+        const error = response?.error;
 
         if (dbCampus && !error) {
             return {
@@ -77,7 +80,8 @@ export function CampusProvider({ children }: { children: React.ReactNode }) {
             setLoading(true);
             try {
                 // 1. Check Auth User
-                const { data: { user } } = await supabase.auth.getUser();
+                const authResponse = await supabase.auth.getUser();
+                const user = authResponse?.data?.user;
                 if (user) {
                     const { data: profile } = await supabase
                         .from('profiles')

@@ -11,13 +11,7 @@ export const createEdgeClient = () => {
             const ghost: any = new Proxy(() => ghost, {
                 get: (target, prop) => {
                     if (prop === 'then') return undefined;
-                    if (prop === 'data') {
-                        const fakeData: any = [];
-                        fakeData.user = null;
-                        fakeData.session = null;
-                        fakeData.subscription = { unsubscribe: () => {} };
-                        return fakeData;
-                    }
+                    if (prop === 'data') return null;
                     if (prop === 'error') return null;
                     if (prop === 'count') return 0;
                     return ghost;
