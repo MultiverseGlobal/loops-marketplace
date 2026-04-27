@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
 
         // Extract name from text (basic pattern matching)
         // Look for common patterns in Nigerian student IDs
-        const lines = extractedText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        const lines = extractedText.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 0);
 
         // Try to find the name (usually appears near the top, often after "NAME:" or similar)
         let extractedName = '';

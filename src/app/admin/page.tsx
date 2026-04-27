@@ -1468,12 +1468,12 @@ const DashboardView = ({
                 <div className="flex-1 w-full max-w-md space-y-4">
                     <div className="flex justify-between items-end">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Launch Saturation</span>
-                        <span className="text-xl font-black italic">{stats.readyPlugs}/50 <span className="text-[10px] opacity-40 not-italic uppercase tracking-widest ml-1">Ready</span></span>
+                        <span className="text-xl font-black italic">{analytics?.overview?.readyVendors || stats.readyPlugs}/50 <span className="text-[10px] opacity-40 not-italic uppercase tracking-widest ml-1">Ready</span></span>
                     </div>
                     <div className="h-4 w-full bg-white/5 rounded-full border border-white/10 overflow-hidden backdrop-blur-sm">
                         <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: `${Math.min((stats.readyPlugs / 50) * 100, 100)}%` }}
+                            animate={{ width: `${Math.min(((analytics?.overview?.readyVendors || stats.readyPlugs) / 50) * 100, 100)}%` }}
                             className="h-full bg-gradient-to-r from-loops-primary to-loops-secondary shadow-[0_0_20px_rgba(var(--loops-primary-rgb),0.5)] transition-all"
                         />
                     </div>
@@ -1559,18 +1559,39 @@ const DashboardView = ({
                     <Activity className="w-5 h-5 text-loops-primary" />
                     <h3 className="text-xl font-black italic uppercase tracking-tighter">Live Signals</h3>
                 </div>
-                <div className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-4">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-loops-muted opacity-50">Node Health</div>
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-loops-success animate-pulse" />
-                                <span className="text-[11px] font-bold">Campus Node</span>
+                <div className="p-6 rounded-3xl bg-white border border-loops-border shadow-sm space-y-6">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-loops-muted opacity-50">Growth Velocity (24h)</div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-loops-primary">
+                                <TrendingUp className="w-3.5 h-3.5" />
+                                <span className="text-xl font-black italic">+{analytics?.overview?.newUsers24h || 0}</span>
                             </div>
-                            <span className="text-[10px] font-black text-loops-success">98% UP</span>
+                            <p className="text-[9px] font-bold text-loops-muted uppercase">New Users</p>
                         </div>
-                        <div className="h-1 w-full bg-loops-subtle rounded-full overflow-hidden">
-                            <div className="h-full bg-loops-success w-[98%]" />
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-loops-energetic">
+                                <TrendingUp className="w-3.5 h-3.5" />
+                                <span className="text-xl font-black italic">+{analytics?.overview?.newListings24h || 0}</span>
+                            </div>
+                            <p className="text-[9px] font-bold text-loops-muted uppercase">New Items</p>
+                        </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-loops-border">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <Clock className="w-3.5 h-3.5 text-loops-muted" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-loops-muted">Node Status</span>
+                            </div>
+                            <span className="text-[9px] font-black text-loops-success uppercase">98% Stable</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-loops-subtle rounded-full overflow-hidden">
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: '98%' }}
+                                className="h-full bg-loops-success" 
+                            />
                         </div>
                     </div>
                 </div>
@@ -1634,23 +1655,56 @@ const DashboardView = ({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 p-8 rounded-3xl bg-white border border-loops-border shadow-sm space-y-8">
                     <div className="flex items-center justify-between border-b pb-6">
-                        <h2 className="text-xl font-bold font-display">Loop Velocity</h2>
-                        <div className="text-3xl font-display font-bold text-loops-primary italic">₦{analytics.overview?.listedGMV?.toLocaleString()}</div>
+                        <div className="space-y-1">
+                            <h2 className="text-xl font-bold font-display">Loop Velocity</h2>
+                            <p className="text-[10px] font-bold text-loops-muted uppercase tracking-widest">Total Transaction Flow</p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-3xl font-display font-bold text-loops-primary italic">₦{analytics.overview?.realizedGMV?.toLocaleString() || '0'}</div>
+                            <div className="text-[9px] font-bold text-loops-muted uppercase tracking-widest">Realized GMV</div>
+                        </div>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                        <StatTile label="Plugs" value={analytics.overview?.verifiedPlugs} icon={Zap} />
-                        <StatTile label="Adoption" value={`${analytics.overview?.totalUsers > 0 ? Math.round((analytics.overview?.verifiedPlugs / analytics.overview?.totalUsers) * 100) : 0}%`} icon={BarChart3} />
-                        <StatTile label="Products" value={analytics.overview?.products} icon={Package} />
-                        <StatTile label="Services" value={analytics.overview?.services} icon={Award} />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-6">
+                                <StatTile label="Plugs" value={analytics.overview?.verifiedPlugs} icon={Zap} />
+                                <StatTile label="Adoption" value={`${analytics.overview?.totalUsers > 0 ? Math.round((analytics.overview?.verifiedPlugs / analytics.overview?.totalUsers) * 100) : 0}%`} icon={BarChart3} />
+                                <StatTile label="Products" value={analytics.overview?.products} icon={Package} />
+                                <StatTile label="Services" value={analytics.overview?.services} icon={Award} />
+                            </div>
+                            
+                            <div className="p-4 rounded-2xl bg-loops-primary/5 border border-loops-primary/10">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-loops-primary">Listed Liquidity</span>
+                                    <span className="text-sm font-black text-loops-primary">₦{analytics.overview?.listedGMV?.toLocaleString()}</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-loops-primary/10 rounded-full overflow-hidden">
+                                    <div className="h-full bg-loops-primary w-[100%]" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <CategoryDistribution data={analytics.categoryDistribution || {}} />
                     </div>
                 </div>
+                
                 <div className="p-8 rounded-3xl bg-white border border-loops-border shadow-sm space-y-6">
-                    <h2 className="text-xl font-bold font-display flex items-center gap-2"><Award className="w-5 h-5 text-loops-energetic" /> Top Plugs</h2>
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold font-display flex items-center gap-2">
+                            <Award className="w-5 h-5 text-loops-energetic" /> 
+                            Top Plugs
+                        </h2>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-loops-muted">by Volume</span>
+                    </div>
                     <div className="space-y-4">
-                        {analytics.topSellers?.map((seller: any, idx: number) => (
-                            <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-loops-subtle border border-loops-border">
-                                <span className="font-bold text-sm">{seller.name}</span>
-                                <span className="text-loops-primary font-bold">{seller.count}</span>
+                        {analytics.topSellers?.slice(0, 8).map((seller: any, idx: number) => (
+                            <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-loops-subtle border border-loops-border group hover:border-loops-primary/30 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-[10px] font-black text-loops-muted w-4">{idx + 1}</span>
+                                    <span className="font-bold text-sm group-hover:text-loops-primary transition-colors">{seller.name}</span>
+                                </div>
+                                <span className="text-loops-primary font-black">{seller.count}</span>
                             </div>
                         ))}
                     </div>

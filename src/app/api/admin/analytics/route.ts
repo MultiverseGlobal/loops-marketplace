@@ -51,15 +51,15 @@ export async function GET(request: NextRequest) {
         let readyVendorsCount = readyVendors.data || 0;
         if (readyVendors.error) {
             const { data: allPlugs } = await supabase.from('profiles').select('id').eq('is_plug', true);
-            const plugIds = allPlugs?.map(p => p.id) || [];
+            const plugIds = (allPlugs as any[])?.map((p: any) => p.id) || [];
             const { data: listingCounts } = await supabase.from('listings').select('seller_id');
             const counts: Record<string, number> = {};
-            listingCounts?.forEach(l => {
+            (listingCounts as any[])?.forEach((l: any) => {
                 if (plugIds.includes(l.seller_id)) {
                     counts[l.seller_id] = (counts[l.seller_id] || 0) + 1;
                 }
             });
-            readyVendorsCount = Object.values(counts).filter(c => c >= 3).length;
+            readyVendorsCount = Object.values(counts).filter((c: any) => c >= 3).length;
         }
 
         // 3. GMV Calculation

@@ -36,10 +36,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         if (data && !error) {
             setNotifications(data);
-            const unread = data.filter(n => !n.read);
+            const unread = data.filter((n: any) => !n.read);
             setUnreadCount(unread.length);
-            setUnreadMessagesCount(unread.filter(n => n.type === 'message').length);
-            setPendingLoopsCount(unread.filter(n => n.type === 'loop' || n.type === 'transaction').length);
+            setUnreadMessagesCount(unread.filter((n: any) => n.type === 'message').length);
+            setPendingLoopsCount(unread.filter((n: any) => n.type === 'loop' || n.type === 'transaction').length);
         }
     }, [supabase]);
 
