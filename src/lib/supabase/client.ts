@@ -17,9 +17,15 @@ export function createClient() {
             const ghost: any = new Proxy(() => ghost, {
                 get: (target, prop) => {
                     if (prop === 'then') return undefined;
-                    if (prop === 'data') return new Proxy({ user: null }, {
-                        get: (t, p) => p === 'length' ? 0 : (t as any)[p] ?? ghost
-                    });
+                    if (prop === 'data') {
+                        // Return an empty array that also has common Supabase object properties
+                        // This satisfies both array iteration (.map, .forEach) and auth destructuring ({ data: { user } })
+                        const fakeData: any = [];
+                        fakeData.user = null;
+                        fakeData.session = null;
+                        fakeData.subscription = { unsubscribe: () => {} };
+                        return fakeData;
+                    }
                     if (prop === 'error') return null;
                     if (prop === 'count') return 0;
                     return ghost;
