@@ -12,14 +12,21 @@ export function createClient() {
             console.warn("⚠️ Supabase keys missing or invalid in Browser. Using Ghost Client.");
         }
         
-        // Recursive Proxy to handle nested property access like supabase.auth.getUser()
+        // Recursive Proxy that handles both property access and function calls
         const createGhostProxy = (): any => {
-            return new Proxy(() => ({ data: null, error: null, count: 0 }), {
+            const ghost: any = new Proxy(() => ghost, {
                 get: (target, prop) => {
-                    if (prop === 'then') return undefined; // Avoid issues with async/await
-                    return createGhostProxy();
+                    if (prop === 'then') return undefined;
+                    if (prop === 'data') return null;
+                    if (prop === 'error') return null;
+                    if (prop === 'count') return 0;
+                    return ghost;
+                },
+                apply: (target, thisArg, args) => {
+                    return ghost;
                 }
             });
+            return ghost;
         };
         
         return createGhostProxy();
