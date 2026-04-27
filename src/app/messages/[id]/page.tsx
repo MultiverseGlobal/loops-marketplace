@@ -85,7 +85,7 @@ export default function ChatPage() {
 
 
                     if (msgs) {
-                        const filtered = msgs.filter(m =>
+                        const filtered = msgs.filter((m: any) =>
                             (m.sender_id === user.id && m.receiver_id === targetThreadPartnerId) ||
                             (m.sender_id === targetThreadPartnerId && m.receiver_id === user.id)
                         );
@@ -109,7 +109,7 @@ export default function ChatPage() {
                         .on(
                             'postgres_changes',
                             { event: 'INSERT', schema: 'public', table: 'messages', filter: `listing_id=eq.${listingId}` },
-                            (payload) => {
+                            (payload: any) => {
                                 const m = payload.new;
                                 if ((m.sender_id === user.id && m.receiver_id === targetThreadPartnerId) ||
                                     (m.sender_id === targetThreadPartnerId && m.receiver_id === user.id)) {
@@ -179,7 +179,7 @@ export default function ChatPage() {
             // Optimistic update fallback if subscription is slow
             if (msgData) {
                 setMessages((prev) => {
-                    if (prev.some(m => m.id === msgData.id)) return prev;
+                    if (prev.some((m: any) => m.id === msgData.id)) return prev;
                     return [...prev, msgData];
                 });
 
@@ -439,7 +439,7 @@ export default function ChatPage() {
                         </p>
                     </div>
 
-                    {messages.map((m, i) => {
+                    {messages.map((m: any, i: number) => {
                         const isMe = m.sender_id === currentUser?.id;
                         const isSystem = m.content.startsWith('SYSTEM:') || m.content.startsWith('LOOPS:');
 

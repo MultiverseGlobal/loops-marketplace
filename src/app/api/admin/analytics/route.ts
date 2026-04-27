@@ -1,3 +1,4 @@
+// Testing write access
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
@@ -22,28 +23,59 @@ export async function GET(request: NextRequest) {
         }
 
         // 2. Aggregate Growth Metrics
+        const now = new Date();
+        const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+
         const [
             usersCount,
             plugsCount,
             listingsCount,
             productsCount,
-            servicesCount
+            servicesCount,
+            newUsers24h,
+            newListings24h,
+            readyVendors
         ] = await Promise.all([
             supabase.from('profiles').select('*', { count: 'exact', head: true }),
             supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_plug', true),
             supabase.from('listings').select('*', { count: 'exact', head: true }),
             supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'product'),
-            supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'service')
+            supabase.from('listings').select('*', { count: 'exact', head: true }).eq('type', 'service'),
+            supabase.from('profiles').select('*', { count: 'exact', head: true }).gt('created_at', yesterday),
+            supabase.from('listings').select('*', { count: 'exact', head: true }).gt('created_at', yesterday),
+            // Count vendors with >= 3 listings
+            supabase.rpc('get_ready_vendors_count') // We'll need to create this RPC or do it manually
         ]);
 
-        // 3. Gross Merchandise Value (GMV) Calculation
-        // Note: For MVP, we calculate "Listed GMV" as total value of active listings
-        const { data: gmvData, error: gmvError } = await supabase
+        // Alternative for ready vendors if RPC doesn't exist yet
+        let readyVendorsCount = readyVendors.data || 0;
+        if (readyVendors.error) {
+            const { data: allPlugs } = await supabase.from('profiles').select('id').eq('is_plug', true);
+            const plugIds = allPlugs?.map(p => p.id) || [];
+            const { data: listingCounts } = await supabase.from('listings').select('seller_id');
+            const counts: Record<string, number> = {};
+            listingCounts?.forEach(l => {
+                if (plugIds.includes(l.seller_id)) {
+                    counts[l.seller_id] = (counts[l.seller_id] || 0) + 1;
+                }
+            });
+            readyVendorsCount = Object.values(counts).filter(c => c >= 3).length;
+        }
+
+        // 3. GMV Calculation
+        const { data: gmvData } = await supabase
             .from('listings')
             .select('price')
             .eq('status', 'active');
 
         const listedGMV = gmvData?.reduce((acc: number, curr: any) => acc + (Number(curr.price) || 0), 0) || 0;
+
+        const { data: realizedData } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('status', 'completed');
+
+        const realizedGMV = realizedData?.reduce((acc: number, curr: any) => acc + (Number(curr.amount) || 0), 0) || 0;
 
         // 4. Category Distribution
         const { data: categories, error: catError } = await supabase
@@ -87,7 +119,11 @@ export async function GET(request: NextRequest) {
                 totalListings: listingsCount.count || 0,
                 products: productsCount.count || 0,
                 services: servicesCount.count || 0,
-                listedGMV: listedGMV
+                listedGMV: listedGMV,
+                realizedGMV: realizedGMV,
+                newUsers24h: newUsers24h.count || 0,
+                newListings24h: newListings24h.count || 0,
+                readyVendors: readyVendorsCount
             },
             categoryDistribution: categoryMap,
             topSellers: sortedSellers,
