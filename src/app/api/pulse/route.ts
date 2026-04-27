@@ -60,10 +60,10 @@ export async function GET(request: Request) {
 
         // 4. Combine and Sort
         const feed = [
-            ...(listings || []).map(l => ({ ...l, feed_type: 'listing' })),
-            ...(transactions || []).map(t => ({ ...t, feed_type: 'activity' })),
-            ...(campaigns || []).map(c => ({ ...c, feed_type: 'campaign' }))
-        ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+            ...(listings || []).map((l: any) => ({ ...l, feed_type: 'listing' })),
+            ...(transactions || []).map((t: any) => ({ ...t, feed_type: 'activity' })),
+            ...(campaigns || []).map((c: any) => ({ ...c, feed_type: 'campaign' }))
+        ].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
         return NextResponse.json(feed.slice(0, limit));
 
