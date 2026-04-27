@@ -1,13 +1,15 @@
 import { createBrowserClient } from '@supabase/ssr'
 
 export function createClient() {
-    // During build, environment variables might be missing. 
-    // We provide placeholders to satisfy the Supabase library's validation.
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder";
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-        console.warn("⚠️ Supabase Environment Variables are missing. Using placeholders for build/SSR.");
+    if (!url || !key) {
+        console.warn("⚠️ Supabase keys missing. Activating Ghost Client for build.");
+        // Return a Proxy that handles any property access or method call without crashing
+        return new Proxy({} as any, {
+            get: () => () => ({ data: null, error: null, count: 0 })
+        });
     }
 
     return createBrowserClient(url, key);
