@@ -43,6 +43,7 @@ import { useToast } from "@/context/toast-context";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { AdminSidebar, AdminView } from "@/components/admin/sidebar";
+import { CategoryDistribution } from "@/components/admin/AnalyticsCharts";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AdminProfile {
