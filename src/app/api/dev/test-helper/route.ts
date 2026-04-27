@@ -1,13 +1,19 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-// We use a separate client here to avoid any cookie/session issues during automated tests
-const supabaseAdmin = createSupabaseClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! // Note: Ideally use SERVICE_ROLE for testing if available
-);
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
+  // Initialize client inside to avoid build-time errors if env vars are missing
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  );
+
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      return NextResponse.json({ error: "Configuration missing" }, { status: 500 });
+  }
+
   try {
     const { action, payload } = await req.json();
 
