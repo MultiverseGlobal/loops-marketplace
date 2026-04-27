@@ -546,9 +546,9 @@ export default function AdminDashboard() {
                     products: products.count || 0,
                     services: servicesCount.count || 0,
                     reports: reportsCount.count || 0,
-                    pendingApps: allApplications?.filter(a => a.status === 'pending').length || 0,
-                    readyPlugs: usersData?.filter(u => {
-                        const has3Listings = (listingsData?.filter(l => l.seller_id === u.id).length || 0) >= 3;
+                    pendingApps: allApplications?.filter((a: any) => a.status === 'pending').length || 0,
+                    readyPlugs: usersData?.filter((u: any) => {
+                        const has3Listings = (listingsData?.filter((l: any) => l.seller_id === u.id).length || 0) >= 3;
                         return u.is_plug && has3Listings;
                     }).length || 0
                 });
