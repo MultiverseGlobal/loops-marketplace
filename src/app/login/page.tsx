@@ -38,9 +38,10 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         setLoading(true);
         const origin = typeof window !== 'undefined' ? window.location.origin : '';
-        const redirectTo = origin.includes('localhost') 
-            ? `${origin}/auth/callback` 
-            : 'https://loops-marketplace.vercel.app/auth/callback';
+        // Dynamically use the current origin for the redirect.
+        // This ensures that whether you are on production or a preview link, 
+        // Google will send you back to the exact same site you came from.
+        const redirectTo = `${origin}/auth/callback`;
 
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
@@ -129,9 +130,7 @@ export default function LoginPage() {
             if (view === 'signup') {
 
                 const origin = typeof window !== 'undefined' ? window.location.origin : '';
-                const emailRedirectTo = origin.includes('localhost') 
-                    ? `${origin}/auth/callback` 
-                    : 'https://loops-marketplace.vercel.app/auth/callback';
+                const emailRedirectTo = `${origin}/auth/callback`;
 
                 // Signup flow
                 const { data, error } = await supabase.auth.signUp({
