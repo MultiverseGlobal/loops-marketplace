@@ -4,7 +4,7 @@ import { updateSession } from '@/utils/supabase/middleware'
 // Simple in-memory rate limiting (Note: This is reset on function cold starts on Vercel)
 const rateLimitMap = new Map<string, number>();
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const ip = (request as any).ip || request.headers.get('x-forwarded-for') || 'anonymous';
     const path = request.nextUrl.pathname;
 
