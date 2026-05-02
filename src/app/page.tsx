@@ -2,6 +2,7 @@
 
 import { Navbar } from "../components/layout/navbar";
 import { PulseFeed } from "../components/ui/pulse-feed";
+import { CampusBuzz } from "../components/ui/campus-buzz";
 import { Footer } from "../components/layout/footer";
 import { CampusSelector } from "../components/ui/campus-selector";
 import { FeaturedHubs } from "../components/ui/featured-hubs";
@@ -23,6 +24,8 @@ export default function Home() {
     return (
         <div className="bg-loops-bg min-h-screen">
             <Navbar />
+            <CampusSelector />
+            <CampusBuzz />
             
             <main className="pt-20 md:pt-36 pb-24">
                 {/* Compact Hybrid Hero Section - Hidden on Mobile */}
@@ -105,7 +108,7 @@ export default function Home() {
                         </Link>
                     </div>
 
-                    {/* Continuous Pulse Feed */}
+                    {/* Real Pulse Feed */}
                     <PulseFeed campusId={campus?.id} />
                 </div>
             </main>

@@ -39,7 +39,7 @@ export function BottomNav() {
     }, [supabase.auth]);
 
     // Define routes where the bottom nav should be hidden
-    const hideOnRoutes = ["/", "/onboarding", "/login", "/signup", "/auth", "/founding-plugs"];
+    const hideOnRoutes = ["/onboarding", "/login", "/signup", "/auth", "/founding-plugs"];
     const shouldHide = hideOnRoutes.includes(pathname) ||
         pathname.startsWith("/auth/") ||
         pathname.startsWith("/messages/");
@@ -47,7 +47,7 @@ export function BottomNav() {
     if (shouldHide) return null;
 
     const navItems = [
-        { label: "Feed", href: "/browse", icon: Home },
+        { label: "Feed", href: "/", icon: Home },
         { label: "Inbox", href: "/messages", icon: MessageSquare, badge: unreadCount },
         { label: "Post", href: "/listings/create", icon: PlusSquare, primary: true },
         { label: "Cart", icon: ShoppingCart, badge: cartCount, isCart: true },

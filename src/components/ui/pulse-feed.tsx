@@ -43,7 +43,18 @@ export function PulseFeed({ campusId }: { campusId?: string | null }) {
     }, [campusId, supabase]);
     return (
         <div className="w-full">
-            <HybridGrid items={items} loading={loading} />
+            {items.length === 0 && !loading ? (
+                <div className="text-center py-20 bg-white border border-dashed border-loops-border rounded-[2rem]">
+                    <p className="text-loops-muted font-bold">No activity in this Loop yet. Be the first to post!</p>
+                    <Link href="/listings/create" className="mt-4 inline-block">
+                        <Button variant="ghost" className="text-loops-primary font-black uppercase tracking-widest text-[10px]">
+                            Post a Drop <ArrowRight className="w-3 h-3 ml-2" />
+                        </Button>
+                    </Link>
+                </div>
+            ) : (
+                <HybridGrid items={items} loading={loading} />
+            )}
 
             {/* Bottom Spacer/Padding */}
             <div className="h-20" />
