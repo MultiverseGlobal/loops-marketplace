@@ -17,7 +17,6 @@ import { useNotifications } from "@/context/notification-context";
 import { NotificationDrawer } from "./notification-drawer";
 import { SearchBar } from "../ui/search-bar";
 import { PRODUCT_CATEGORIES } from "@/lib/constants";
-import { ActivityBuzz } from "../ui/activity-buzz";
 import { VerificationBanner } from "../ui/verification-banner";
 
 function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
@@ -57,16 +56,7 @@ export function Navbar() {
     const { campus, getTerm } = useCampus();
     const toast = useToast();
     const { unreadCount, unreadMessagesCount, pendingLoopsCount } = useNotifications();
-    const [showAppBanner, setShowAppBanner] = useState(false);
     const pathname = usePathname();
-
-    useEffect(() => {
-        const dismissed = localStorage.getItem('loops_app_banner_dismissed');
-        const isMobile = window.innerWidth < 768;
-        if (isMobile && !dismissed) {
-            setShowAppBanner(true);
-        }
-    }, []);
 
     useEffect(() => {
         const getUser = async () => {
@@ -264,20 +254,8 @@ export function Navbar() {
             {/* Mobile Header */}
             <nav className={cn(
                 "md:hidden w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl transition-all duration-500",
-                showAppBanner ? "pt-12" : "pt-0"
+                "pt-0"
             )}>
-                {showAppBanner && (
-                    <div className="absolute top-0 w-full h-12 bg-loops-primary text-white flex items-center justify-between px-6">
-                        <div className="flex items-center gap-2">
-                            <Smartphone className="w-4 h-4" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Get the App</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <button onClick={triggerPWAInstall} className="text-[9px] font-black uppercase tracking-widest bg-white text-loops-primary px-3 py-1 rounded-full">Install</button>
-                            <button onClick={() => setShowAppBanner(false)}><X className="w-4 h-4 opacity-50" /></button>
-                        </div>
-                    </div>
-                )}
                 <div className="px-6 h-14 flex items-center justify-between">
                     <Link href="/welcome" className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-loops-border shadow-sm overflow-hidden">

@@ -86,6 +86,12 @@ export default function OnboardingPage() {
     const [primaryRole, setPrimaryRole] = useState<'buying' | 'plug'>('buying');
     const [storeCategory, setStoreCategory] = useState("");
     const [storeBannerColor, setStoreBannerColor] = useState("bg-loops-primary");
+    const [plugType, setPlugType] = useState("Individual");
+    const [businessStage, setBusinessStage] = useState("Just Starting");
+    const [deliveryMode, setDeliveryMode] = useState("Campus Meetup");
+    const [refundPolicy, setRefundPolicy] = useState("No Refunds");
+    const [isGeneratingStore, setIsGeneratingStore] = useState(false);
+    const [generationStep, setGenerationStep] = useState(0);
     const [loading, setLoading] = useState(false);
     const [campuses, setCampuses] = useState<Campus[]>([]);
     const [showRequestForm, setShowRequestForm] = useState(false);
@@ -144,6 +150,23 @@ export default function OnboardingPage() {
         setup();
     }, [router, supabase]);
 
+    useEffect(() => {
+        if (step === 7 && primaryRole === 'plug') {
+            setGenerationStep(0);
+            const interval = setInterval(() => {
+                setGenerationStep(prev => {
+                    if (prev >= 3) {
+                        clearInterval(interval);
+                        setTimeout(() => setStep(8), 800);
+                        return prev;
+                    }
+                    return prev + 1;
+                });
+            }, 1200);
+            return () => clearInterval(interval);
+        }
+    }, [step, primaryRole]);
+
     const handleNext = async () => {
         if (step === 1) {
             const campus = campuses.find(c => c.id === selectedCampus);
@@ -188,6 +211,10 @@ export default function OnboardingPage() {
                     whatsapp_number: formatWhatsAppNumber(whatsappNumber),
                     primary_role: primaryRole,
                     is_plug: primaryRole === 'plug',
+                    plug_type: plugType,
+                    delivery_mode: deliveryMode,
+                    refund_policy: refundPolicy,
+                    business_stage: businessStage,
                     referred_by_code: referralCode || null,
                     updated_at: new Date().toISOString(),
                 });
@@ -260,12 +287,13 @@ export default function OnboardingPage() {
             <main className="pt-24 sm:pt-32 pb-16 sm:pb-20 max-w-2xl mx-auto px-4 sm:px-6 relative z-10">
                 {/* Progress Bar */}
                 <div className="flex gap-1 sm:gap-2 mb-8 sm:mb-12">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                         <div
                             key={i}
                             className={cn(
                                 "h-1 flex-1 rounded-full transition-all duration-500",
-                                step >= i ? "bg-loops-primary" : "bg-loops-border"
+                                step >= i ? "bg-loops-primary" : "bg-loops-border",
+                                step === 7 && i === 7 ? "animate-pulse bg-loops-accent" : ""
                             )}
                         />
                     ))}
@@ -516,16 +544,7 @@ export default function OnboardingPage() {
                                     <p className="text-[10px] text-loops-muted italic">Essential for the Handshake. Use your local number (e.g. 080...) or international format.</p>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Bio (Optional)</label>
-                                    <textarea
-                                        value={bio}
-                                        onChange={(e) => setBio(e.target.value)}
-                                        placeholder="Senior CS major. Selling my old textbooks and offering UI design help."
-                                        rows={4}
-                                        className="w-full p-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all resize-none shadow-sm"
-                                    />
-                                </div>
+
 
                                 <div className="space-y-2 pt-4">
                                     <label className="text-sm font-bold text-loops-primary uppercase tracking-widest flex items-center gap-2">
@@ -617,7 +636,7 @@ export default function OnboardingPage() {
                                 <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
                                     Back
                                 </Button>
-                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white shadow-xl shadow-loops-primary/20" onClick={() => setStep(primaryRole === 'plug' ? 4 : 6)}>
+                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white shadow-xl shadow-loops-primary/20" onClick={() => setStep(primaryRole === 'plug' ? 4 : 8)}>
                                     {primaryRole === 'plug' ? "Step Inside" : "Verify & Finish"}
                                 </Button>
                             </div>
@@ -633,12 +652,30 @@ export default function OnboardingPage() {
                             className="space-y-8"
                         >
                             <div className="space-y-4">
-                                <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Plug Setup</div>
-                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Select your <span className="text-gradient italic">Vibe</span></h1>
-                                <p className="text-loops-muted text-lg">Detailed stores sell 3x more. Pick a banner color and name your Store.</p>
+                                <div className="text-[10px] font-bold text-loops-primary uppercase tracking-[0.3em]">Step 1 of 3: Brand</div>
+                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Build your <span className="text-gradient italic">Brand</span></h1>
+                                <p className="text-loops-muted text-lg">Every great empire starts with a name. What are we calling yours?</p>
                             </div>
 
                             <div className="space-y-6">
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Business Structure</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {['Individual', 'Business/Brand'].map((type) => (
+                                            <button
+                                                key={type}
+                                                onClick={() => setPlugType(type)}
+                                                className={cn(
+                                                    "p-4 rounded-xl border-2 transition-all text-left font-bold",
+                                                    plugType === type ? "border-loops-primary bg-loops-primary/5 text-loops-primary" : "border-loops-border bg-white text-loops-muted hover:border-loops-primary/30"
+                                                )}
+                                            >
+                                                {type}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Storefront Name</label>
                                     <input
@@ -646,12 +683,12 @@ export default function OnboardingPage() {
                                         value={storeName}
                                         onChange={(e) => setStoreName(e.target.value)}
                                         placeholder="e.g. Benin City Sneaker Plug"
-                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm"
+                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-primary focus:outline-none focus:ring-1 focus:ring-loops-primary transition-all shadow-sm font-bold text-lg"
                                     />
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Banner Accent</label>
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Brand Accent Color</label>
                                     <div className="flex gap-4">
                                         {['bg-loops-primary', 'bg-loops-secondary', 'bg-loops-accent', 'bg-black'].map((color) => (
                                             <button
@@ -673,7 +710,7 @@ export default function OnboardingPage() {
                                     Back
                                 </Button>
                                 <Button className="h-14 flex-[2] text-lg font-bold bg-loops-primary text-white" disabled={!storeName} onClick={handleNext}>
-                                    Activate Vibe
+                                    Next: The Niche
                                 </Button>
                             </div>
                         </motion.div>
@@ -688,26 +725,55 @@ export default function OnboardingPage() {
                             className="space-y-8"
                         >
                             <div className="space-y-4">
-                                <div className="text-[10px] font-bold text-loops-secondary uppercase tracking-[0.2em]">Growth Strategy</div>
+                                <div className="text-[10px] font-bold text-loops-secondary uppercase tracking-[0.2em]">Step 2 of 3: Strategy</div>
                                 <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">Define your <span className="text-secondary-gradient italic">Niche</span></h1>
-                                <p className="text-loops-muted text-lg">What are you plugging? This helps us route buyers to your store.</p>
+                                <p className="text-loops-muted text-lg">What are you plugging? Let buyers know what makes you special.</p>
                             </div>
 
                             <div className="space-y-6">
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Business Stage</label>
+                                    <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                                        {['Just Starting', 'Already Selling', 'Scaling Up'].map((stage) => (
+                                            <button
+                                                key={stage}
+                                                onClick={() => setBusinessStage(stage)}
+                                                className={cn(
+                                                    "px-5 py-3 rounded-xl border-2 transition-all whitespace-nowrap font-bold text-sm",
+                                                    businessStage === stage ? "border-loops-secondary bg-loops-secondary/5 text-loops-secondary" : "border-loops-border bg-white text-loops-muted hover:border-loops-secondary/30"
+                                                )}
+                                            >
+                                                {stage}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Primary Category</label>
                                     <select
                                         value={storeCategory}
                                         onChange={(e) => setStoreCategory(e.target.value)}
-                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-secondary focus:outline-none focus:ring-1 focus:ring-loops-secondary transition-all"
+                                        className="w-full h-14 px-6 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-secondary focus:outline-none focus:ring-1 focus:ring-loops-secondary transition-all font-bold"
                                     >
                                         <option value="">Select Niche...</option>
-                                        <option value="Electronics">Electronics Plug</option>
-                                        <option value="Fashion">Fashion Plug</option>
-                                        <option value="Books">Academics/Books</option>
-                                        <option value="Food">Food/Snacks</option>
-                                        <option value="Services">Services (Graphics, Code, etc)</option>
+                                        <option value="Electronics">Electronics & Gadgets</option>
+                                        <option value="Fashion">Fashion & Thrift</option>
+                                        <option value="Books">Academics & Textbooks</option>
+                                        <option value="Food">Food & Snacks</option>
+                                        <option value="Services">Services (Graphics, Hair, Code, etc)</option>
                                     </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest flex items-center gap-2">Store Pitch <span className="text-[10px] bg-loops-border text-loops-muted px-2 py-1 rounded-md ml-auto">Optional</span></label>
+                                    <textarea
+                                        value={bio}
+                                        onChange={(e) => setBio(e.target.value)}
+                                        placeholder="E.g., The best thrift vintage plug on campus. Next day delivery guaranteed."
+                                        rows={3}
+                                        className="w-full p-4 rounded-xl bg-loops-subtle border border-loops-border text-loops-main focus:border-loops-secondary focus:outline-none focus:ring-1 focus:ring-loops-secondary transition-all resize-none shadow-sm font-medium"
+                                    />
                                 </div>
                             </div>
 
@@ -716,15 +782,116 @@ export default function OnboardingPage() {
                                     Back
                                 </Button>
                                 <Button className="h-14 flex-[2] text-lg font-bold bg-loops-secondary text-white shadow-xl shadow-loops-secondary/20" disabled={!storeCategory} onClick={handleNext}>
-                                    Go Live
+                                    Next: Operations
                                 </Button>
                             </div>
                         </motion.div>
                     )}
 
-                    {step === 6 && (
+                    {step === 6 && primaryRole === 'plug' && (
                         <motion.div
-                            key="step3"
+                            key="step6"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            className="space-y-8"
+                        >
+                            <div className="space-y-4">
+                                <div className="text-[10px] font-bold text-loops-accent uppercase tracking-[0.2em]">Step 3 of 3: Logistics</div>
+                                <h1 className="text-4xl font-bold font-display tracking-tight text-loops-main">How you <span className="text-accent-gradient italic">Operate</span></h1>
+                                <p className="text-loops-muted text-lg">Set the rules for your buyers to ensure smooth transactions.</p>
+                            </div>
+
+                            <div className="space-y-8">
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Delivery Mode</label>
+                                    <div className="grid gap-3">
+                                        {[
+                                            { id: 'Campus Meetup', desc: 'Buyers meet you at a safe spot on campus' },
+                                            { id: 'Hostel Delivery', desc: 'You deliver directly to their room/hostel' },
+                                            { id: 'Digital/Virtual', desc: 'For digital services, code, or design' }
+                                        ].map((mode) => (
+                                            <button
+                                                key={mode.id}
+                                                onClick={() => setDeliveryMode(mode.id)}
+                                                className={cn(
+                                                    "p-4 rounded-xl border-2 transition-all text-left flex flex-col gap-1",
+                                                    deliveryMode === mode.id ? "border-loops-accent bg-loops-accent/5" : "border-loops-border bg-white hover:border-loops-accent/30"
+                                                )}
+                                            >
+                                                <span className={cn("font-bold", deliveryMode === mode.id ? "text-loops-accent" : "text-loops-main")}>{mode.id}</span>
+                                                <span className="text-xs text-loops-muted">{mode.desc}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold text-loops-muted uppercase tracking-widest">Refund Policy</label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {['No Refunds', '24hr Exchange', 'Money Back Guarantee'].map((policy) => (
+                                            <button
+                                                key={policy}
+                                                onClick={() => setRefundPolicy(policy)}
+                                                className={cn(
+                                                    "px-5 py-3 rounded-xl border-2 transition-all font-bold text-sm flex-1 text-center whitespace-nowrap",
+                                                    refundPolicy === policy ? "border-loops-accent bg-loops-accent/5 text-loops-accent" : "border-loops-border bg-white text-loops-muted hover:border-loops-accent/30"
+                                                )}
+                                            >
+                                                {policy}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <Button variant="outline" className="h-14 flex-1 border-loops-border text-loops-muted hover:bg-loops-subtle" onClick={handleBack}>
+                                    Back
+                                </Button>
+                                <Button className="h-14 flex-[2] text-lg font-bold bg-loops-accent text-loops-main shadow-xl shadow-loops-accent/20" onClick={handleNext}>
+                                    Generate Store
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {step === 7 && primaryRole === 'plug' && (
+                        <motion.div
+                            key="step7"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex flex-col items-center justify-center py-20 space-y-8 text-center"
+                        >
+                            <div className="relative w-32 h-32 flex items-center justify-center">
+                                {/* Rotating gradient ring */}
+                                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-loops-accent border-r-loops-primary animate-spin" style={{ animationDuration: '1.5s' }} />
+                                <div className="absolute inset-2 rounded-full border-4 border-transparent border-b-loops-secondary border-l-loops-accent animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
+                                <div className="w-16 h-16 bg-loops-main rounded-2xl flex items-center justify-center shadow-2xl animate-pulse">
+                                    <Sparkles className="w-8 h-8 text-white" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 h-24">
+                                <h2 className="text-2xl font-bold font-display text-loops-main">
+                                    {generationStep === 0 && "Registering Brand..."}
+                                    {generationStep === 1 && "Setting up Logistics..."}
+                                    {generationStep === 2 && "Securing Storefront..."}
+                                    {generationStep >= 3 && "Store Activated!"}
+                                </h2>
+                                <p className="text-loops-muted font-medium">
+                                    {generationStep === 0 && `Reserving ${storeName}`}
+                                    {generationStep === 1 && `Applying ${refundPolicy} rules`}
+                                    {generationStep === 2 && "Finalizing database entries"}
+                                    {generationStep >= 3 && "Redirecting to dashboard"}
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {step === 8 && (
+                        <motion.div
+                            key="step8"
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="text-center space-y-8"
@@ -741,13 +908,14 @@ export default function OnboardingPage() {
                                 </p>
                             </div>
 
-
-
                             {primaryRole === 'plug' && (
-                                <div className={cn("p-6 rounded-2xl border max-w-sm mx-auto space-y-2 text-white", storeBannerColor)}>
-                                    <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">Verified Plug Storefront</div>
-                                    <div className="text-2xl font-display font-bold">{storeName}</div>
-                                    <div className="text-xs font-medium opacity-90">{storeCategory} Hub</div>
+                                <div className={cn("p-6 rounded-2xl border max-w-sm mx-auto space-y-3 text-white shadow-xl transform hover:scale-[1.02] transition-transform", storeBannerColor)}>
+                                    <div className="flex justify-between items-center opacity-80">
+                                        <div className="text-[10px] font-bold uppercase tracking-widest">{plugType} Store</div>
+                                        <div className="text-[10px] font-bold uppercase">{deliveryMode}</div>
+                                    </div>
+                                    <div className="text-2xl font-display font-bold leading-tight">{storeName}</div>
+                                    <div className="text-xs font-medium bg-black/20 inline-block px-3 py-1 rounded-full">{storeCategory} Hub</div>
                                 </div>
                             )}
 

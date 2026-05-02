@@ -15,8 +15,15 @@ export async function createClient() {
                 get: (target, prop) => {
                     if (prop === 'then') return undefined;
                     if (prop === 'data') return null;
-                    if (prop === 'error') return null;
+                    if (prop === 'error') {
+                        return { message: "Supabase configuration missing or invalid on Server." };
+                    }
                     if (prop === 'count') return 0;
+
+                    if (typeof prop === 'string' && (prop === 'auth' || prop === 'from' || prop === 'storage')) {
+                        console.error(`❌ Supabase Ghost Client (Server): Attempted to access '${prop}' but keys are missing.`);
+                    }
+
                     return ghost;
                 },
                 apply: (target, thisArg, args) => {

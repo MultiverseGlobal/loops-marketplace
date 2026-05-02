@@ -1,4 +1,5 @@
 {
+  "name": "loops-marketplace",
   "crons": [
     {
       "path": "/api/cron/abandoned-cart",

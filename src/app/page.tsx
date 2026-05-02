@@ -25,8 +25,8 @@ export default function Home() {
             <Navbar />
             
             <main className="pt-20 md:pt-36 pb-24">
-                {/* Compact Hybrid Hero Section */}
-                <section className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
+                {/* Compact Hybrid Hero Section - Hidden on Mobile */}
+                <section className="hidden md:block max-w-7xl mx-auto px-4 md:px-6 mb-8">
                     <div className="relative min-h-[300px] md:h-[350px] rounded-[2.5rem] overflow-hidden bg-loops-main flex flex-col justify-center border border-white/5 shadow-2xl">
                         <div className="absolute inset-0 bg-gradient-to-r from-loops-main via-loops-main/40 to-transparent z-10" />
                         <Image 
@@ -79,7 +79,7 @@ export default function Home() {
                 </section>
 
                 {/* Quick Category Bar (Hybrid Element) */}
-                <section className="max-w-7xl mx-auto px-4 md:px-6 mb-12">
+                <section className="max-w-7xl mx-auto px-4 md:px-6 mb-8 md:mb-12">
                     <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2">
                         {["all", "electronics", "fashion", "books", "others"].map((cat) => (
                             <Link key={cat} href={`/browse?category=${cat}`}>
