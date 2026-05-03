@@ -100,11 +100,11 @@ export function ProductCard({ id, title, price, image, category, delay = 0, auth
         >
             <Link href={`/listings/${id}`}>
                 <div className={cn(
-                    "relative bg-white border border-loops-border rounded-[2rem] p-3 md:p-4 transition-all duration-500 group-hover:border-loops-primary/50 group-hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.2)]",
+                    "relative bg-white border border-loops-border rounded-[1.5rem] sm:rounded-[2rem] p-2.5 sm:p-4 transition-all duration-500 group-hover:border-loops-primary/50 group-hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.2)]",
                     featured ? "h-full" : ""
                 )}>
                     <div className={cn(
-                        "relative overflow-hidden rounded-2xl bg-loops-subtle mb-4 border border-loops-border",
+                        "relative overflow-hidden rounded-xl sm:rounded-2xl bg-loops-subtle mb-3 sm:mb-4 border border-loops-border",
                         featured ? "aspect-[4/5] sm:aspect-auto sm:h-full" : "aspect-square"
                     )}>
                         <Image
