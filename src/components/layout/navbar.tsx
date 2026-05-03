@@ -292,13 +292,6 @@ export function Navbar() {
                                 <span className="absolute top-1 right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-black rounded-full flex items-center justify-center border border-white">{cartCount}</span>
                             )}
                         </Button>
-                        <Link href="/profile" className="w-9 h-9 rounded-xl bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
-                            {profile?.avatar_url ? (
-                                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                                <UserCircle className="w-5 h-5 text-loops-muted" />
-                            )}
-                        </Link>
                     </div>
                 </div>
 
