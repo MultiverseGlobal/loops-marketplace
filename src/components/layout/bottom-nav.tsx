@@ -62,8 +62,8 @@ export function BottomNav() {
 
     return (
         <>
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-6 pb-6 pt-2 pointer-events-none">
-                <nav className="bg-white/80 backdrop-blur-3xl border border-white/20 shadow-[0_-12px_40px_-15px_rgba(0,0,0,0.2)] rounded-[2.5rem] flex items-center justify-around h-16 pointer-events-auto px-2">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+                <nav className="bg-white/95 backdrop-blur-2xl border-t border-loops-border shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex items-center justify-around h-[calc(64px+env(safe-area-inset-bottom))] pointer-events-auto px-4 pb-[env(safe-area-inset-bottom)]">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = item.href && (pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)));
@@ -74,13 +74,13 @@ export function BottomNav() {
                                     key={item.label}
                                     href={item.href!}
                                     onClick={handleNavClick}
-                                    className="relative -top-3"
+                                    className="flex-1 flex flex-col items-center justify-center gap-1 group relative"
                                 >
                                     <div className={cn(
-                                        "w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all active:scale-90",
+                                        "w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transition-all active:scale-90",
                                         isActive ? "bg-loops-primary text-white" : "bg-loops-main text-white"
                                     )}>
-                                        <Icon className="w-7 h-7" />
+                                        <PlusSquare className="w-6 h-6" />
                                     </div>
                                 </Link>
                             );

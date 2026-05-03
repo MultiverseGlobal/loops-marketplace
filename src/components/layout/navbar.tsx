@@ -266,41 +266,71 @@ export function Navbar() {
                 </div>
             </nav>
 
-            {/* Mobile Header */}
-            <nav className={cn(
-                "md:hidden w-full z-50 border-b border-loops-border bg-white/80 backdrop-blur-xl transition-all duration-500",
-                "pt-0"
-            )}>
-                <div className="px-6 h-14 flex items-center justify-between">
+            {/* Mobile Header (High Density) */}
+            <nav className="md:hidden w-full bg-white border-b border-loops-border px-4 py-2 space-y-2 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
                     <Link href="/welcome" className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-loops-border shadow-sm overflow-hidden">
+                        <div className="w-8 h-8 bg-loops-subtle rounded-lg flex items-center justify-center border border-loops-border overflow-hidden">
                             <CampusLogo slug={campus?.slug} className="w-6 h-6" />
                         </div>
-                        <span className="font-display text-lg font-bold tracking-tighter text-loops-main truncate max-w-[120px]">
+                        <span className="font-display text-lg font-black tracking-tighter text-loops-main truncate max-w-[120px]">
                             {campus?.name?.split(' ')[0] || 'Loops'}
                         </span>
                     </Link>
 
-                    <div className="flex items-center gap-3">
-                        <Link href="/" className="p-2">
-                            <Search className="w-5 h-5 text-loops-main" />
-                        </Link>
-                        {user && (
-                            <button onClick={() => setIsNotificationsOpen(true)} className="relative p-2">
-                                <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary")} />
-                                {unreadCount > 0 && (
-                                    <span className="absolute top-0 right-0 min-w-[16px] h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
-                                        {unreadCount > 9 ? '9+' : unreadCount}
-                                    </span>
-                                )}
-                            </button>
-                        )}
-                        <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(true)} className="w-10 h-10 relative">
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => setIsNotificationsOpen(true)} className="relative p-2 text-loops-muted hover:text-loops-primary transition-colors">
+                            <Bell className={cn("w-5 h-5", unreadCount > 0 && "text-loops-primary")} />
+                            {unreadCount > 0 && (
+                                <span className="absolute top-1 right-1 min-w-[14px] h-3.5 bg-loops-primary text-white text-[7px] font-black rounded-full flex items-center justify-center border border-white">
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
+                        </button>
+                        <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(true)} className="w-10 h-10 relative text-loops-muted hover:text-loops-primary">
                             <ShoppingCart className="w-5 h-5" />
                             {cartCount > 0 && (
-                                <span className="absolute top-1 right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">{cartCount}</span>
+                                <span className="absolute top-1 right-1 w-4 h-4 bg-loops-primary text-white text-[8px] font-black rounded-full flex items-center justify-center border border-white">{cartCount}</span>
                             )}
                         </Button>
+                        <Link href="/profile" className="w-9 h-9 rounded-xl bg-loops-subtle border border-loops-border flex items-center justify-center overflow-hidden">
+                            {profile?.avatar_url ? (
+                                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                                <UserCircle className="w-5 h-5 text-loops-muted" />
+                            )}
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <div className="flex-1 relative">
+                        <SearchBar 
+                            onSearch={(q) => q && router.push(`/?q=${q}`)} 
+                            placeholder={`Search...`}
+                            className="h-9 bg-loops-subtle/50 border-loops-border rounded-lg"
+                        />
+                    </div>
+                    {/* Simplified Type Toggle */}
+                    <div className="flex p-0.5 bg-loops-subtle rounded-lg border border-loops-border shrink-0">
+                        <Link 
+                            href="/?view=product"
+                            className={cn(
+                                "px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest transition-all",
+                                (!pathname.includes('view=service') && !pathname.includes('type=service')) ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
+                            )}
+                        >
+                            Shop
+                        </Link>
+                        <Link 
+                            href="/?view=service"
+                            className={cn(
+                                "px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest transition-all",
+                                (pathname.includes('view=service') || pathname.includes('type=service')) ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
+                            )}
+                        >
+                            Pro
+                        </Link>
                     </div>
                 </div>
             </nav>

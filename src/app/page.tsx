@@ -4,18 +4,17 @@ import { Navbar } from "../components/layout/navbar";
 import { ProductCard } from "../components/ui/product-card";
 import { Button } from "../components/ui/button";
 import { CampusBuzz } from "../components/ui/campus-buzz";
-import * as Icons from "lucide-react";
-import { Sparkles, ArrowRight, Store, Rocket, ShieldCheck, Filter, LayoutGrid, Search } from "lucide-react";
+import { Sparkles, LayoutGrid, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from "../lib/supabase/client";
 import { SkeletonCard } from "../components/ui/skeleton-loader";
-import { SearchBar } from "../components/ui/search-bar";
 import { cn } from "../lib/utils";
 import { useCampus } from "../context/campus-context";
 import { CampusSelector } from "../components/ui/campus-selector";
 import { PRODUCT_CATEGORIES, SERVICE_CATEGORIES, FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../lib/constants";
+import { BottomNav } from "../components/layout/bottom-nav";
 
 export default function Home() {
     const [listings, setListings] = useState<any[]>([]);
@@ -69,11 +68,20 @@ export default function Home() {
 
     // Sync URL params
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const catParam = params.get('category');
-        const typeParam = params.get('view') || params.get('type');
-        if (catParam) setSelectedCategory(catParam);
-        if (typeParam === 'product' || typeParam === 'service') setActiveType(typeParam as 'product' | 'service');
+        const syncParams = () => {
+            const params = new URLSearchParams(window.location.search);
+            const catParam = params.get('category');
+            const typeParam = params.get('view') || params.get('type');
+            const qParam = params.get('q');
+            
+            if (catParam) setSelectedCategory(catParam);
+            if (typeParam === 'product' || typeParam === 'service') setActiveType(typeParam as 'product' | 'service');
+            if (qParam) setSearchQuery(qParam);
+        };
+
+        syncParams();
+        window.addEventListener('popstate', syncParams);
+        return () => window.removeEventListener('popstate', syncParams);
     }, []);
 
     return (
@@ -82,57 +90,19 @@ export default function Home() {
             <CampusSelector />
             <CampusBuzz />
 
-            {/* Mobile-First App Header */}
-            <header className="pt-20 pb-2 px-4 sticky top-0 bg-white/80 backdrop-blur-xl z-40 border-b border-loops-border/40">
-                <div className="max-w-7xl mx-auto space-y-3">
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="flex-1 relative group">
-                            <div className="absolute inset-0 bg-loops-primary/5 blur-lg rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
-                            <div className="relative flex items-center bg-loops-subtle/50 border border-loops-border rounded-xl px-3 h-10 transition-all group-focus-within:bg-white group-focus-within:border-loops-primary/50">
-                                <Search className="w-3.5 h-3.5 text-loops-muted" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Search the Loop..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none px-2 text-[11px] font-bold text-loops-main placeholder:text-loops-muted/40"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex p-0.5 bg-loops-subtle rounded-lg border border-loops-border">
-                            <button
-                                onClick={() => setActiveType('product')}
-                                className={cn(
-                                    "px-3 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all",
-                                    activeType === 'product' ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
-                                )}
-                            >
-                                Shop
-                            </button>
-                            <button
-                                onClick={() => setActiveType('service')}
-                                className={cn(
-                                    "px-3 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all",
-                                    activeType === 'service' ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
-                                )}
-                            >
-                                Pro
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Category Scroller */}
-                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            <main className="max-w-7xl mx-auto px-4 pt-4 pb-24">
+                {/* Unified Category Scroller (Integrated) */}
+                <div className="sticky top-[104px] z-30 bg-white/80 backdrop-blur-md py-3 border-b border-loops-border/50 -mx-4 px-4 mb-6">
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                         {(activeType === 'product' ? PRODUCT_CATEGORIES : SERVICE_CATEGORIES).map((cat) => (
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
                                 className={cn(
-                                    "px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap text-[9px] font-black uppercase tracking-widest",
+                                    "px-4 py-2 rounded-xl border transition-all whitespace-nowrap text-[10px] font-black uppercase tracking-widest",
                                     selectedCategory === cat.id
-                                        ? "bg-loops-primary text-white border-loops-primary shadow-md shadow-loops-primary/10"
-                                        : "bg-white border-loops-border text-loops-muted hover:text-loops-main"
+                                        ? "bg-loops-primary text-white border-loops-primary shadow-lg shadow-loops-primary/10"
+                                        : "bg-loops-subtle/50 border-loops-border text-loops-muted hover:text-loops-main"
                                 )}
                             >
                                 {cat.label}
@@ -140,10 +110,8 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
-            </header>
 
-            <main className="max-w-7xl mx-auto px-4 py-6">
-                {/* Real-Time Pulse Feed */}
+                {/* Real-Time Pulse Feed Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-loops-primary animate-ping" />
@@ -184,10 +152,9 @@ export default function Home() {
                         </div>
                     </div>
                 )}
-                
-                {/* Bottom Padding for PWA bar */}
-                <div className="h-24" />
             </main>
+
+            <BottomNav />
         </div>
     );
 }
