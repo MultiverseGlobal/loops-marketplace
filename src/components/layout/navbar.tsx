@@ -72,7 +72,6 @@ export function Navbar() {
                     .eq('id', user.id)
                     .single();
                 setProfile(data);
-                router.replace('/');
             }
         };
         getUser();

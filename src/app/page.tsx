@@ -90,9 +90,9 @@ export default function Home() {
             <CampusSelector />
             <CampusBuzz />
 
-            <main className="max-w-7xl mx-auto px-4 pt-4 pb-24">
-                {/* Unified Category Scroller (Integrated) */}
-                <div className="sticky top-[104px] z-30 bg-white/80 backdrop-blur-md py-3 border-b border-loops-border/50 -mx-4 px-4 mb-6">
+            <main className="max-w-7xl mx-auto px-4 pt-2 pb-24">
+                {/* Integrated Category Scroller */}
+                <div className="py-4 border-b border-loops-border/50 -mx-4 px-4 mb-6">
                     <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                         {(activeType === 'product' ? PRODUCT_CATEGORIES : SERVICE_CATEGORIES).map((cat) => (
                             <button
