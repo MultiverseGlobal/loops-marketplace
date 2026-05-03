@@ -91,46 +91,39 @@ export function CampusSelector() {
                         className="relative w-full max-w-4xl max-h-[90vh] md:max-h-[85vh] bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl border border-loops-border flex flex-col overflow-hidden mx-4"
                     >
                         {/* Header Section */}
-                        <div className="p-6 md:p-10 space-y-4 bg-gradient-to-b from-loops-subtle/50 to-white border-b border-loops-border">
+                        <div className="p-4 md:p-8 space-y-3 bg-gradient-to-b from-loops-subtle/50 to-white border-b border-loops-border">
                             <div className="flex items-center justify-between">
-                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-loops-border shadow-sm">
-                                    <Infinity className="w-6 h-6 text-loops-primary" />
+                                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-loops-border shadow-sm">
+                                    <Infinity className="w-5 h-5 text-loops-primary" />
                                 </div>
                                 <Button 
                                     variant="ghost" 
                                     size="icon" 
                                     onClick={handleDismiss}
-                                    className="rounded-full w-10 h-10 hover:bg-loops-subtle text-loops-muted"
+                                    className="rounded-full w-8 h-8 hover:bg-loops-subtle text-loops-muted"
                                 >
-                                    <X className="w-5 h-5" />
+                                    <X className="w-4 h-4" />
                                 </Button>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="space-y-1">
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-loops-primary/10 text-loops-primary text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em]"
-                                    >
-                                        <Sparkles className="w-3.5 h-3.5" />
-                                        Connect your Node
-                                    </motion.div>
-                                    <h1 className="text-3xl md:text-5xl font-black font-display tracking-tighter text-loops-main italic leading-none">
+                                    <h1 className="text-2xl md:text-4xl font-black font-display tracking-tighter text-loops-main italic leading-none">
                                         Choose Your <span className="text-loops-primary">Loop.</span>
                                     </h1>
+                                    <p className="text-[9px] md:text-[10px] font-bold text-loops-muted uppercase tracking-widest opacity-60">Select your university to sync</p>
                                 </div>
 
-                                <div className="relative group">
+                                <div className="relative group flex-1 md:max-w-xs">
                                     <div className="absolute inset-0 bg-loops-primary/5 blur-xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity" />
-                                    <div className="relative flex items-center bg-white border border-loops-border rounded-xl md:rounded-2xl px-4 h-12 md:h-14 shadow-sm group-focus-within:border-loops-primary/50 group-focus-within:shadow-lg transition-all duration-500">
-                                        <Search className="w-4 h-4 text-loops-muted group-focus-within:text-loops-primary transition-colors" />
+                                    <div className="relative flex items-center bg-white border border-loops-border rounded-xl px-3 h-10 md:h-12 shadow-sm group-focus-within:border-loops-primary/50 group-focus-within:shadow-lg transition-all duration-500">
+                                        <Search className="w-3.5 h-3.5 text-loops-muted group-focus-within:text-loops-primary transition-colors" />
                                         <input 
                                             type="text"
-                                            placeholder="Search your university..."
+                                            placeholder="Search university..."
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="flex-1 bg-transparent border-none outline-none px-3 text-[10px] md:text-xs font-bold text-loops-main placeholder:text-loops-muted/40"
+                                            className="flex-1 bg-transparent border-none outline-none px-2 text-[10px] md:text-xs font-bold text-loops-main placeholder:text-loops-muted/40"
                                         />
                                     </div>
                                 </div>
@@ -138,8 +131,8 @@ export function CampusSelector() {
                         </div>
 
                         {/* Scrolling Content */}
-                        <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-8">
+                        <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-6">
                                 {loading ? (
                                     [...Array(6)].map((_, i) => (
                                         <div key={i} className="h-40 bg-loops-subtle rounded-[2rem] animate-pulse border border-loops-border" />
@@ -211,10 +204,10 @@ export function CampusSelector() {
                         </div>
 
                         {/* Bottom Actions */}
-                        <div className="p-6 bg-loops-subtle/50 border-t border-loops-border flex items-center justify-center">
-                            <div className="flex items-center gap-3 text-[10px] font-bold text-loops-muted uppercase tracking-widest italic opacity-60">
-                                <ShieldCheck className="w-4 h-4 text-loops-success" />
-                                Select your university node to enter the Loop
+                        <div className="p-3 bg-loops-subtle/30 border-t border-loops-border flex items-center justify-center">
+                            <div className="flex items-center gap-2 text-[8px] md:text-[9px] font-bold text-loops-muted uppercase tracking-widest italic opacity-50">
+                                <ShieldCheck className="w-3 h-3 text-loops-success" />
+                                Select university to enter the Loop
                             </div>
                         </div>
 
