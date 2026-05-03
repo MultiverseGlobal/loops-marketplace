@@ -58,6 +58,18 @@ export default function PopulateTheLooPage() {
     const [savedCount, setSavedCount] = useState(0);
     const [launching, setLaunching] = useState(false);
     const [launched, setLaunched] = useState(false);
+    const [linkCopied, setLinkCopied] = useState(false);
+
+    const handleShareCopy = () => {
+        navigator.clipboard.writeText(CAMPAIGN_URL);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+    };
+
+    const handleWhatsAppShare = () => {
+        const msg = encodeURIComponent(`🔥 I just went live on Loops — the campus marketplace! Come check my store and join as a Founding Plug before spots run out 👇\n${CAMPAIGN_URL}`);
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
+    };
 
     useEffect(() => {
         const init = async () => {
@@ -196,20 +208,6 @@ export default function PopulateTheLooPage() {
             </div>
         );
     }
-
-    const [linkCopied, setLinkCopied] = useState(false);
-
-    const handleShareCopy = () => {
-        navigator.clipboard.writeText(CAMPAIGN_URL);
-        setLinkCopied(true);
-        setTimeout(() => setLinkCopied(false), 2000);
-    };
-
-    const handleWhatsAppShare = () => {
-        const msg = encodeURIComponent(`🔥 I just went live on Loops — the campus marketplace! Come check my store and join as a Founding Plug before spots run out 👇\n${CAMPAIGN_URL}`);
-        window.open(`https://wa.me/?text=${msg}`, '_blank');
-    };
-
     if (launched) {
         return (
             <div className="fixed inset-0 bg-loops-bg flex flex-col items-center justify-center text-center p-8 gap-6">
