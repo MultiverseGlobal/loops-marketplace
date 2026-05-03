@@ -90,9 +90,10 @@ export default function Home() {
             <CampusSelector />
             <CampusBuzz />
 
-            <main className="max-w-7xl mx-auto px-4 pt-2 pb-24">
+            {/* Added pt-32 to clear the fixed navbar height on mobile */}
+            <main className="max-w-7xl mx-auto px-4 pt-32 pb-24">
                 {/* Integrated Category Scroller */}
-                <div className="py-4 border-b border-loops-border/50 -mx-4 px-4 mb-6">
+                <div className="py-4 border-b border-loops-border/50 -mx-4 px-4 mb-8">
                     <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                         {(activeType === 'product' ? PRODUCT_CATEGORIES : SERVICE_CATEGORIES).map((cat) => (
                             <button
@@ -109,17 +110,6 @@ export default function Home() {
                             </button>
                         ))}
                     </div>
-                </div>
-
-                {/* Real-Time Pulse Feed Header */}
-                <div className="mb-6 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-loops-primary animate-ping" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-loops-main italic">Live Feed</span>
-                    </div>
-                    <span className="text-[9px] font-bold text-loops-muted uppercase tracking-widest opacity-40">
-                        {campus?.name || 'Local'} Loop
-                    </span>
                 </div>
 
                 {loading ? (
