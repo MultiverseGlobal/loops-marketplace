@@ -265,14 +265,14 @@ export function Navbar() {
                 </div>
             </nav>
 
-            {/* Mobile Header (High Density) */}
-            <nav className="md:hidden w-full bg-white border-b border-loops-border px-4 py-2 space-y-2 shadow-sm">
-                <div className="flex items-center justify-between gap-4">
-                    <Link href="/welcome" className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-loops-subtle rounded-lg flex items-center justify-center border border-loops-border overflow-hidden">
-                            <CampusLogo slug={campus?.slug} className="w-6 h-6" />
+            {/* Mobile Header (Ultra High Density) */}
+            <nav className="md:hidden w-full bg-white border-b border-loops-border px-4 py-1.5 space-y-1.5 shadow-sm">
+                <div className="flex items-center justify-between gap-3">
+                    <Link href="/welcome" className="flex items-center gap-1.5">
+                        <div className="w-7 h-7 bg-loops-subtle rounded-lg flex items-center justify-center border border-loops-border overflow-hidden">
+                            <CampusLogo slug={campus?.slug} className="w-5 h-5" />
                         </div>
-                        <span className="font-display text-lg font-black tracking-tighter text-loops-main truncate max-w-[120px]">
+                        <span className="font-display text-base font-black tracking-tighter text-loops-main truncate max-w-[120px]">
                             {campus?.name?.split(' ')[0] || 'Loops'}
                         </span>
                     </Link>
@@ -300,7 +300,7 @@ export function Navbar() {
                         <SearchBar 
                             onSearch={(q) => q && router.push(`/?q=${q}`)} 
                             placeholder={`Search...`}
-                            className="h-9 bg-loops-subtle/50 border-loops-border rounded-lg"
+                            className="h-8 bg-loops-subtle/50 border-loops-border rounded-lg"
                         />
                     </div>
                     {/* Simplified Type Toggle */}
@@ -308,7 +308,7 @@ export function Navbar() {
                         <Link 
                             href="/?view=product"
                             className={cn(
-                                "px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest transition-all",
+                                "px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest transition-all",
                                 (!pathname.includes('view=service') && !pathname.includes('type=service')) ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
                             )}
                         >
@@ -317,7 +317,7 @@ export function Navbar() {
                         <Link 
                             href="/?view=service"
                             className={cn(
-                                "px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest transition-all",
+                                "px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest transition-all",
                                 (pathname.includes('view=service') || pathname.includes('type=service')) ? "bg-white text-loops-primary shadow-sm" : "text-loops-muted"
                             )}
                         >
