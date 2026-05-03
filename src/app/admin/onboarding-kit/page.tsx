@@ -59,7 +59,7 @@ export default function OnboardingKit() {
             title: 'Buyer Hype / Launch Day',
             icon: Users,
             description: 'For general university groups on launch morning.',
-            content: `Safe! ${selectedCampus.name} is finally in the Loop! 🔗\n\nNo more searching 100 groups for what you need. Buy and sell securely with verified campus Plugs.\n\nSee what's dropping today:\nhttps://loops-marketplace.vercel.app/browse?campus=${selectedCampus.slug}\n\n#${selectedCampus.slug}Loop #CampusEconomy`
+            content: `Safe! ${selectedCampus.name} is finally in the Loop! 🔗\n\nNo more searching 100 groups for what you need. Buy and sell securely with verified campus Plugs.\n\nSee what's dropping today:\nhttps://loops-marketplace.vercel.app/?campus=${selectedCampus.slug}\n\n#${selectedCampus.slug}Loop #CampusEconomy`
         },
         {
             id: 'service-focus',

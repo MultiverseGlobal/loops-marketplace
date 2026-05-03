@@ -20,7 +20,7 @@ export default function VerifySuccessPage() {
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearInterval(timer);
-                    window.location.href = '/browse';
+                    window.location.href = '/';
                     return 0;
                 }
                 return prev - 1;
@@ -90,7 +90,7 @@ export default function VerifySuccessPage() {
                 </div>
 
                 <div className="space-y-4 pt-4">
-                    <Link href="/browse">
+                    <Link href="/">
                         <Button className="w-full h-14 bg-loops-primary text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-loops-primary/20 hover:scale-[1.02] transition-all group">
                             Enter the Marketplace
                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

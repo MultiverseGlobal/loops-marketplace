@@ -100,7 +100,7 @@ export default function CreateListingPage() {
             if (!error) {
                 triggerSuccessBlast();
                 toast.success("Listing created! Your Item is now live in the Loop.");
-                router.push(`/browse?view=${type}`);
+                router.push(`/?view=${type}`);
             } else {
                 throw error;
             }

@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const code = searchParams.get('code')
     const token_hash = searchParams.get('token_hash')
     const type = searchParams.get('type') as EmailOtpType | null
-    const next = searchParams.get('next') ?? '/browse'
+    const next = searchParams.get('next') ?? '/'
 
     console.log('🔍 Auth Callback Debug:', {
         code: code ? 'present' : 'missing',

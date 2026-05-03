@@ -243,7 +243,7 @@ export default function AdminDashboard() {
                 title: "Node Launched! 🚀",
                 message: `Congratulations! Your request for ${req.university_name} has been bridged. The Loop is now live on your campus.`,
                 type: 'system',
-                link: '/browse'
+                link: '/'
             });
 
             setCampusRequests(prev => prev.filter(r => r.id !== req.id));
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
                     title: broadcastMessage.toLowerCase().includes('launch') ? "Veritas Grand Launch 🚀" : "Admin Announcement 📣",
                     message: broadcastMessage,
                     type: 'system',
-                    link: '/browse'
+                    link: '/'
                 }));
 
             if (notificationEntries.length > 0) {
@@ -2343,7 +2343,7 @@ const EngagementView = ({ campaigns, stats, allUsers, applications, onSendCampai
                             <input 
                                 value={ctaLink}
                                 onChange={(e) => setCtaLink(e.target.value)}
-                                placeholder="/browse or https://"
+                                placeholder="/ or https://"
                                 className="w-full bg-loops-subtle border-none rounded-2xl px-6 py-4 text-sm font-bold placeholder:text-loops-muted focus:ring-2 ring-loops-primary/20"
                             />
                         </div>

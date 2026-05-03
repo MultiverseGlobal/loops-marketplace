@@ -190,7 +190,7 @@ export default function ActivityLedgerPage() {
                                 <Receipt className="w-12 h-12 text-loops-muted/10 mx-auto" />
                                 <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Activity found.</h3>
                                 <p className="text-loops-muted max-w-xs mx-auto text-sm">You haven't completed any Loops in the {getTerm('communityName')} yet. Start by exploring the marketplace!</p>
-                                <Link href="/browse" className="inline-block pt-4">
+                                <Link href="/" className="inline-block pt-4">
                                     <Button className="font-bold uppercase tracking-widest text-[10px]">Browse Marketplace</Button>
                                 </Link>
                             </div>

@@ -158,7 +158,7 @@ export default function MessagesPage() {
                         <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
                         <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">The Loop is silent.</h3>
                         <p className="text-loops-muted mt-2">Start an interaction on any drop to open a channel.</p>
-                        <Link href="/browse">
+                        <Link href="/">
                             <Button variant="ghost" className="text-loops-primary mt-6 font-bold uppercase tracking-widest text-xs hover:bg-loops-primary/10">Explore {getTerm('marketplaceName')}</Button>
                         </Link>
                     </div>

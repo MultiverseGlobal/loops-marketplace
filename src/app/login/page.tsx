@@ -108,7 +108,7 @@ export default function LoginPage() {
                         });
                         router.push('/onboarding');
                     } else if (profile.campus_id) {
-                        router.push('/browse');
+                        router.push('/');
                     } else {
                         router.push('/onboarding');
                     }
@@ -186,7 +186,7 @@ export default function LoginPage() {
 
                     if (profile?.campus_id) {
                         setMessage({ type: 'success', text: "Welcome back! Redirecting..." });
-                        setTimeout(() => router.push('/browse'), 1500);
+                        setTimeout(() => router.push('/'), 1500);
                     } else {
                         setMessage({ type: 'success', text: "Welcome! Completing your profile..." });
                         setTimeout(() => router.push('/onboarding'), 1500);

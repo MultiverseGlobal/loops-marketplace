@@ -36,7 +36,7 @@ export default function CheckoutPage() {
                     <h1 className="text-2xl font-black tracking-tighter">Your cart is empty.</h1>
                     <p className="text-loops-muted max-w-xs mx-auto">Add something to your cart before proceeding to the secure checkout.</p>
                 </div>
-                <Button onClick={() => router.push('/browse')} className="rounded-2xl bg-loops-primary">
+                <Button onClick={() => router.push('/')} className="rounded-2xl bg-loops-primary">
                     Return to Shop
                 </Button>
             </div>
@@ -85,7 +85,7 @@ export default function CheckoutPage() {
             {/* Header */}
             <div className="bg-white border-b border-loops-border sticky top-0 z-10">
                 <div className="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <Link href="/browse" className="p-2 hover:bg-loops-subtle rounded-full transition-colors">
+                    <Link href="/" className="p-2 hover:bg-loops-subtle rounded-full transition-colors">
                         <ArrowLeft className="w-6 h-6 text-loops-main" />
                     </Link>
                     <div className="flex flex-col items-center gap-1">

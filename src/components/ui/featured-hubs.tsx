@@ -31,7 +31,7 @@ export function FeaturedHubs() {
                                 transition={{ delay: idx * 0.1 }}
                                 viewport={{ once: true }}
                             >
-                                <Link href={`/browse?category=${hub.id}`}>
+                                <Link href={`/?category=${hub.id}`}>
                                     <div className="group relative aspect-[4/5] rounded-[32px] overflow-hidden bg-white border border-loops-border hover:border-transparent transition-all duration-500 shadow-sm hover:shadow-2xl">
                                         {/* Background Accent */}
                                         <div

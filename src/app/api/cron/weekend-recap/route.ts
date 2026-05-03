@@ -41,7 +41,7 @@ export async function GET(request: Request) {
                 message: `Check out the top drops at your campus this week. Don't miss these deals!`,
                 type: 'engagement',
                 category: 'weekend_recap',
-                link: '/browse',
+                link: '/',
                 metadata: { top_listings: topListings.map(l => l.id) },
                 read: false
             });

@@ -125,7 +125,7 @@ export default function OnboardingPage() {
                 .single();
 
             if (profile?.campus_id) {
-                router.replace('/browse');
+                router.replace('/');
                 return;
             }
 
@@ -244,7 +244,7 @@ export default function OnboardingPage() {
                 window.dispatchEvent(new CustomEvent('show-pwa-install'));
             }
 
-            router.push('/browse');
+            router.push('/');
         } catch (error: any) {
             toast.error(error.message || "Failed to complete onboarding. Check console.");
             if (error?.message?.includes("Session")) {

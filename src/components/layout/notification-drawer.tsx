@@ -35,7 +35,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
             type: 'engagement',
             category: 'social',
             image_url: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=800",
-            cta_link: "/browse",
+            cta_link: "/",
             read: false
         };
 

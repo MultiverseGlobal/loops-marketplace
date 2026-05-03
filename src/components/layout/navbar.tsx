@@ -54,6 +54,7 @@ export function Navbar() {
     const supabase = createClient();
     const router = useRouter();
     const { campus, getTerm } = useCampus();
+
     const toast = useToast();
     const { unreadCount, unreadMessagesCount, pendingLoopsCount } = useNotifications();
     const pathname = usePathname();
@@ -71,6 +72,7 @@ export function Navbar() {
                     .eq('id', user.id)
                     .single();
                 setProfile(data);
+                router.replace('/');
             }
         };
         getUser();
@@ -145,7 +147,7 @@ export function Navbar() {
                     {/* Amazon-style Search Bar (Center) */}
                     <div className="flex-1 max-w-2xl">
                         <SearchBar 
-                            onSearch={(q) => q && router.push(`/browse?q=${q}`)} 
+                            onSearch={(q) => q && router.push(`/?q=${q}`)} 
                             placeholder={`Search items in ${campus?.name || 'the Loop'}...`}
                             className="h-11"
                         />
@@ -213,6 +215,8 @@ export function Navbar() {
                                         )}
                                     </Button>
 
+                                    <li><NavLink href="/">Marketplace</NavLink></li>
+                                    
                                     <Link href="/profile" className="flex items-center gap-3 p-1 rounded-2xl bg-loops-subtle border border-loops-border hover:border-loops-primary/20 transition-all group">
                                         <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-loops-primary text-sm font-bold border border-loops-border shadow-sm overflow-hidden group-hover:scale-105 transition-transform">
                                             {profile?.avatar_url ? (
@@ -244,7 +248,7 @@ export function Navbar() {
                 {/* Desktop Category Bar */}
                 <div className="bg-loops-subtle/30 border-t border-loops-border">
                     <div className="max-w-7xl mx-auto px-6 h-11 flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth">
-                        <Link href="/browse" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-loops-main whitespace-nowrap hover:text-loops-primary group shrink-0">
+                        <Link href="/" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-loops-main whitespace-nowrap hover:text-loops-primary group shrink-0">
                             <Package className="w-4 h-4 group-hover:scale-110 transition-transform" />
                             Browse Categories
                         </Link>
@@ -252,7 +256,7 @@ export function Navbar() {
                         {PRODUCT_CATEGORIES.filter(c => c.id !== 'all').map(cat => (
                             <Link 
                                 key={cat.id} 
-                                href={`/browse?category=${cat.id}`}
+                                href={`/?category=${cat.id}`}
                                 className="text-[10px] font-bold uppercase tracking-widest text-loops-muted whitespace-nowrap hover:text-loops-primary transition-colors shrink-0"
                             >
                                 {cat.label}
@@ -278,7 +282,7 @@ export function Navbar() {
                     </Link>
 
                     <div className="flex items-center gap-3">
-                        <Link href="/browse" className="p-2">
+                        <Link href="/" className="p-2">
                             <Search className="w-5 h-5 text-loops-main" />
                         </Link>
                         {user && (

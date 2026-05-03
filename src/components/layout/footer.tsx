@@ -40,7 +40,7 @@ export function Footer() {
                     <div className="space-y-6">
                         <h4 className="font-bold text-loops-main uppercase tracking-widest text-[10px]">Discovery</h4>
                         <ul className="space-y-3">
-                            <li><NavLink href="/browse">Marketplace</NavLink></li>
+                            <li><NavLink href="/">Marketplace</NavLink></li>
                             <li><NavLink href="/services">Campus Services</NavLink></li>
                             <li><NavLink href="/requests">Student Requests</NavLink></li>
                             <li><Link href="/request-campus" className="text-loops-primary font-bold hover:underline transition-all text-sm">Request a Campus</Link></li>

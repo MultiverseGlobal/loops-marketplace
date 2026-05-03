@@ -995,7 +995,7 @@ export default function ProfilePage() {
                                                 <MessageSquare className="w-12 h-12 text-loops-muted/10 mx-auto mb-4" />
                                                 <h3 className="text-xl font-bold font-display text-loops-muted uppercase tracking-widest">No Active Loops</h3>
                                                 <p className="text-loops-muted mt-2">When you message sellers or buy items, they will appear here for tracking.</p>
-                                                <Link href="/browse" className="inline-block mt-4">
+                                                <Link href="/" className="inline-block mt-4">
                                                     <Button className="bg-loops-primary text-white uppercase tracking-widest text-[10px] font-bold h-10 px-6 rounded-xl">Explore Marketplace</Button>
                                                 </Link>
                                             </div>
@@ -1134,7 +1134,7 @@ export default function ProfilePage() {
                                             ) : (
                                                 <div className="p-12 rounded-3xl border border-dashed border-loops-border text-center">
                                                     <p className="text-loops-muted italic text-sm">You haven't made any offers yet. Don't be shy, campus commerce is built on bargaining!</p>
-                                                    <Link href="/browse" className="inline-block mt-4 text-loops-primary font-bold text-xs uppercase tracking-widest hover:underline">Start Browsing</Link>
+                                                    <Link href="/" className="inline-block mt-4 text-loops-primary font-bold text-xs uppercase tracking-widest hover:underline">Start Browsing</Link>
                                                 </div>
                                             )}
                                         </div>
