@@ -203,8 +203,6 @@ export function CampusSelector() {
                             </div>
                         </div>
 
-                        </div>
-
                     </motion.div>
                 </div>
             )}
