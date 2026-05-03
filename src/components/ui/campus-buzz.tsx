@@ -51,7 +51,7 @@ export function CampusBuzz() {
     const activity = activities[currentIndex];
 
     return (
-        <div className="w-full bg-loops-primary/5 border-y border-loops-primary/10 py-3 overflow-hidden">
+        <div className="w-full bg-loops-primary/5 border-y border-loops-primary/10 py-1.5 overflow-hidden">
             <div className="max-w-7xl mx-auto px-6">
                 <AnimatePresence mode="wait">
                     <motion.div

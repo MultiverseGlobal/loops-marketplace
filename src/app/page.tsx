@@ -91,16 +91,16 @@ export default function Home() {
             <CampusBuzz />
 
             {/* Adjusted pt to match the ultra-slim navbar */}
-            <main className="max-w-7xl mx-auto px-4 pt-[84px] pb-24">
+            <main className="max-w-7xl mx-auto px-4 pt-[74px] pb-24">
                 {/* Integrated Category Scroller */}
-                <div className="py-4 border-b border-loops-border/50 -mx-4 px-4 mb-8">
-                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <div className="py-2.5 border-b border-loops-border/50 -mx-4 px-4 mb-6">
+                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                         {(activeType === 'product' ? PRODUCT_CATEGORIES : SERVICE_CATEGORIES).map((cat) => (
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
                                 className={cn(
-                                    "px-4 py-2 rounded-xl border transition-all whitespace-nowrap text-[10px] font-black uppercase tracking-widest",
+                                    "px-3 py-1.5 rounded-xl border transition-all whitespace-nowrap text-[10px] font-black uppercase tracking-widest",
                                     selectedCategory === cat.id
                                         ? "bg-loops-primary text-white border-loops-primary shadow-lg shadow-loops-primary/10"
                                         : "bg-loops-subtle/50 border-loops-border text-loops-muted hover:text-loops-main"
