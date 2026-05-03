@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart, Bell, Home, Search, PlusSquare, Package, X } from "lucide-react";
+import { UserCircle, LogOut, MessageSquare, Sparkles, LogOut as SignOut, LayoutDashboard, Smartphone, Download, ShoppingCart, Heart, Bell, Home, Search, PlusSquare, Package, X, Rocket } from "lucide-react";
 import { InfinityLogo } from "@/components/ui/infinity-logo";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
@@ -67,7 +67,7 @@ export function Navbar() {
                 // Fetch Profile
                 const { data } = await supabase
                     .from('profiles')
-                    .select('avatar_url, full_name, is_admin, is_verified')
+                    .select('avatar_url, full_name, is_admin, is_verified, is_plug, is_founding_member')
                     .eq('id', user.id)
                     .single();
                 setProfile(data);
@@ -155,12 +155,23 @@ export function Navbar() {
                     <div className="flex items-center gap-3 shrink-0">
                         {user ? (
                             <>
-                                <Link href="/listings/create">
-                                    <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-11 px-6 flex items-center gap-2 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-loops-primary/10 transition-all active:scale-95">
-                                        <Sparkles className="w-3.5 h-3.5" />
-                                        Post a Drop
-                                    </Button>
-                                </Link>
+                                <div className="flex items-center gap-2">
+                                    <Link href="/listings/create">
+                                        <Button className="bg-loops-primary text-white hover:bg-loops-primary/90 h-11 px-6 flex items-center gap-2 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-loops-primary/10 transition-all active:scale-95">
+                                            <Sparkles className="w-3.5 h-3.5" />
+                                            Post a Drop
+                                        </Button>
+                                    </Link>
+
+                                    {profile?.is_plug && !profile?.is_founding_member && (
+                                        <Link href="/founding-plugs/populate">
+                                            <Button variant="outline" className="border-loops-primary text-loops-primary hover:bg-loops-primary/5 h-11 px-6 flex items-center gap-2 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all animate-pulse shadow-lg shadow-loops-primary/5">
+                                                <Rocket className="w-3.5 h-3.5" />
+                                                Populate Loop
+                                            </Button>
+                                        </Link>
+                                    )}
+                                </div>
 
                                 <div className="w-px h-6 bg-loops-border mx-1" />
 
