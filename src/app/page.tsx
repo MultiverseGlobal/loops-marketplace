@@ -16,7 +16,6 @@ import { cn } from "../lib/utils";
 import { useCampus } from "../context/campus-context";
 import { CampusSelector } from "../components/ui/campus-selector";
 import { PRODUCT_CATEGORIES, SERVICE_CATEGORIES, FALLBACK_PRODUCT_IMAGE, CURRENCY } from "../lib/constants";
-import { Footer } from "../components/layout/footer";
 import { InfinityLogo } from "../components/ui/infinity-logo";
 
 export default function Home() {
@@ -385,7 +384,6 @@ export default function Home() {
                 </section>
             </main>
 
-            <Footer />
         </div>
     );
 }
