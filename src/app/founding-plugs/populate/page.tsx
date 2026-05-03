@@ -7,15 +7,17 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/toast-context';
 import { InfinityLogo } from '@/components/ui/infinity-logo';
 import {
-    Plus, Trash2, Upload, CheckCircle, Rocket, Package,
+    Plus, Upload, CheckCircle, Rocket, Package,
     Tag, DollarSign, ImageIcon, ArrowRight, Sparkles,
-    ShieldCheck, Store, Loader2, X
+    ShieldCheck, Store, Loader2, X, Copy, Check, Share2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const VERIFIED_PLUG_THRESHOLD = 3;
 const CURRENCY = '₦';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://loops-stores.vercel.app';
+const CAMPAIGN_URL = `${SITE_URL}/campaign`;
 
 const CATEGORIES = [
     'Fashion & Wears', 'Food & Snacks', 'Electronics', 'Books & Stationery',
@@ -195,9 +197,22 @@ export default function PopulateTheLooPage() {
         );
     }
 
+    const [linkCopied, setLinkCopied] = useState(false);
+
+    const handleShareCopy = () => {
+        navigator.clipboard.writeText(CAMPAIGN_URL);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+    };
+
+    const handleWhatsAppShare = () => {
+        const msg = encodeURIComponent(`🔥 I just went live on Loops — the campus marketplace! Come check my store and join as a Founding Plug before spots run out 👇\n${CAMPAIGN_URL}`);
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
+    };
+
     if (launched) {
         return (
-            <div className="fixed inset-0 bg-loops-bg flex flex-col items-center justify-center text-center p-8 gap-8">
+            <div className="fixed inset-0 bg-loops-bg flex flex-col items-center justify-center text-center p-8 gap-6">
                 <motion.div
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: [0, 1.2, 1], opacity: 1 }}
@@ -214,8 +229,36 @@ export default function PopulateTheLooPage() {
                         Students on your campus can now discover and buy from you. Welcome to the Founding 50.
                     </p>
                 </motion.div>
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="flex gap-3">
-                    <Button onClick={() => router.push('/sell')} className="h-12 px-8 rounded-2xl bg-loops-primary text-white font-bold uppercase tracking-widest text-xs">
+
+                {/* Share block */}
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.55 }}
+                    className="w-full max-w-sm p-4 rounded-2xl bg-loops-subtle border border-loops-border space-y-3"
+                >
+                    <p className="text-[9px] font-black uppercase tracking-[0.25em] text-loops-muted">Share your campaign link</p>
+                    <div className="flex items-center gap-2">
+                        <div className="flex-1 px-3 py-2 rounded-xl bg-white border border-loops-border text-[10px] font-mono text-loops-muted truncate">
+                            {CAMPAIGN_URL}
+                        </div>
+                        <button
+                            onClick={handleShareCopy}
+                            className="h-9 px-3 rounded-xl bg-loops-primary/10 border border-loops-primary/20 text-loops-primary font-bold text-[10px] uppercase tracking-widest hover:bg-loops-primary hover:text-white transition-all flex items-center gap-1.5 shrink-0"
+                        >
+                            {linkCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                            {linkCopied ? 'Copied!' : 'Copy'}
+                        </button>
+                    </div>
+                    <button
+                        onClick={handleWhatsAppShare}
+                        className="w-full h-10 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] font-bold text-xs uppercase tracking-widest hover:bg-[#25D366] hover:text-white transition-all flex items-center justify-center gap-2"
+                    >
+                        <Share2 className="w-3.5 h-3.5" />
+                        Share on WhatsApp
+                    </button>
+                </motion.div>
+
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }} className="flex gap-3">
+                    <Button onClick={() => router.push('/listings/create')} className="h-12 px-8 rounded-2xl bg-loops-primary text-white font-bold uppercase tracking-widest text-xs">
                         Add More Products <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                     <Button onClick={() => router.push('/')} variant="ghost" className="h-12 px-6 rounded-2xl font-bold uppercase tracking-widest text-xs text-loops-muted">
@@ -292,6 +335,22 @@ export default function PopulateTheLooPage() {
                         <span className="text-[10px] text-loops-muted font-bold uppercase tracking-widest">{savedCount} saved</span>
                         <span className="text-[10px] text-loops-muted font-bold uppercase tracking-widest">Goal: {VERIFIED_PLUG_THRESHOLD}</span>
                     </div>
+
+                    {/* Campaign share link */}
+                    <div className="mt-4 pt-4 border-t border-loops-border/50 flex items-center gap-2">
+                        <div className="flex-1 px-3 py-2 rounded-xl bg-white/50 border border-loops-border text-[9px] font-mono text-loops-muted truncate">
+                            {CAMPAIGN_URL}
+                        </div>
+                        <button
+                            id="copy-campaign-link"
+                            onClick={() => { navigator.clipboard.writeText(CAMPAIGN_URL); toast.success('Campaign link copied!'); }}
+                            className="h-8 px-3 rounded-xl bg-loops-primary/10 border border-loops-primary/20 text-loops-primary font-bold text-[9px] uppercase tracking-widest hover:bg-loops-primary hover:text-white transition-all flex items-center gap-1 shrink-0"
+                        >
+                            <Copy className="w-2.5 h-2.5" />
+                            Copy
+                        </button>
+                    </div>
+                    <p className="text-[8px] text-loops-muted font-bold uppercase tracking-widest">Share this link so others can populate their loop too</p>
                 </motion.div>
 
                 {/* Product Drafts */}
